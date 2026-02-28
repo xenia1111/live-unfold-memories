@@ -48,15 +48,21 @@ const encouragements = [
   "你的生活比你以为的更精彩 🌈",
 ];
 
-const HomePage = () => {
+interface HomePageProps {
+  extraTasks?: Task[];
+  onTasksChange?: (tasks: Task[]) => void;
+}
+
+const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const [tasks, setTasks] = useState<Task[]>(generateMockTasks);
+  const allTasks = [...tasks, ...extraTasks];
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [encouragement] = useState(() => encouragements[Math.floor(Math.random() * encouragements.length)]);
   const today = new Date();
 
-  const pastTasks = tasks.filter(t => isPast(t.date) && !isToday(t.date));
-  const todayTasks = tasks.filter(t => isToday(t.date));
-  const futureTasks = tasks.filter(t => isFuture(t.date) && !isToday(t.date));
+  const pastTasks = allTasks.filter(t => isPast(t.date) && !isToday(t.date));
+  const todayTasks = allTasks.filter(t => isToday(t.date));
+  const futureTasks = allTasks.filter(t => isFuture(t.date) && !isToday(t.date));
 
   const completedCount = pastTasks.filter(t => t.completed).length;
   const totalPast = pastTasks.length;
