@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { format, addDays, subDays, isToday, isFuture, isPast } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle, Clock, Sparkles, ChevronRight,
   Sun, Moon, Coffee, Dumbbell, BookOpen, Music, Heart, Star,
-  PartyPopper, Flame, Image as ImageIcon
+  Flame, PartyPopper
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
+import ConfettiCanvas from "@/components/ConfettiCanvas";
+import GameStats from "@/components/GameStats";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -44,11 +46,14 @@ const generateMockTasks = (): Task[] => {
   ];
 };
 
-const encouragements = [
+const DAILY_QUOTES = [
   "你正在创造美好的回忆 ✨",
   "每一个小事都闪闪发光 🌟",
   "今天也是值得期待的一天 💛",
   "你的生活比你以为的更精彩 🌈",
+  "把每一天都活成值得回忆的样子 🦋",
+  "温柔地对待自己，你已经很棒了 🌸",
+  "世界因为有你而更可爱 🌻",
 ];
 
 interface HomePageProps {
@@ -60,8 +65,9 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const [tasks, setTasks] = useState<Task[]>(generateMockTasks);
   const allTasks = [...tasks, ...extraTasks];
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
-  const [encouragement] = useState(() => encouragements[Math.floor(Math.random() * encouragements.length)]);
+  const [encouragement] = useState(() => DAILY_QUOTES[Math.floor(Math.random() * DAILY_QUOTES.length)]);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const today = new Date();
 
   const pastTasks = allTasks.filter(t => isPast(t.date) && !isToday(t.date));
@@ -75,27 +81,30 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
 
+  // Gamification stats
+  const totalCompleted = allTasks.filter(t => t.completed).length;
+  const streak = 5; // mock streak
+
   const handleTaskClick = (task: Task) => {
-    // Already completed tasks do nothing on click
     if (task.completed) return;
-    // Open completion photo dialog
     setCompletingTask(task);
   };
 
-  const handleCompleteConfirm = (photo?: string) => {
+  const handleCompleteConfirm = useCallback((photo?: string) => {
     if (!completingTask) return;
     const id = completingTask.id;
+    
+    // Trigger confetti!
+    setShowConfetti(true);
     setJustCompleted(id);
-    setTimeout(() => setJustCompleted(null), 800);
+    setTimeout(() => setJustCompleted(null), 1200);
 
-    // Update in mock tasks
     setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
-    // Update in extra tasks
     if (onTasksChange && extraTasks.some(t => t.id === id)) {
       onTasksChange(extraTasks.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
     }
     setCompletingTask(null);
-  };
+  }, [completingTask, onTasksChange, extraTasks]);
 
   const getGreeting = () => {
     const h = new Date().getHours();
@@ -112,8 +121,11 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
+      {/* Confetti */}
+      <ConfettiCanvas active={showConfetti} onDone={() => setShowConfetti(false)} />
+
       {/* Header */}
-      <div className="animate-fade-in mb-8">
+      <div className="animate-fade-in mb-6">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl animate-float">{greeting.emoji}</span>
           <span className="text-sm text-muted-foreground">{greeting.text}</span>
@@ -122,13 +134,18 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         <p className="text-sm text-muted-foreground mt-1">
           {format(today, "yyyy年M月d日 EEEE", { locale: zhCN })}
         </p>
-        <div className="mt-4 px-4 py-3 rounded-2xl animate-shimmer border border-primary/10">
+        <div className="mt-3 px-4 py-3 rounded-2xl animate-shimmer border border-primary/10">
           <p className="text-sm text-foreground/80 font-medium">{encouragement}</p>
         </div>
       </div>
 
+      {/* Game Stats */}
+      <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <GameStats totalCompleted={totalCompleted} streak={streak} />
+      </section>
+
       {/* Today tasks */}
-      <section className="mb-8 animate-fade-in" style={{ animationDelay: "0.15s" }}>
+      <section className="mb-8 animate-fade-in" style={{ animationDelay: "0.2s" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Flame size={18} className="text-accent animate-pulse-warm" />
@@ -136,7 +153,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
           </div>
           {todayTotal > 0 && (
             <span className={cn(
-              "text-xs px-2 py-0.5 rounded-full font-medium",
+              "text-xs px-2 py-0.5 rounded-full font-medium transition-all",
               todayCompleted === todayTotal
                 ? "bg-forest-light text-secondary"
                 : "bg-muted text-muted-foreground"
@@ -145,6 +162,33 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
             </span>
           )}
         </div>
+        {/* Today progress ring */}
+        {todayTotal > 0 && (
+          <div className="flex items-center gap-4 mb-4 p-3 bg-card rounded-2xl border border-border/50 card-glow">
+            <div className="relative w-14 h-14 flex-shrink-0">
+              <svg className="w-14 h-14 -rotate-90" viewBox="0 0 56 56">
+                <circle cx="28" cy="28" r="24" fill="none" stroke="hsl(var(--muted))" strokeWidth="4" />
+                <circle
+                  cx="28" cy="28" r="24" fill="none"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeDasharray={`${(todayCompleted / todayTotal) * 150.8} 150.8`}
+                  className="transition-all duration-700 ease-out"
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-foreground">
+                {Math.round((todayCompleted / todayTotal) * 100)}%
+              </span>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">
+                {todayCompleted === todayTotal ? "今天的事都做完啦！🎊" : `还有 ${todayTotal - todayCompleted} 件事等你去做`}
+              </p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">每完成一件 +10 XP</p>
+            </div>
+          </div>
+        )}
         <div className="space-y-3">
           {todayTasks.map((task, index) => {
             const Icon = iconMap[task.icon] || Star;
@@ -175,8 +219,8 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
                     <Clock size={11} className="text-muted-foreground/60" />
                     <span className="text-xs text-muted-foreground/60">{task.time}</span>
                     <span className="text-[10px] px-1.5 py-0.5 bg-muted/60 rounded-md text-muted-foreground">{task.category}</span>
+                    {task.completed && <span className="text-[10px] text-secondary font-medium">+10 XP</span>}
                   </div>
-                  {/* Cover image or completion photo */}
                   {(task.coverImage || task.completionPhoto) && (
                     <div className="mt-2 rounded-lg overflow-hidden">
                       <img
@@ -206,7 +250,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
       </section>
 
       {/* Past Week */}
-      <section className="mb-8 animate-fade-in" style={{ animationDelay: "0.25s" }}>
+      <section className="mb-8 animate-fade-in" style={{ animationDelay: "0.3s" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <PartyPopper size={18} className="text-primary" />
@@ -259,7 +303,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
       </section>
 
       {/* Upcoming */}
-      <section className="animate-fade-in" style={{ animationDelay: "0.35s" }}>
+      <section className="animate-fade-in" style={{ animationDelay: "0.4s" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Sparkles size={18} className="text-primary animate-pulse-warm" />
