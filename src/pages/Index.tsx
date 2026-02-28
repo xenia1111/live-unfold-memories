@@ -14,13 +14,15 @@ interface Task {
   completed: boolean;
   date: Date;
   category: string;
+  coverImage?: string;
+  completionPhoto?: string;
 }
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddTask = (task: { title: string; time: string; icon: string; category: string; date: Date }) => {
+  const handleAddTask = (task: { title: string; time: string; icon: string; category: string; date: Date; coverImage?: string }) => {
     const newTask: Task = {
       id: Date.now().toString(),
       ...task,

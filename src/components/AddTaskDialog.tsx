@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Plus, X, Coffee, Dumbbell, BookOpen, Music, Heart, Star } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ const categoryOptions = ["运动", "学习", "社交", "工作", "健康", "记�
 const timeOptions = ["07:00", "08:00", "09:00", "10:00", "12:00", "14:00", "16:00", "18:00", "19:00", "20:00", "21:00", "22:00", "全天"];
 
 interface AddTaskDialogProps {
-  onAdd: (task: { title: string; time: string; icon: string; category: string; date: Date }) => void;
+  onAdd: (task: { title: string; time: string; icon: string; category: string; date: Date; coverImage?: string }) => void;
 }
 
 const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
@@ -31,6 +31,8 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
   const [selectedCategory, setSelectedCategory] = useState("记录");
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [selectedDayOffset, setSelectedDayOffset] = useState(0);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const today = new Date();
   const dayOptions = Array.from({ length: 7 }, (_, i) => ({
@@ -38,6 +40,15 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
     date: addDays(today, i),
     label: i === 0 ? "今天" : i === 1 ? "明天" : format(addDays(today, i), "E", { locale: zhCN }),
   }));
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setCoverImage(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = () => {
     if (!title.trim()) return;
@@ -47,12 +58,14 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
       icon: selectedIcon,
       category: selectedCategory,
       date: addDays(today, selectedDayOffset),
+      coverImage: coverImage || undefined,
     });
     setTitle("");
     setSelectedIcon("star");
     setSelectedCategory("记录");
     setSelectedTime("09:00");
     setSelectedDayOffset(0);
+    setCoverImage(null);
     setOpen(false);
   };
 
@@ -63,7 +76,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
           <Plus size={28} />
         </button>
       </DialogTrigger>
-      <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0">
+      <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] overflow-y-auto">
         <DialogHeader className="p-5 pb-3">
           <DialogTitle className="text-lg font-serif text-foreground">记录一件想做的事 ✨</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">给未来的自己安排一件美好的事吧</DialogDescription>
@@ -79,6 +92,37 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
               className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 border border-border/30 focus:outline-none focus:border-primary/40 transition-colors"
               autoFocus
             />
+          </div>
+
+          {/* Cover image */}
+          <div>
+            <p className="text-xs text-muted-foreground mb-2">📷 配一张图（可选）</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageSelect}
+            />
+            {coverImage ? (
+              <div className="relative rounded-xl overflow-hidden">
+                <img src={coverImage} alt="封面" className="w-full h-32 object-cover rounded-xl" />
+                <button
+                  onClick={() => setCoverImage(null)}
+                  className="absolute top-2 right-2 w-6 h-6 rounded-full bg-background/80 flex items-center justify-center"
+                >
+                  <X size={14} className="text-foreground" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full h-24 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/60 hover:border-primary/30 hover:text-primary/60 transition-all"
+              >
+                <ImagePlus size={22} />
+                <span className="text-xs">添加封面图片</span>
+              </button>
+            )}
           </div>
 
           {/* Day selector */}

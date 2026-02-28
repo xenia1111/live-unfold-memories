@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { format, addDays, subDays, isToday, isFuture, isPast } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle, Clock, Sparkles, ChevronRight,
   Sun, Moon, Coffee, Dumbbell, BookOpen, Music, Heart, Star,
-  PartyPopper, Flame
+  PartyPopper, Flame, Image as ImageIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -21,6 +22,8 @@ interface Task {
   completed: boolean;
   date: Date;
   category: string;
+  coverImage?: string;
+  completionPhoto?: string;
 }
 
 const generateMockTasks = (): Task[] => {
@@ -58,6 +61,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const allTasks = [...tasks, ...extraTasks];
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [encouragement] = useState(() => encouragements[Math.floor(Math.random() * encouragements.length)]);
+  const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const today = new Date();
 
   const pastTasks = allTasks.filter(t => isPast(t.date) && !isToday(t.date));
@@ -71,13 +75,26 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
 
-  const toggleTask = (id: string) => {
-    const task = tasks.find(t => t.id === id);
-    if (task && !task.completed) {
-      setJustCompleted(id);
-      setTimeout(() => setJustCompleted(null), 800);
+  const handleTaskClick = (task: Task) => {
+    // Already completed tasks do nothing on click
+    if (task.completed) return;
+    // Open completion photo dialog
+    setCompletingTask(task);
+  };
+
+  const handleCompleteConfirm = (photo?: string) => {
+    if (!completingTask) return;
+    const id = completingTask.id;
+    setJustCompleted(id);
+    setTimeout(() => setJustCompleted(null), 800);
+
+    // Update in mock tasks
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
+    // Update in extra tasks
+    if (onTasksChange && extraTasks.some(t => t.id === id)) {
+      onTasksChange(extraTasks.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
     }
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+    setCompletingTask(null);
   };
 
   const getGreeting = () => {
@@ -92,11 +109,10 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   };
 
   const greeting = getGreeting();
-  const GreetingIcon = greeting.icon;
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
-      {/* Header with warm greeting */}
+      {/* Header */}
       <div className="animate-fade-in mb-8">
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl animate-float">{greeting.emoji}</span>
@@ -106,13 +122,12 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         <p className="text-sm text-muted-foreground mt-1">
           {format(today, "yyyy年M月d日 EEEE", { locale: zhCN })}
         </p>
-        {/* Encouragement banner */}
         <div className="mt-4 px-4 py-3 rounded-2xl animate-shimmer border border-primary/10">
           <p className="text-sm text-foreground/80 font-medium">{encouragement}</p>
         </div>
       </div>
 
-      {/* Today - promoted to top with emotional framing */}
+      {/* Today tasks */}
       <section className="mb-8 animate-fade-in" style={{ animationDelay: "0.15s" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -126,7 +141,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
                 ? "bg-forest-light text-secondary"
                 : "bg-muted text-muted-foreground"
             )}>
-              {todayCompleted === todayTotal ? "🎉 全部完成！" : `${todayCompleted}/${todayTotal}`}
+              {todayCompleted === todayTotal && todayTotal > 0 ? "🎉 全部完成！" : `${todayCompleted}/${todayTotal}`}
             </span>
           )}
         </div>
@@ -137,17 +152,17 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
             return (
               <button
                 key={task.id}
-                onClick={() => toggleTask(task.id)}
+                onClick={() => handleTaskClick(task)}
                 className={cn(
-                  "w-full flex items-center gap-4 bg-card rounded-2xl p-4 border border-border/50 text-left transition-all active:scale-[0.97]",
-                  task.completed ? "card-glow" : "animate-breathe",
+                  "w-full flex items-start gap-4 bg-card rounded-2xl p-4 border border-border/50 text-left transition-all",
+                  task.completed ? "card-glow cursor-default" : "animate-breathe active:scale-[0.97]",
                   isCelebrating && "animate-celebrate"
                 )}
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
                 {task.completed
-                  ? <CheckCircle2 size={24} className="text-secondary flex-shrink-0" />
-                  : <Circle size={24} className="text-muted-foreground/40 flex-shrink-0" />
+                  ? <CheckCircle2 size={24} className="text-secondary flex-shrink-0 mt-0.5" />
+                  : <Circle size={24} className="text-muted-foreground/40 flex-shrink-0 mt-0.5" />
                 }
                 <div className="flex-1 min-w-0">
                   <p className={cn(
@@ -161,9 +176,22 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
                     <span className="text-xs text-muted-foreground/60">{task.time}</span>
                     <span className="text-[10px] px-1.5 py-0.5 bg-muted/60 rounded-md text-muted-foreground">{task.category}</span>
                   </div>
+                  {/* Cover image or completion photo */}
+                  {(task.coverImage || task.completionPhoto) && (
+                    <div className="mt-2 rounded-lg overflow-hidden">
+                      <img
+                        src={task.completionPhoto || task.coverImage}
+                        alt=""
+                        className="w-full h-24 object-cover rounded-lg"
+                      />
+                      {task.completionPhoto && (
+                        <span className="text-[10px] text-muted-foreground mt-1 block">📸 打卡记录</span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className={cn(
-                  "w-9 h-9 rounded-xl flex items-center justify-center transition-all",
+                  "w-9 h-9 rounded-xl flex items-center justify-center transition-all flex-shrink-0",
                   task.completed ? "bg-forest-light" : "bg-muted/50"
                 )}>
                   <Icon size={16} className={cn(
@@ -177,7 +205,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         </div>
       </section>
 
-      {/* Past Week - emotional progress */}
+      {/* Past Week */}
       <section className="mb-8 animate-fade-in" style={{ animationDelay: "0.25s" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -186,7 +214,6 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
           </div>
         </div>
         <div className="bg-card rounded-2xl p-5 card-glow border border-border/50">
-          {/* Emotional message based on progress */}
           <div className="mb-4 text-center">
             <p className="text-2xl mb-2">
               {progressPercent >= 80 ? "🌟" : progressPercent >= 50 ? "💪" : "🌱"}
@@ -202,14 +229,12 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
               完成了 {completedCount} / {totalPast} 件想做的事
             </p>
           </div>
-          {/* Progress bar */}
           <div className="w-full h-3 bg-muted rounded-full overflow-hidden mb-4">
             <div
               className="h-full rounded-full gradient-progress animate-progress-fill"
               style={{ "--progress-width": `${progressPercent}%` } as React.CSSProperties}
             />
           </div>
-          {/* Past tasks as warm memory chips */}
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             {pastTasks.map((task) => {
               const Icon = iconMap[task.icon] || Star;
@@ -233,7 +258,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         </div>
       </section>
 
-      {/* Upcoming - framed as exciting things */}
+      {/* Upcoming */}
       <section className="animate-fade-in" style={{ animationDelay: "0.35s" }}>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -243,16 +268,16 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
           <ChevronRight size={18} className="text-muted-foreground" />
         </div>
         <div className="space-y-3">
-          {futureTasks.map((task, index) => {
+          {futureTasks.map((task) => {
             const Icon = iconMap[task.icon] || Star;
             const daysFromNow = Math.ceil((task.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
             const dayLabel = daysFromNow === 1 ? "明天" : daysFromNow === 2 ? "后天" : `${daysFromNow}天后`;
             return (
               <div
                 key={task.id}
-                className="flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 hover:border-primary/20 transition-all"
+                className="flex items-start gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 hover:border-primary/20 transition-all"
               >
-                <div className="w-11 h-11 rounded-xl bg-muted flex flex-col items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-muted flex flex-col items-center justify-center flex-shrink-0">
                   <span className="text-[9px] text-primary font-medium leading-none">{dayLabel}</span>
                   <span className="text-sm font-bold text-foreground leading-tight">
                     {format(task.date, "d")}
@@ -265,8 +290,13 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
                     <span className="text-xs text-muted-foreground">{task.time}</span>
                     <span className="text-[10px] px-1.5 py-0.5 bg-muted/60 rounded-md text-muted-foreground">{task.category}</span>
                   </div>
+                  {task.coverImage && (
+                    <div className="mt-2 rounded-lg overflow-hidden">
+                      <img src={task.coverImage} alt="" className="w-full h-20 object-cover rounded-lg" />
+                    </div>
+                  )}
                 </div>
-                <div className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0">
                   <Icon size={16} className="text-primary/50" />
                 </div>
               </div>
@@ -274,6 +304,14 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
           })}
         </div>
       </section>
+
+      {/* Completion photo dialog */}
+      <CompletionPhotoDialog
+        open={!!completingTask}
+        onOpenChange={(open) => !open && setCompletingTask(null)}
+        taskTitle={completingTask?.title || ""}
+        onConfirm={handleCompleteConfirm}
+      />
     </div>
   );
 };
