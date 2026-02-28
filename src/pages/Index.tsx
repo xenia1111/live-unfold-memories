@@ -1,12 +1,27 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import BottomNav from "@/components/BottomNav";
+import HomePage from "@/components/HomePage";
+import CalendarPage from "@/components/CalendarPage";
+import StoryPage from "@/components/StoryPage";
+import ProfilePage from "@/components/ProfilePage";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState("home");
+
+  const renderPage = () => {
+    switch (activeTab) {
+      case "home": return <HomePage />;
+      case "calendar": return <CalendarPage />;
+      case "story": return <StoryPage />;
+      case "profile": return <ProfilePage />;
+      default: return <HomePage />;
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {renderPage()}
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 };
