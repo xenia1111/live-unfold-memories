@@ -34,7 +34,7 @@ const Index = () => {
   const renderPage = () => {
     switch (activeTab) {
       case "home": return <HomePage extraTasks={tasks} onTasksChange={setTasks} />;
-      case "calendar": return <CalendarPage />;
+      case "calendar": return <CalendarPage tasks={tasks} />;
       case "story": return <StoryPage />;
       case "profile": return <ProfilePage />;
       default: return <HomePage extraTasks={tasks} onTasksChange={setTasks} />;
