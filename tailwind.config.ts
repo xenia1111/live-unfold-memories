@@ -95,6 +95,17 @@ export default {
           from: { width: "0%" },
           to: { width: "var(--progress-width)" },
         },
+        "bounce-in": {
+          "0%": { transform: "scale(0.3)", opacity: "0" },
+          "50%": { transform: "scale(1.05)" },
+          "70%": { transform: "scale(0.9)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "wiggle": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "25%": { transform: "rotate(-3deg)" },
+          "75%": { transform: "rotate(3deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -102,6 +113,8 @@ export default {
         "fade-in": "fade-in 0.5s ease-out forwards",
         "slide-up": "slide-up 0.6s ease-out forwards",
         "progress-fill": "progress-fill 1s ease-out forwards",
+        "bounce-in": "bounce-in 0.5s ease-out forwards",
+        "wiggle": "wiggle 0.4s ease-in-out",
       },
     },
   },
