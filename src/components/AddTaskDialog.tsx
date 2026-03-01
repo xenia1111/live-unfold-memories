@@ -18,7 +18,7 @@ const iconOptions = [
 
 const categoryOptions = ["运动", "学习", "社交", "工作", "健康", "记录", "娱乐"];
 
-const timeOptions = ["07:00", "08:00", "09:00", "10:00", "12:00", "14:00", "16:00", "18:00", "19:00", "20:00", "21:00", "22:00", "全天"];
+const timeOptions = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "全天"];
 
 interface AddTaskDialogProps {
   onAdd: (task: { title: string; time: string; icon: string; category: string; date?: Date; coverImage?: string; deadline?: Date }) => void;
