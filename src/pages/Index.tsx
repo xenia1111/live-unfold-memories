@@ -12,17 +12,18 @@ interface Task {
   time: string;
   icon: string;
   completed: boolean;
-  date: Date;
+  date?: Date;
   category: string;
   coverImage?: string;
   completionPhoto?: string;
+  deadline?: Date;
 }
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home");
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  const handleAddTask = (task: { title: string; time: string; icon: string; category: string; date: Date; coverImage?: string }) => {
+  const handleAddTask = (task: { title: string; time: string; icon: string; category: string; date?: Date; coverImage?: string; deadline?: Date }) => {
     const newTask: Task = {
       id: Date.now().toString(),
       ...task,
