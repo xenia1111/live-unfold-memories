@@ -260,7 +260,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
           >
             <CalendarDays size={14} className="text-primary/60" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              即将到来 · {futureTasks.length} 件事
+              即将到来
             </span>
             <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
           </button>
