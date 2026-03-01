@@ -29,10 +29,11 @@ interface Task {
   time: string;
   icon: string;
   completed: boolean;
-  date: Date;
+  date?: Date;
   category: string;
   coverImage?: string;
   completionPhoto?: string;
+  deadline?: Date;
 }
 
 interface MockEvent {
@@ -177,8 +178,8 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
     mockEvents.forEach(e => {
       items.push({ date: e.date, id: `mock-${e.date.getTime()}-${e.title}`, title: e.title, icon: e.icon, category: e.category, photos: e.photos });
     });
-    tasks.forEach(t => {
-      items.push({ date: t.date, id: t.id, title: t.title, icon: t.icon, category: t.category, photos: t.completionPhoto ? [t.completionPhoto] : [] });
+    tasks.filter(t => t.date).forEach(t => {
+      items.push({ date: t.date!, id: t.id, title: t.title, icon: t.icon, category: t.category, photos: t.completionPhoto ? [t.completionPhoto] : [] });
     });
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     return items;

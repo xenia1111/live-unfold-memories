@@ -1,10 +1,10 @@
 import { useState, useCallback, useMemo } from "react";
-import { format, addDays, subDays, isToday, isFuture, isPast } from "date-fns";
+import { format, addDays, subDays, isToday, isFuture, differenceInCalendarDays } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
-  CheckCircle2, Circle, Clock,
+  CheckCircle2, Circle,
   Coffee, Dumbbell, BookOpen, Music, Heart, Star,
-  ChevronDown, Sparkles, CalendarDays, ChevronRight, X
+  ChevronRight, CalendarDays, Inbox, AlertCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -22,10 +22,11 @@ interface Task {
   time: string;
   icon: string;
   completed: boolean;
-  date: Date;
+  date?: Date;
   category: string;
   coverImage?: string;
   completionPhoto?: string;
+  deadline?: Date;
 }
 
 const generateMockTasks = (): Task[] => {
@@ -40,32 +41,44 @@ const generateMockTasks = (): Task[] => {
     { id: "7", title: "冥想 15 分钟", time: "07:30", icon: "star", completed: false, date: today, category: "健康" },
     { id: "8", title: "学习 React", time: "10:00", icon: "book", completed: false, date: addDays(today, 1), category: "学习" },
     { id: "9", title: "约朋友看电影", time: "19:00", icon: "heart", completed: false, date: addDays(today, 2), category: "社交" },
-    { id: "10", title: "准备周报", time: "09:00", icon: "star", completed: false, date: addDays(today, 3), category: "工作" },
+    { id: "10", title: "准备周报", time: "09:00", icon: "star", completed: false, date: addDays(today, 3), category: "工作", deadline: addDays(today, 4) },
     { id: "11", title: "瑜伽课", time: "18:00", icon: "dumbbell", completed: false, date: addDays(today, 4), category: "运动" },
-    { id: "12", title: "读完一本新书", time: "全天", icon: "book", completed: false, date: addDays(today, 5), category: "学习" },
+    { id: "12", title: "读完一本新书", time: "全天", icon: "book", completed: false, category: "学习", deadline: addDays(today, 7) },
+    { id: "13", title: "学吉他", time: "全天", icon: "music", completed: false, category: "娱乐" },
   ];
 };
 
-interface HomePageProps {
-  extraTasks?: Task[];
-  onTasksChange?: (tasks: Task[]) => void;
-}
+/* ── Deadline 标签 ── */
+const DeadlineTag = ({ deadline }: { deadline: Date }) => {
+  const days = differenceInCalendarDays(deadline, new Date());
+  const isUrgent = days <= 2;
+  const label = days <= 0 ? "已到期" : days === 1 ? "明天截止" : `还剩${days}天`;
+  return (
+    <span className={cn(
+      "text-[10px] px-1.5 py-0.5 rounded-md font-medium",
+      isUrgent ? "bg-destructive/10 text-destructive" : "bg-accent/50 text-accent-foreground/70"
+    )}>
+      {days <= 0 && <AlertCircle size={10} className="inline mr-0.5 -mt-0.5" />}
+      {label}
+    </span>
+  );
+};
 
 /* ── 未来规划分组组件 ── */
 const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => {
   const grouped = useMemo(() => {
     const map = new Map<string, Task[]>();
-    const sorted = [...tasks].sort((a, b) => a.date.getTime() - b.date.getTime());
+    const sorted = [...tasks].sort((a, b) => a.date!.getTime() - b.date!.getTime());
     sorted.forEach(t => {
-      const key = format(t.date, "yyyy-MM-dd");
+      const key = format(t.date!, "yyyy-MM-dd");
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(t);
     });
-    return Array.from(map.entries()).map(([key, items]) => ({ key, date: items[0].date, items }));
+    return Array.from(map.entries()).map(([key, items]) => ({ key, date: items[0].date!, items }));
   }, [tasks]);
 
   const getDayLabel = (date: Date) => {
-    const diff = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const diff = differenceInCalendarDays(date, today);
     if (diff === 1) return "明天";
     if (diff === 2) return "后天";
     return format(date, "M月d日 EEEE", { locale: zhCN });
@@ -75,29 +88,27 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
     <div className="space-y-4">
       {grouped.map(group => (
         <div key={group.key}>
-          {/* 日期标签 */}
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[11px] font-bold text-primary">{getDayLabel(group.date)}</span>
-            {Math.ceil((group.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) <= 2 && (
+            {differenceInCalendarDays(group.date, today) <= 2 && (
               <span className="text-[10px] text-muted-foreground">{format(group.date, "M/d EEEE", { locale: zhCN })}</span>
             )}
             <div className="flex-1 h-px bg-border/40" />
           </div>
-          {/* 该日任务 */}
           <div className="space-y-2">
             {group.items.map(task => {
               const Icon = iconMap[task.icon] || Star;
               return (
-                <div
-                  key={task.id}
-                  className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30 hover:border-primary/15 transition-all"
-                >
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30 hover:border-primary/15 transition-all">
                   <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0">
                     <Icon size={14} className="text-primary/50" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground/80">{task.title}</p>
-                    <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                      {task.deadline && <DeadlineTag deadline={task.deadline} />}
+                    </div>
                   </div>
                   <ChevronRight size={14} className="text-muted-foreground/20 flex-shrink-0" />
                 </div>
@@ -110,6 +121,11 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
   );
 };
 
+interface HomePageProps {
+  extraTasks?: Task[];
+  onTasksChange?: (tasks: Task[]) => void;
+}
+
 const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const [tasks, setTasks] = useState<Task[]>(generateMockTasks);
   const allTasks = [...tasks, ...extraTasks];
@@ -117,10 +133,12 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showUpcoming, setShowUpcoming] = useState(false);
+  const [showBacklog, setShowBacklog] = useState(false);
   const today = new Date();
 
-  const todayTasks = allTasks.filter(t => isToday(t.date));
-  const futureTasks = allTasks.filter(t => isFuture(t.date) && !isToday(t.date)).sort((a, b) => a.date.getTime() - b.date.getTime());
+  const todayTasks = allTasks.filter(t => t.date && isToday(t.date));
+  const futureTasks = allTasks.filter(t => t.date && isFuture(t.date) && !isToday(t.date)).sort((a, b) => a.date!.getTime() - b.date!.getTime());
+  const backlogTasks = allTasks.filter(t => !t.date && !t.completed);
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
   const allCompleted = allTasks.filter(t => t.completed).length;
@@ -161,7 +179,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
     <div className="px-5 pt-14 pb-24 max-w-lg mx-auto">
       <ConfettiCanvas active={showConfetti} onDone={() => setShowConfetti(false)} />
 
-      {/* ── Hero: 简洁问候 + 核心数据 ── */}
+      {/* ── Hero ── */}
       <div className="mb-8 animate-fade-in">
         <p className="text-sm text-muted-foreground mb-1">
           {format(today, "M月d日 EEEE", { locale: zhCN })}
@@ -169,8 +187,6 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
           {greeting.emoji} {greeting.text}
         </h1>
-
-        {/* 迷你状态条 */}
         <div className="mt-4 flex items-center gap-3">
           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
             <div
@@ -185,8 +201,6 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         {todayTotal > 0 && todayCompleted === todayTotal && (
           <p className="text-xs text-secondary font-medium mt-2">🎉 今天全部完成！太棒了</p>
         )}
-
-        {/* 快速统计 */}
         <div className="mt-4 flex gap-3">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card border border-border/50 text-xs">
             <span className="text-accent">🔥</span>
@@ -199,7 +213,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         </div>
       </div>
 
-      {/* ── 今天的任务（主区域）── */}
+      {/* ── 今天的任务 ── */}
       <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {todayTotal === 0 ? (
           <div className="text-center py-12">
@@ -236,7 +250,10 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
                     )}>
                       {task.title}
                     </p>
-                    <span className="text-[11px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                      {task.deadline && <DeadlineTag deadline={task.deadline} />}
+                    </div>
                   </div>
                   <div className={cn(
                     "w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0",
@@ -251,31 +268,28 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         )}
       </section>
 
-      {/* ── 未来规划预览 ── */}
+      {/* ── 即将到来 ── */}
       {futureTasks.length > 0 && (
-        <section className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <section className="mb-4 animate-fade-in" style={{ animationDelay: "0.2s" }}>
           <button
             onClick={() => setShowUpcoming(true)}
             className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all"
           >
             <CalendarDays size={14} className="text-primary/60" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              即将到来
-            </span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">即将到来</span>
             <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
           </button>
-
-          {/* 预览前3条 */}
           <div className="space-y-2">
             {futureTasks.slice(0, 3).map(task => {
               const Icon = iconMap[task.icon] || Star;
-              const diff = Math.ceil((task.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-              const dayLabel = diff === 1 ? "明天" : diff === 2 ? "后天" : format(task.date, "M/d EEE", { locale: zhCN });
+              const diff = differenceInCalendarDays(task.date!, today);
+              const dayLabel = diff === 1 ? "明天" : diff === 2 ? "后天" : format(task.date!, "M/d EEE", { locale: zhCN });
               return (
                 <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
                   <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground/80 truncate">{task.title}</p>
+                    {task.deadline && <DeadlineTag deadline={task.deadline} />}
                   </div>
                   <Icon size={14} className="text-muted-foreground/30 flex-shrink-0" />
                 </div>
@@ -285,15 +299,84 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         </section>
       )}
 
-      {/* ── 未来规划全屏 Sheet ── */}
+      {/* ── 计划中（无日期） ── */}
+      {backlogTasks.length > 0 && (
+        <section className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
+          <button
+            onClick={() => setShowBacklog(true)}
+            className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all"
+          >
+            <Inbox size={14} className="text-primary/60" />
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">计划中</span>
+            <span className="text-[10px] text-muted-foreground/40 ml-1">{backlogTasks.length}</span>
+            <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
+          </button>
+          <div className="space-y-2">
+            {backlogTasks.slice(0, 2).map(task => {
+              const Icon = iconMap[task.icon] || Star;
+              return (
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
+                  <div className="w-8 h-8 rounded-xl bg-muted/30 flex items-center justify-center flex-shrink-0">
+                    <Icon size={14} className="text-muted-foreground/40" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-foreground/70 truncate">{task.title}</p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground/40">{task.category}</span>
+                      {task.deadline && <DeadlineTag deadline={task.deadline} />}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── 未来规划 Sheet ── */}
       <Sheet open={showUpcoming} onOpenChange={setShowUpcoming}>
         <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-0 pb-0">
           <SheetHeader className="px-5 pb-3 border-b border-border/50">
             <SheetTitle className="text-lg font-bold font-serif">未来规划</SheetTitle>
-            <p className="text-xs text-muted-foreground">{futureTasks.length} 件事待完成</p>
           </SheetHeader>
           <div className="overflow-y-auto px-5 pt-4 pb-8 h-full">
             <FuturePlanSection tasks={futureTasks} today={today} />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* ── 计划中 Sheet ── */}
+      <Sheet open={showBacklog} onOpenChange={setShowBacklog}>
+        <SheetContent side="bottom" className="h-[70vh] rounded-t-3xl px-0 pb-0">
+          <SheetHeader className="px-5 pb-3 border-b border-border/50">
+            <SheetTitle className="text-lg font-bold font-serif">计划中</SheetTitle>
+            <p className="text-xs text-muted-foreground">还没安排具体日期的事</p>
+          </SheetHeader>
+          <div className="overflow-y-auto px-5 pt-4 pb-8 h-full">
+            <div className="space-y-2.5">
+              {backlogTasks.map(task => {
+                const Icon = iconMap[task.icon] || Star;
+                return (
+                  <button
+                    key={task.id}
+                    onClick={() => handleTaskClick(task)}
+                    className="w-full flex items-center gap-3.5 rounded-2xl p-4 text-left bg-card border border-border/50 active:scale-[0.98] transition-all"
+                  >
+                    <Circle size={22} className="text-muted-foreground/30 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">{task.title}</p>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[11px] text-muted-foreground/50">{task.category}</span>
+                        {task.deadline && <DeadlineTag deadline={task.deadline} />}
+                      </div>
+                    </div>
+                    <div className="w-8 h-8 rounded-xl bg-muted/40 flex items-center justify-center flex-shrink-0">
+                      <Icon size={14} className="text-primary/40" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </SheetContent>
       </Sheet>
