@@ -1,7 +1,8 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
-import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ArrowUp } from "lucide-react";
+import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ArrowUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -49,6 +50,88 @@ const generateMockEvents = (): MockEvent[] => {
     }
   }
   return events;
+};
+
+const MONTHS = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+
+interface MonthPickerProps {
+  months: { key: string; label: string; items: any[] }[];
+  onSelect: (key: string) => void;
+}
+
+const MonthPicker = ({ months, onSelect }: MonthPickerProps) => {
+  const [open, setOpen] = useState(false);
+  // Extract available years from data
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    months.forEach(g => {
+      const [y] = g.key.split("-");
+      years.add(Number(y));
+    });
+    return Array.from(years).sort((a, b) => b - a);
+  }, [months]);
+
+  const [selectedYear, setSelectedYear] = useState(availableYears[0] || new Date().getFullYear());
+
+  const monthKeyMap = useMemo(() => {
+    const map = new Map<string, string>();
+    months.forEach(g => map.set(g.key, g.key));
+    return map;
+  }, [months]);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-muted-foreground hover:bg-muted/60 transition-colors">
+          跳转
+          <ChevronDown size={12} />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 p-3 pointer-events-auto" align="start">
+        {/* Year selector */}
+        <div className="flex items-center justify-between mb-3">
+          <button
+            onClick={() => setSelectedYear(y => y - 1)}
+            className="p-1 rounded-md hover:bg-muted/60 text-muted-foreground transition-colors"
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <span className="text-sm font-bold text-foreground">{selectedYear}年</span>
+          <button
+            onClick={() => setSelectedYear(y => y + 1)}
+            className="p-1 rounded-md hover:bg-muted/60 text-muted-foreground transition-colors"
+          >
+            <ChevronRight size={14} />
+          </button>
+        </div>
+        {/* Month grid */}
+        <div className="grid grid-cols-4 gap-1.5">
+          {MONTHS.map((label, i) => {
+            const key = `${selectedYear}-${i}`;
+            const hasData = monthKeyMap.has(key);
+            return (
+              <button
+                key={key}
+                disabled={!hasData}
+                onClick={() => {
+                  onSelect(key);
+                  setOpen(false);
+                }}
+                className={`py-2 rounded-lg text-xs font-medium transition-all ${
+                  hasData
+                    ? "text-foreground hover:bg-primary/10 hover:text-primary"
+                    : "text-muted-foreground/30 cursor-not-allowed"
+                }`}
+              >
+                {label}
+                {hasData && <div className="w-1 h-1 rounded-full bg-primary mx-auto mt-0.5" />}
+              </button>
+            );
+          })}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
 };
 
 interface CalendarPageProps {
@@ -135,7 +218,13 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto" ref={scrollRef}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6 animate-fade-in">
-        <h1 className="text-xl font-bold text-foreground font-serif">时间轴</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold text-foreground font-serif">时间轴</h1>
+          <MonthPicker
+            months={groupedByMonth}
+            onSelect={scrollToMonth}
+          />
+        </div>
         <button
           onClick={scrollToToday}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
@@ -143,22 +232,6 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
           <CalendarDays size={14} />
           回到今天
         </button>
-      </div>
-
-      {/* Month quick switch */}
-      <div className="flex gap-2 mb-5 overflow-x-auto pb-2 scrollbar-hide animate-fade-in" style={{ animationDelay: "0.05s" }}>
-        {groupedByMonth.map((group) => {
-          const shortLabel = format(new Date(group.items[0].date), "M月", { locale: zhCN });
-          return (
-            <button
-              key={group.key}
-              onClick={() => scrollToMonth(group.key)}
-              className="flex-shrink-0 px-3 py-1.5 rounded-xl bg-muted/60 text-xs font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
-            >
-              {shortLabel}
-            </button>
-          );
-        })}
       </div>
 
       {/* Endless Vertical Timeline */}
