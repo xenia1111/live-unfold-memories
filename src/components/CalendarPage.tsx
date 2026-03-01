@@ -43,9 +43,21 @@ interface MockEvent {
   completionPhoto?: string;
 }
 
+const mockPhotos = [
+  "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=400&h=300&fit=crop",
+];
+
 const generateMockEvents = (): MockEvent[] => {
   const today = new Date();
   const events: MockEvent[] = [];
+  let photoIdx = 0;
   for (let i = 90; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
@@ -58,7 +70,12 @@ const generateMockEvents = (): MockEvent[] => {
         { title: "写日记", icon: "heart", category: "记录", emoji: "📝" },
       ];
       const item = items[Math.floor(Math.random() * items.length)];
-      events.push({ date, ...item });
+      const hasPhoto = Math.random() > 0.45;
+      events.push({
+        date,
+        ...item,
+        completionPhoto: hasPhoto ? mockPhotos[photoIdx++ % mockPhotos.length] : undefined,
+      });
     }
   }
   return events;
