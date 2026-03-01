@@ -315,7 +315,7 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
       {showBackToTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-32 right-5 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all z-50 active:scale-90"
+          className="fixed bottom-44 right-6 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all z-50 active:scale-90"
         >
           <ArrowUp size={18} />
         </button>
