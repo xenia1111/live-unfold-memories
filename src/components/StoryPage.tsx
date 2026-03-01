@@ -1,15 +1,15 @@
-import { useMemo } from "react";
-import { useState } from "react";
-import { BookOpen, Sparkles, Share2, AlertCircle } from "lucide-react";
+import { useMemo, useState, useCallback } from "react";
+import { BookOpen, Sparkles, Share2, RefreshCw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   startOfWeek, endOfWeek, subWeeks,
   startOfMonth, endOfMonth, subMonths,
   startOfQuarter, endOfQuarter, subQuarters,
-  subDays, isWithinInterval, format, differenceInCalendarDays,
+  isWithinInterval, format, differenceInCalendarDays,
   isBefore
 } from "date-fns";
-import { zhCN } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Task {
   id: string;
@@ -26,49 +26,65 @@ interface Task {
 
 type Period = "week" | "month" | "quarter" | "half";
 
-interface Story {
-  label: string;
-  timeRange: string;
+interface StoryData {
   title: string;
+  openingLine: string;
   summary: string;
   highlights: string[];
   mood: string;
   emoji: string;
-  openingLine: string;
-  color: string;
-  isCurrent: boolean;
-  overdueWarnings: string[];
 }
 
-// Category emoji mapping
+interface StoryCard {
+  label: string;
+  timeRange: string;
+  isCurrent: boolean;
+  color: string;
+  // Static fallback
+  fallback: StoryData;
+  // AI generated
+  ai?: StoryData;
+  loading: boolean;
+}
+
 const categoryEmoji: Record<string, string> = {
   "运动": "🏃", "学习": "📖", "社交": "☕", "工作": "💼",
   "健康": "🧘", "记录": "📝", "娱乐": "🎵",
 };
 
-// Mood mapping based on completion rate
-const getMoodInfo = (rate: number, total: number): { mood: string; emoji: string; color: string } => {
-  if (total === 0) return { mood: "等待", emoji: "🌙", color: "from-muted/20 to-muted/10" };
-  if (rate >= 0.8) return { mood: "充实", emoji: "🌟", color: "from-primary/20 to-accent/10" };
-  if (rate >= 0.6) return { mood: "稳步", emoji: "🚀", color: "from-secondary/15 to-primary/10" };
-  if (rate >= 0.4) return { mood: "平和", emoji: "🍃", color: "from-accent/15 to-muted/15" };
-  return { mood: "蓄力", emoji: "🌱", color: "from-secondary/10 to-muted/20" };
+const getMoodColor = (rate: number, total: number): string => {
+  if (total === 0) return "from-muted/20 to-muted/10";
+  if (rate >= 0.8) return "from-primary/20 to-accent/10";
+  if (rate >= 0.6) return "from-secondary/15 to-primary/10";
+  if (rate >= 0.4) return "from-accent/15 to-muted/15";
+  return "from-secondary/10 to-muted/20";
 };
 
-const getOpeningLine = (rate: number, total: number): string => {
-  if (total === 0) return "这段时间还没有计划，新的开始随时可以出发。";
-  if (rate >= 0.8) return "太棒了，你的执行力让人佩服！";
-  if (rate >= 0.6) return "稳扎稳打，你正在变得更好。";
-  if (rate >= 0.4) return "每一步都算数，继续加油。";
-  return "慢慢来，重要的是不停下脚步。";
-};
+// Simple fallback when AI is not yet loaded
+const buildFallback = (tasks: Task[], total: number, completed: number, rate: number): StoryData => {
+  const catCount: Record<string, number> = {};
+  tasks.filter(t => t.completed).forEach(t => {
+    catCount[t.category] = (catCount[t.category] || 0) + 1;
+  });
+  const topCats = Object.entries(catCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
-const generateTitle = (rate: number, total: number): string => {
-  if (total === 0) return "等待启程";
-  if (rate >= 0.8) return "高光时刻";
-  if (rate >= 0.6) return "稳步前行";
-  if (rate >= 0.4) return "成长进行时";
-  return "蓄势待发";
+  const highlights: string[] = [];
+  if (completed > 0) highlights.push(`✅ 完成了 ${completed} 项计划`);
+  topCats.forEach(([cat, count]) => {
+    highlights.push(`${categoryEmoji[cat] || "📌"} ${cat}类完成 ${count} 项`);
+  });
+  if (total === 0) highlights.push("📭 还没有安排计划");
+
+  return {
+    title: total === 0 ? "等待启程" : rate >= 0.8 ? "高光时刻" : rate >= 0.5 ? "稳步前行" : "蓄势待发",
+    openingLine: total === 0 ? "新的开始随时可以出发。" : rate >= 0.8 ? "你的执行力让人佩服！" : "每一步都算数，继续加油。",
+    summary: total === 0
+      ? "给自己安排一些小目标吧。"
+      : `完成了 ${completed}/${total} 项计划，完成率 ${Math.round(rate * 100)}%。${topCats.length > 0 ? `「${topCats[0][0]}」最活跃。` : ""}`,
+    highlights,
+    mood: total === 0 ? "等待" : rate >= 0.8 ? "充实" : rate >= 0.5 ? "稳步" : "蓄力",
+    emoji: total === 0 ? "🌙" : rate >= 0.8 ? "🌟" : rate >= 0.5 ? "🚀" : "🌱",
+  };
 };
 
 interface PeriodRange {
@@ -82,130 +98,40 @@ const getPeriodRanges = (period: Period): PeriodRange[] => {
   const now = new Date();
   switch (period) {
     case "week":
-      return [0, 1, 2].map(i => {
-        const s = startOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
-        const e = endOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
-        return {
-          label: i === 0 ? "本周" : i === 1 ? "上周" : "两周前",
-          start: s, end: e, isCurrent: i === 0,
-        };
-      });
+      return [0, 1, 2].map(i => ({
+        label: i === 0 ? "本周" : i === 1 ? "上周" : "两周前",
+        start: startOfWeek(subWeeks(now, i), { weekStartsOn: 1 }),
+        end: endOfWeek(subWeeks(now, i), { weekStartsOn: 1 }),
+        isCurrent: i === 0,
+      }));
     case "month":
-      return [0, 1, 2].map(i => {
-        const s = startOfMonth(subMonths(now, i));
-        const e = endOfMonth(subMonths(now, i));
-        return {
-          label: i === 0 ? "本月" : i === 1 ? "上个月" : "两个月前",
-          start: s, end: e, isCurrent: i === 0,
-        };
-      });
+      return [0, 1, 2].map(i => ({
+        label: i === 0 ? "本月" : i === 1 ? "上个月" : "两个月前",
+        start: startOfMonth(subMonths(now, i)),
+        end: endOfMonth(subMonths(now, i)),
+        isCurrent: i === 0,
+      }));
     case "quarter":
-      return [0, 1].map(i => {
-        const s = startOfQuarter(subQuarters(now, i));
-        const e = endOfQuarter(subQuarters(now, i));
-        return {
-          label: i === 0 ? "本季度" : "上季度",
-          start: s, end: e, isCurrent: i === 0,
-        };
-      });
+      return [0, 1].map(i => ({
+        label: i === 0 ? "本季度" : "上季度",
+        start: startOfQuarter(subQuarters(now, i)),
+        end: endOfQuarter(subQuarters(now, i)),
+        isCurrent: i === 0,
+      }));
     case "half":
-      return [0, 1].map(i => {
-        const s = subMonths(startOfMonth(now), i * 6 + (i === 0 ? 5 : 5));
-        const e = i === 0 ? now : subMonths(startOfMonth(now), i * 6);
-        return {
-          label: i === 0 ? "近半年" : "上半年",
-          start: s, end: endOfMonth(e), isCurrent: i === 0,
-        };
-      });
+      return [0, 1].map(i => ({
+        label: i === 0 ? "近半年" : "上半年",
+        start: subMonths(startOfMonth(now), i * 6 + 5),
+        end: i === 0 ? now : endOfMonth(subMonths(startOfMonth(now), i * 6)),
+        isCurrent: i === 0,
+      }));
   }
 };
 
 const formatRange = (start: Date, end: Date, period: Period): string => {
-  if (period === "week") {
-    return `${format(start, "M/d")} - ${format(end, "M/d")}`;
-  }
-  if (period === "month") {
-    return format(start, "yyyy年M月");
-  }
+  if (period === "week") return `${format(start, "M/d")} - ${format(end, "M/d")}`;
+  if (period === "month") return format(start, "yyyy年M月");
   return `${format(start, "yyyy年M月")} - ${format(end, "yyyy年M月")}`;
-};
-
-const buildStory = (tasks: Task[], range: PeriodRange, period: Period): Story => {
-  const tasksInRange = tasks.filter(t => {
-    if (!t.date) return false;
-    return isWithinInterval(t.date, { start: range.start, end: range.end });
-  });
-
-  // Also include no-date tasks for current period
-  const noDateTasks = range.isCurrent ? tasks.filter(t => !t.date) : [];
-  const allTasks = [...tasksInRange, ...noDateTasks];
-
-  const total = allTasks.length;
-  const completed = allTasks.filter(t => t.completed).length;
-  const rate = total > 0 ? completed / total : 0;
-
-  // Category breakdown
-  const catCount: Record<string, number> = {};
-  allTasks.filter(t => t.completed).forEach(t => {
-    catCount[t.category] = (catCount[t.category] || 0) + 1;
-  });
-  const topCategories = Object.entries(catCount)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3);
-
-  // Highlights
-  const highlights: string[] = [];
-  if (completed > 0) {
-    highlights.push(`✅ 完成了 ${completed} 项计划${total > completed ? `（共 ${total} 项）` : "，全部搞定！"}`);
-  }
-  topCategories.forEach(([cat, count]) => {
-    const emoji = categoryEmoji[cat] || "📌";
-    highlights.push(`${emoji} ${cat}类完成 ${count} 项`);
-  });
-  if (total === 0) {
-    highlights.push("📭 这段时间还没有安排计划");
-  }
-
-  // Overdue warnings
-  const now = new Date();
-  const overdueWarnings: string[] = [];
-  if (range.isCurrent) {
-    allTasks.filter(t => !t.completed && t.deadline && isBefore(t.deadline, now)).forEach(t => {
-      overdueWarnings.push(`⚠️ 「${t.title}」已超过截止日期`);
-    });
-    allTasks.filter(t => !t.completed && t.deadline && !isBefore(t.deadline, now) && differenceInCalendarDays(t.deadline, now) <= 2).forEach(t => {
-      const days = differenceInCalendarDays(t.deadline!, now);
-      overdueWarnings.push(`⏰ 「${t.title}」还剩 ${days} 天截止`);
-    });
-  }
-
-  // Summary text
-  let summary: string;
-  if (total === 0) {
-    summary = "这段时间还没有添加计划。给自己安排一些小目标吧，每完成一个都是对生活的热爱。";
-  } else if (rate >= 0.8) {
-    summary = `这段时间你完成了 ${completed} 项计划，完成率高达 ${Math.round(rate * 100)}%！${topCategories.length > 0 ? `在「${topCategories[0][0]}」方面尤其出色。` : ""} 继续保持这份热情！`;
-  } else if (rate >= 0.5) {
-    summary = `你安排了 ${total} 项计划，完成了其中 ${completed} 项。${topCategories.length > 0 ? `「${topCategories[0][0]}」是你最活跃的领域。` : ""} 节奏不错，稳步前进中。`;
-  } else {
-    summary = `这段时间有 ${total} 项计划，已完成 ${completed} 项。${overdueWarnings.length > 0 ? "有些计划快到截止日期了，别忘了关注一下。" : "不着急，按自己的节奏来就好。"}`;
-  }
-
-  const moodInfo = getMoodInfo(rate, total);
-
-  return {
-    label: range.label,
-    timeRange: formatRange(range.start, range.end, period),
-    title: generateTitle(rate, total),
-    summary,
-    highlights,
-    mood: moodInfo.mood,
-    emoji: moodInfo.emoji,
-    openingLine: getOpeningLine(rate, total),
-    color: moodInfo.color,
-    isCurrent: range.isCurrent,
-    overdueWarnings,
-  };
 };
 
 interface StoryPageProps {
@@ -221,11 +147,58 @@ const periodTabs = [
 
 const StoryPage = ({ tasks }: StoryPageProps) => {
   const [activePeriod, setActivePeriod] = useState<Period>("week");
+  const [aiStories, setAiStories] = useState<Record<string, StoryData>>({});
+  const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
 
-  const stories = useMemo(() => {
+  // Build base cards with fallback data
+  const cards = useMemo(() => {
     const ranges = getPeriodRanges(activePeriod);
-    return ranges.map(r => buildStory(tasks, r, activePeriod));
+    return ranges.map(range => {
+      const tasksInRange = tasks.filter(t => t.date && isWithinInterval(t.date, { start: range.start, end: range.end }));
+      const noDateTasks = range.isCurrent ? tasks.filter(t => !t.date) : [];
+      const allTasks = [...tasksInRange, ...noDateTasks];
+      const total = allTasks.length;
+      const completed = allTasks.filter(t => t.completed).length;
+      const rate = total > 0 ? completed / total : 0;
+
+      const key = `${activePeriod}-${range.label}`;
+      return {
+        key,
+        label: range.label,
+        timeRange: formatRange(range.start, range.end, activePeriod),
+        isCurrent: range.isCurrent,
+        color: getMoodColor(rate, total),
+        fallback: buildFallback(allTasks, total, completed, rate),
+        tasks: allTasks.map(t => ({
+          title: t.title,
+          category: t.category,
+          completed: t.completed,
+          deadline: t.deadline ? t.deadline.toISOString() : undefined,
+        })),
+      };
+    });
   }, [tasks, activePeriod]);
+
+  const generateAIStory = useCallback(async (key: string, cardTasks: any[], label: string, timeRange: string) => {
+    setLoadingKeys(prev => new Set(prev).add(key));
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-story", {
+        body: { tasks: cardTasks, periodLabel: label, timeRange },
+      });
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+      setAiStories(prev => ({ ...prev, [key]: data }));
+    } catch (e: any) {
+      console.error("AI story generation failed:", e);
+      toast.error("故事生成失败，显示基础总结", { description: e.message });
+    } finally {
+      setLoadingKeys(prev => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }
+  }, []);
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
@@ -259,61 +232,85 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
       {/* Stories List */}
       <div className="space-y-6" key={activePeriod}>
-        {stories.map((story, storyIndex) => (
-          <div key={storyIndex} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.1}s` }}>
-            {/* Period time badge */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-bold text-primary">{story.label}</span>
-              <span className="text-[10px] text-muted-foreground">{story.timeRange}</span>
-              <div className="flex-1 h-px bg-border/40" />
-              {story.isCurrent && (
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">当前</span>
-              )}
-            </div>
+        {cards.map((card, storyIndex) => {
+          const story = aiStories[card.key] || card.fallback;
+          const isLoading = loadingKeys.has(card.key);
+          const hasAI = !!aiStories[card.key];
 
-            {/* Story Card */}
-            <div className={cn("rounded-t-2xl px-6 pt-5 pb-4 bg-gradient-to-br", story.color)}>
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{story.emoji}</span>
-                  <h2 className="text-lg font-bold text-foreground font-serif">{story.title}</h2>
-                </div>
-                <div className="px-2.5 py-1 rounded-full bg-card/80 backdrop-blur-sm text-[11px] font-medium text-foreground">
-                  {story.mood}
-                </div>
+          return (
+            <div key={card.key} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.1}s` }}>
+              {/* Period time badge */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-bold text-primary">{card.label}</span>
+                <span className="text-[10px] text-muted-foreground">{card.timeRange}</span>
+                <div className="flex-1 h-px bg-border/40" />
+                {card.isCurrent && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">当前</span>
+                )}
               </div>
-              <p className="text-sm text-primary font-medium italic font-serif mt-1">"{story.openingLine}"</p>
-            </div>
-            <div className="bg-card rounded-b-2xl px-6 py-4 border border-t-0 border-border/50">
-              <p className="text-sm text-foreground leading-[1.8] mb-4">{story.summary}</p>
 
-              {/* Overdue warnings */}
-              {story.overdueWarnings.length > 0 && (
-                <div className="mb-4 space-y-1.5">
-                  {story.overdueWarnings.map((w, i) => (
-                    <div key={i} className="flex items-start gap-2 px-3 py-2 bg-destructive/10 rounded-xl">
-                      <span className="text-sm text-destructive leading-relaxed">{w}</span>
-                    </div>
-                  ))}
+              {/* Story Card */}
+              <div className={cn("rounded-t-2xl px-6 pt-5 pb-4 bg-gradient-to-br", card.color)}>
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{story.emoji}</span>
+                    <h2 className="text-lg font-bold text-foreground font-serif">{story.title}</h2>
+                  </div>
+                  <div className="px-2.5 py-1 rounded-full bg-card/80 backdrop-blur-sm text-[11px] font-medium text-foreground">
+                    {story.mood}
+                  </div>
                 </div>
-              )}
+                <p className="text-sm text-primary font-medium italic font-serif mt-1">"{story.openingLine}"</p>
+              </div>
+              <div className="bg-card rounded-b-2xl px-6 py-4 border border-t-0 border-border/50">
+                <p className="text-sm text-foreground leading-[1.8] mb-4">{story.summary}</p>
 
-              <div>
-                <div className="flex items-center gap-2 mb-2.5">
-                  <Sparkles size={14} className="text-primary" />
-                  <span className="text-xs font-semibold text-foreground">亮点时刻</span>
+                <div>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <Sparkles size={14} className="text-primary" />
+                    <span className="text-xs font-semibold text-foreground">亮点时刻</span>
+                  </div>
+                  <div className="space-y-2">
+                    {story.highlights.map((h, i) => (
+                      <div key={i} className="flex items-start gap-3 px-3 py-2 bg-muted/40 rounded-xl">
+                        <span className="text-sm text-foreground leading-relaxed">{h}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {story.highlights.map((h, i) => (
-                    <div key={i} className="flex items-start gap-3 px-3 py-2 bg-muted/40 rounded-xl">
-                      <span className="text-sm text-foreground leading-relaxed">{h}</span>
-                    </div>
-                  ))}
-                </div>
+
+                {/* AI Generate / Regenerate button */}
+                <button
+                  onClick={() => generateAIStory(card.key, card.tasks, card.label, card.timeRange)}
+                  disabled={isLoading}
+                  className={cn(
+                    "mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-medium transition-all",
+                    hasAI
+                      ? "bg-muted/50 text-muted-foreground hover:text-foreground"
+                      : "bg-primary/10 text-primary hover:bg-primary/20"
+                  )}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>AI 正在撰写故事...</span>
+                    </>
+                  ) : hasAI ? (
+                    <>
+                      <RefreshCw size={14} />
+                      <span>换一个版本</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={14} />
+                      <span>✨ 用 AI 生成有温度的故事</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Share button */}
