@@ -1,12 +1,13 @@
 import { useState, useCallback, useMemo } from "react";
-import { format, addDays, subDays, isToday, isFuture, isPast, isSameDay } from "date-fns";
+import { format, addDays, subDays, isToday, isFuture, isPast } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle, Clock,
   Coffee, Dumbbell, BookOpen, Music, Heart, Star,
-  ChevronDown, Sparkles, CalendarDays, ChevronRight
+  ChevronDown, Sparkles, CalendarDays, ChevronRight, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
 import ConfettiCanvas from "@/components/ConfettiCanvas";
 
@@ -250,28 +251,57 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         )}
       </section>
 
-      {/* ── 未来规划 ── */}
+      {/* ── 未来规划预览 ── */}
       {futureTasks.length > 0 && (
         <section className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <button
-            onClick={() => setShowUpcoming(!showUpcoming)}
-            className="flex items-center gap-2 w-full text-left mb-3 group"
-          >
+          <div className="flex items-center gap-2 mb-3">
             <CalendarDays size={14} className="text-primary/60" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              未来规划 · {futureTasks.length} 件事
+              即将到来
             </span>
-            <ChevronDown size={14} className={cn(
-              "text-muted-foreground/40 transition-transform ml-auto",
-              showUpcoming && "rotate-180"
-            )} />
-          </button>
+          </div>
 
-          {showUpcoming && (
-            <FuturePlanSection tasks={futureTasks} today={today} />
-          )}
+          {/* 预览前3条 */}
+          <div className="space-y-2 mb-3">
+            {futureTasks.slice(0, 3).map(task => {
+              const Icon = iconMap[task.icon] || Star;
+              const diff = Math.ceil((task.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+              const dayLabel = diff === 1 ? "明天" : diff === 2 ? "后天" : format(task.date, "M/d EEE", { locale: zhCN });
+              return (
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
+                  <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-foreground/80 truncate">{task.title}</p>
+                  </div>
+                  <Icon size={14} className="text-muted-foreground/30 flex-shrink-0" />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 查看全部按钮 */}
+          <button
+            onClick={() => setShowUpcoming(true)}
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-muted/50 text-xs font-medium text-muted-foreground hover:bg-muted/80 transition-all active:scale-[0.98]"
+          >
+            查看全部 {futureTasks.length} 件事
+            <ChevronRight size={12} />
+          </button>
         </section>
       )}
+
+      {/* ── 未来规划全屏 Sheet ── */}
+      <Sheet open={showUpcoming} onOpenChange={setShowUpcoming}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-0 pb-0">
+          <SheetHeader className="px-5 pb-3 border-b border-border/50">
+            <SheetTitle className="text-lg font-bold font-serif">未来规划</SheetTitle>
+            <p className="text-xs text-muted-foreground">{futureTasks.length} 件事待完成</p>
+          </SheetHeader>
+          <div className="overflow-y-auto px-5 pt-4 pb-8 h-full">
+            <FuturePlanSection tasks={futureTasks} today={today} />
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <CompletionPhotoDialog
         open={!!completingTask}
