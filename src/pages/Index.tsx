@@ -60,7 +60,7 @@ const Index = () => {
     switch (activeTab) {
       case "home": return <HomePage tasks={tasks} onTasksChange={handleTasksChange} />;
       case "calendar": return <CalendarPage tasks={tasks} />;
-      case "story": return <StoryPage />;
+      case "story": return <StoryPage tasks={tasks} />;
       case "profile": return <ProfilePage />;
       default: return <HomePage tasks={tasks} onTasksChange={handleTasksChange} />;
     }
