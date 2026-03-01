@@ -1,12 +1,25 @@
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
-import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ArrowUp, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ArrowUp, ChevronLeft, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
   music: Music, heart: Heart, star: Star,
+};
+
+const emojiMap: Record<string, string> = {
+  dumbbell: "🏃", book: "📖", coffee: "☕",
+  star: "🧘", heart: "📝", music: "🎵",
+};
+
+const categoryColorMap: Record<string, string> = {
+  "运动": "bg-accent/15 text-accent",
+  "学习": "bg-primary/15 text-primary",
+  "社交": "bg-secondary/15 text-secondary",
+  "健康": "bg-secondary/15 text-secondary",
+  "记录": "bg-primary/15 text-primary",
 };
 
 interface Task {
@@ -33,7 +46,6 @@ interface MockEvent {
 const generateMockEvents = (): MockEvent[] => {
   const today = new Date();
   const events: MockEvent[] = [];
-  // Generate 90 days of mock data (past 3 months)
   for (let i = 90; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
@@ -57,74 +69,67 @@ const MONTHS = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", 
 interface MonthPickerProps {
   months: { key: string; label: string; items: any[] }[];
   onSelect: (key: string) => void;
+  currentMonthKey: string;
 }
 
-const MonthPicker = ({ months, onSelect }: MonthPickerProps) => {
+const MonthPicker = ({ months, onSelect, currentMonthKey }: MonthPickerProps) => {
   const [open, setOpen] = useState(false);
-  // Extract available years from data
   const availableYears = useMemo(() => {
     const years = new Set<number>();
-    months.forEach(g => {
-      const [y] = g.key.split("-");
-      years.add(Number(y));
-    });
+    months.forEach(g => { years.add(Number(g.key.split("-")[0])); });
     return Array.from(years).sort((a, b) => b - a);
   }, [months]);
-
   const [selectedYear, setSelectedYear] = useState(availableYears[0] || new Date().getFullYear());
-
   const monthKeyMap = useMemo(() => {
-    const map = new Map<string, string>();
-    months.forEach(g => map.set(g.key, g.key));
+    const map = new Map<string, number>();
+    months.forEach(g => map.set(g.key, g.items.length));
     return map;
   }, [months]);
+
+  const currentLabel = useMemo(() => {
+    const [y, m] = currentMonthKey.split("-");
+    return `${y}年${Number(m) + 1}月`;
+  }, [currentMonthKey]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-muted-foreground hover:bg-muted/60 transition-colors">
-          跳转
-          <ChevronDown size={12} />
+        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/80 text-sm font-medium text-foreground hover:bg-muted transition-all active:scale-95">
+          <CalendarDays size={14} className="text-primary" />
+          {currentLabel}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-3 pointer-events-auto" align="start">
-        {/* Year selector */}
-        <div className="flex items-center justify-between mb-3">
-          <button
-            onClick={() => setSelectedYear(y => y - 1)}
-            className="p-1 rounded-md hover:bg-muted/60 text-muted-foreground transition-colors"
-          >
-            <ChevronLeft size={14} />
-          </button>
-          <span className="text-sm font-bold text-foreground">{selectedYear}年</span>
-          <button
-            onClick={() => setSelectedYear(y => y + 1)}
-            className="p-1 rounded-md hover:bg-muted/60 text-muted-foreground transition-colors"
-          >
-            <ChevronRight size={14} />
-          </button>
+      <PopoverContent className="w-72 p-4 pointer-events-auto rounded-2xl" align="start" sideOffset={8}>
+        {/* Year row */}
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => setSelectedYear(y => y - 1)} className="p-1.5 rounded-full hover:bg-muted transition-colors"><ChevronLeft size={16} className="text-muted-foreground" /></button>
+          <span className="text-base font-bold text-foreground">{selectedYear}</span>
+          <button onClick={() => setSelectedYear(y => y + 1)} className="p-1.5 rounded-full hover:bg-muted transition-colors"><ChevronRight size={16} className="text-muted-foreground" /></button>
         </div>
         {/* Month grid */}
-        <div className="grid grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-4 gap-2">
           {MONTHS.map((label, i) => {
             const key = `${selectedYear}-${i}`;
-            const hasData = monthKeyMap.has(key);
+            const count = monthKeyMap.get(key);
+            const hasData = count !== undefined;
+            const isCurrent = key === currentMonthKey;
             return (
               <button
                 key={key}
                 disabled={!hasData}
-                onClick={() => {
-                  onSelect(key);
-                  setOpen(false);
-                }}
-                className={`py-2 rounded-lg text-xs font-medium transition-all ${
-                  hasData
-                    ? "text-foreground hover:bg-primary/10 hover:text-primary"
-                    : "text-muted-foreground/30 cursor-not-allowed"
+                onClick={() => { onSelect(key); setOpen(false); }}
+                className={`relative py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  isCurrent
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : hasData
+                      ? "text-foreground hover:bg-primary/10 hover:text-primary active:scale-95"
+                      : "text-muted-foreground/25 cursor-not-allowed"
                 }`}
               >
                 {label}
-                {hasData && <div className="w-1 h-1 rounded-full bg-primary mx-auto mt-0.5" />}
+                {hasData && !isCurrent && (
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
+                )}
               </button>
             );
           })}
@@ -145,57 +150,35 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
   const monthRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [showBackToTop, setShowBackToTop] = useState(false);
 
-  // Merge all events and sort by date descending
   const allEvents = useMemo(() => {
     const items: { date: Date; id: string; title: string; icon: string; category: string; completionPhoto?: string }[] = [];
-
     mockEvents.forEach(e => {
-      items.push({
-        date: e.date,
-        id: `mock-${e.date.getTime()}-${e.title}`,
-        title: e.title,
-        icon: e.icon,
-        category: e.category,
-        completionPhoto: e.completionPhoto,
-      });
+      items.push({ date: e.date, id: `mock-${e.date.getTime()}-${e.title}`, title: e.title, icon: e.icon, category: e.category, completionPhoto: e.completionPhoto });
     });
-
     tasks.forEach(t => {
-      items.push({
-        date: t.date,
-        id: t.id,
-        title: t.title,
-        icon: t.icon,
-        category: t.category,
-        completionPhoto: t.completionPhoto,
-      });
+      items.push({ date: t.date, id: t.id, title: t.title, icon: t.icon, category: t.category, completionPhoto: t.completionPhoto });
     });
-
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     return items;
   }, [mockEvents, tasks]);
 
-  // Group events by month
   const groupedByMonth = useMemo(() => {
     const groups: { key: string; label: string; items: typeof allEvents }[] = [];
     const map = new Map<string, typeof allEvents>();
-
     allEvents.forEach(item => {
       const key = `${item.date.getFullYear()}-${item.date.getMonth()}`;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(item);
     });
-
     map.forEach((items, key) => {
       const label = format(items[0].date, "yyyy年 M月", { locale: zhCN });
       groups.push({ key, label, items });
     });
-
     return groups;
   }, [allEvents]);
 
-  // Find today's date string for ref matching
   const todayStr = format(new Date(), "yyyy-MM-dd");
+  const currentMonthKey = `${new Date().getFullYear()}-${new Date().getMonth()}`;
 
   const scrollToToday = useCallback(() => {
     todayRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -205,36 +188,29 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
     monthRefs.current.get(key)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
-  // Track scroll for back-to-top button
   useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 400);
-    };
+    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <div className="px-5 pt-12 pb-24 max-w-lg mx-auto" ref={scrollRef}>
+    <div className="px-5 pt-10 pb-24 max-w-lg mx-auto" ref={scrollRef}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 animate-fade-in">
+      <div className="flex items-center justify-between mb-5 animate-fade-in">
+        <h1 className="text-2xl font-bold text-foreground font-serif">时间轴</h1>
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold text-foreground font-serif">时间轴</h1>
-          <MonthPicker
-            months={groupedByMonth}
-            onSelect={scrollToMonth}
-          />
+          <MonthPicker months={groupedByMonth} onSelect={scrollToMonth} currentMonthKey={currentMonthKey} />
+          <button
+            onClick={scrollToToday}
+            className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-all active:scale-95 shadow-sm"
+          >
+            今天
+          </button>
         </div>
-        <button
-          onClick={scrollToToday}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
-        >
-          <CalendarDays size={14} />
-          回到今天
-        </button>
       </div>
 
-      {/* Endless Vertical Timeline */}
+      {/* Timeline */}
       <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {allEvents.length === 0 ? (
           <div className="bg-card rounded-2xl p-8 card-glow border border-border/50 text-center">
@@ -242,66 +218,95 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
             <p className="text-sm text-muted-foreground">还没有记录哦</p>
           </div>
         ) : (
-          <div className="relative pl-6">
+          <div className="relative pl-8">
             {/* Timeline line */}
-            <div className="absolute left-[7px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary/40 via-secondary/40 to-accent/40 rounded-full" />
+            <div className="absolute left-[11px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/50 via-primary/20 to-transparent rounded-full" />
 
-            {groupedByMonth.map((group) => (
+            {groupedByMonth.map((group, gi) => (
               <div key={group.key} ref={el => { if (el) monthRefs.current.set(group.key, el); }}>
-                {/* Month label */}
-                <div className="relative mb-3 mt-2">
-                  <div className="absolute -left-6 top-1 w-4 h-4 rounded-full bg-primary/30 flex items-center justify-center">
-                    <div className="w-2.5 h-2.5 rounded-full bg-primary" />
+                {/* Month header */}
+                <div className="relative flex items-center gap-3 mb-4 mt-6 first:mt-0">
+                  <div className="absolute -left-8 w-6 h-6 rounded-full gradient-warm flex items-center justify-center shadow-sm">
+                    <span className="text-[10px] text-primary-foreground font-bold">
+                      {format(group.items[0].date, "M", { locale: zhCN })}
+                    </span>
                   </div>
-                  <span className="text-sm font-bold text-primary">{group.label}</span>
+                  <span className="text-xs font-bold text-muted-foreground tracking-wider uppercase">{group.label}</span>
+                  <div className="flex-1 h-px bg-border/60" />
+                  <span className="text-[10px] text-muted-foreground/60">{group.items.length}条记录</span>
                 </div>
 
                 {group.items.map((item, i) => {
-                  const Icon = iconMap[item.icon] || Star;
+                  const emoji = emojiMap[item.icon] || "⭐";
                   const itemDateStr = format(item.date, "yyyy-MM-dd");
                   const isToday = itemDateStr === todayStr;
+                  const catColor = categoryColorMap[item.category] || "bg-muted/60 text-muted-foreground";
+
                   return (
                     <div
                       key={item.id}
                       ref={isToday ? todayRef : undefined}
-                      className="relative mb-4 animate-fade-in"
-                      style={{ animationDelay: `${i * 0.05}s` }}
+                      className="relative mb-3 animate-fade-in"
+                      style={{ animationDelay: `${Math.min(i * 0.03, 0.3)}s` }}
                     >
                       {/* Timeline dot */}
-                      <div className={`absolute -left-6 top-6 w-4 h-4 rounded-full flex items-center justify-center ${isToday ? 'bg-primary/40' : 'bg-primary/20'}`}>
-                        <div className={`w-2 h-2 rounded-full ${isToday ? 'bg-primary animate-pulse' : 'bg-primary'}`} />
+                      <div className={`absolute -left-8 top-4 w-6 h-6 rounded-full flex items-center justify-center text-xs ${
+                        isToday ? 'bg-primary shadow-md animate-breathe' : 'bg-card border-2 border-primary/30'
+                      }`}>
+                        {isToday
+                          ? <span className="text-primary-foreground text-[10px]">●</span>
+                          : <span className="text-[11px]">{emoji}</span>
+                        }
                       </div>
 
                       {/* Card */}
-                      <div className={`bg-card rounded-2xl card-glow border hover:border-primary/20 transition-all p-4 ${isToday ? 'border-primary/30 ring-1 ring-primary/10' : 'border-border/50'}`}>
-                        <div className="flex items-start justify-between mb-2">
-                          <span className="text-xs text-muted-foreground">
-                            {format(item.date, "M月d日 EEEE", { locale: zhCN })}
-                            {isToday && <span className="ml-1.5 text-primary font-medium">今天</span>}
+                      <div className={`rounded-2xl transition-all p-4 ${
+                        isToday
+                          ? 'bg-primary/5 border-2 border-primary/25 shadow-md'
+                          : 'bg-card border border-border/40 card-glow hover:border-primary/15'
+                      }`}>
+                        {/* Date + tag row */}
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-muted-foreground">
+                              {format(item.date, "M/d EEEE", { locale: zhCN })}
+                            </span>
+                            {isToday && (
+                              <span className="text-[10px] font-bold text-primary-foreground bg-primary px-1.5 py-0.5 rounded-full">
+                                今天
+                              </span>
+                            )}
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${catColor}`}>
+                            {item.category}
                           </span>
-                          <Icon size={20} className="text-muted-foreground/60" />
                         </div>
 
-                        <p className="text-base font-bold text-foreground mb-2">{item.title}</p>
+                        {/* Title */}
+                        <p className="text-[15px] font-semibold text-foreground leading-snug">{item.title}</p>
 
+                        {/* Photo */}
                         {item.completionPhoto && (
                           <img
                             src={item.completionPhoto}
                             alt={item.title}
-                            className="w-full h-40 object-cover rounded-xl mb-2"
+                            className="w-full h-36 object-cover rounded-xl mt-2.5"
                           />
                         )}
-
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs px-2 py-0.5 bg-muted/60 rounded-md text-muted-foreground">{item.category}</span>
-                          <span className="text-xs text-primary flex items-center gap-0.5">✓ 已完成</span>
-                        </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
             ))}
+
+            {/* Timeline end */}
+            <div className="relative flex items-center gap-3 mt-6 pb-4">
+              <div className="absolute -left-8 w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+                <span className="text-[10px] text-muted-foreground">∞</span>
+              </div>
+              <span className="text-xs text-muted-foreground/50 italic">更早的记录...</span>
+            </div>
           </div>
         )}
       </div>
@@ -310,7 +315,7 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
       {showBackToTop && (
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-24 right-5 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all z-50"
+          className="fixed bottom-24 right-5 p-3 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all z-50 active:scale-90"
         >
           <ArrowUp size={18} />
         </button>
