@@ -1,23 +1,193 @@
 
 
-## Problem
+# 产品功能总结
 
-1. Header with month picker and "today" button scrolls away with the page -- useless for navigation
-2. "Back to top" button design is ugly and redundant if we have sticky navigation
+## 一、产品定位
 
-## Plan
+**核心理念**：「把"想做的事"变成"会发生的事"，把"发生过的事"变成"能回忆的事"。」
 
-### Make header sticky
-- Change the header `div` from normal flow to `fixed` positioning at the top, with backdrop blur and subtle border
-- Add `pt-16` or similar to the content below to compensate for the fixed header height
-- Remove the ugly "back to top" button entirely since the sticky header with month picker + today button serves that purpose
+这是一款面向个人生活管理的移动端 Web 应用，围绕 **规划 → 执行 → 记录 → 回忆** 的闭环设计，融入游戏化激励机制，让用户感受到生活的充实感。
 
-### Refined sticky header design
-- Clean frosted glass bar: `fixed top-0 left-0 right-0 z-40 bg-card/80 backdrop-blur-xl border-b border-border/50`
-- Inner container: `max-w-lg mx-auto px-5 py-3 flex items-center justify-between`
-- Title slightly smaller in sticky mode
-- Month picker and "today" button stay accessible at all times
+---
 
-### Files to modify
-- `src/components/CalendarPage.tsx`: Make header fixed, remove back-to-top button, adjust content padding
+## 二、四个核心 Tab
+
+通过底部导航栏 (`BottomNav`) 切换，状态统一由 `Index.tsx` 管理。
+
+### Tab 1：首页 (Home)
+
+**核心职责**：聚焦「今天」，驱动用户行动。
+
+| 模块 | 说明 |
+|---|---|
+| **问候语** | 根据当前小时动态切换（早安/午安/晚安等），配合日期与 emoji |
+| **今日进度条** | 显示 `已完成/总数`，百分比驱动进度条动画，全部完成时展示庆祝文案 |
+| **激励标签** | 连续天数（🔥 5天连续）、经验值（⚡ 50 XP） |
+| **今日任务列表** | 未完成：空心圆 + 可点击触发完成流程；已完成：绿色勾 + 中划线 + 淡化样式 |
+| **即将到来** | 预览未来 3 条有日期的任务，点击标题行展开全屏 Sheet，按日期分组（明天/后天/具体日期） |
+| **计划中** | 预览 2 条无日期任务，点击展开 Sheet 查看全部，可直接打卡完成 |
+| **空状态** | 无今日任务时显示引导文案 |
+
+### Tab 2：日历/时间轴 (Calendar)
+
+**核心职责**：回顾历史记录，构建时间线。
+
+| 模块 | 说明 |
+|---|---|
+| **吸顶导航** | 毛玻璃效果固定顶部，含标题、月份选择器、"今天"快捷按钮 |
+| **月份选择器** | Popover 弹出，支持年份切换（左右箭头），4×3 月份网格，有数据的月份底部有圆点标记，当前月高亮 |
+| **纵向时间轴** | 左侧竖线 + 圆点，按月分组，每组显示月份标题和记录条数 |
+| **事件卡片** | 显示日期（M/d 星期X）、分类标签（颜色区分）、标题、图片宫格 |
+| **今天标记** | 今天的时间点有脉动动画 + 高亮边框 + "今天"标签 |
+| **数据过滤** | 仅展示今天及过去的事件，不显示未来任务 |
+| **数据来源** | 合并两部分：90 天随机 Mock 事件 + 用户通过首页完成的真实任务 |
+
+### Tab 3：故事 (Story)
+
+**核心职责**：叙事化总结，赋予生活意义感。
+
+| 模块 | 说明 |
+|---|---|
+| **周期切换** | 四个 Tab：一周 📅 / 一月 🗓️ / 一季 🍂 / 半年 🌍 |
+| **多周期回顾** | 每个分类下包含当前周期 + 往期历史（如本周、上周、两周前） |
+| **时间标注** | 每张故事卡标注周期名称（本周/上周）、时间区间（2/24 - 3/1）、当前周期有"当前"标签 |
+| **故事卡片** | 上半部渐变色区域：emoji + 标题 + 心情标签 + 开场白引言；下半部：正文总结 + 亮点时刻列表 |
+| **分享按钮** | 底部"分享我的故事"按钮（目前为 UI 占位） |
+| **数据来源** | 目前为硬编码 Mock 数据 |
+
+### Tab 4：个人主页 (Profile)
+
+**核心职责**：展示用户成就与设置入口。
+
+| 模块 | 说明 |
+|---|---|
+| **头像区** | 圆形渐变头像 + 用户名"探索者" + 签名 |
+| **统计卡片** | 三列：完成计划 280 / 连续天数 23 / 生活指数 92 |
+| **设置菜单** | 通知设置、隐私设置、外观设置、通用设置（均为 UI 占位） |
+| **退出登录** | 底部按钮（UI 占位） |
+
+---
+
+## 三、任务管理系统
+
+### 3.1 新建任务 (AddTaskDialog)
+
+浮动在右下角的 `+` 按钮触发，弹出 Dialog：
+
+| 字段 | 交互 |
+|---|---|
+| **标题** | 文本输入，必填 |
+| **封面图** | 可选，支持从相册选择，可删除 |
+| **日期** | 横向滑动选择：不定（无日期）/ 今天 / 明天 / 未来 7 天 |
+| **时间** | 仅在选择了日期时显示，07:00-23:00 每小时一档 + "全天" |
+| **截止日期** | 可选：无 / 3天后 / 5天后 / 7天后 / 14天后 / 30天后 |
+| **图标** | 6 种：咖啡、运动、阅读、音乐、生活、特别 |
+| **分类** | 7 种：运动、学习、社交、工作、健康、记录、娱乐 |
+
+弹窗采用 `max-h-[85vh]` + 内容区可滚动 + 底部按钮固定的布局，适配移动端。
+
+### 3.2 完成任务 (CompletionPhotoDialog)
+
+点击未完成任务触发：
+
+1. 弹出庆祝弹窗，随机展示一条鼓励文案（6 种）
+2. 用户可选择拍照/选照片记录，或跳过
+3. 确认后：任务标记完成 → 撒花动画 → 任务卡片播放庆祝动画 → 中划线样式
+
+### 3.3 Deadline 机制
+
+- 任务可设置截止日期
+- 首页各区域（今日/即将到来/计划中）均展示倒计时标签
+- 距截止 ≤2 天：红色警示样式
+- 已到期：显示"已到期"+ 警告图标
+
+---
+
+## 四、数据流与同步逻辑
+
+```text
+Index.tsx (单一数据源)
+  ├── tasks state (useState)
+  ├── handleAddTask() ← AddTaskDialog
+  ├── handleTasksChange() ← HomePage (完成任务时回调)
+  │
+  ├── → HomePage (props: tasks, onTasksChange)
+  ├── → CalendarPage (props: tasks)
+  ├── → StoryPage (无 props, 独立 Mock 数据)
+  └── → ProfilePage (无 props, 独立 Mock 数据)
+```
+
+- **首页 ↔ 日历同步**：通过 props 共享同一份 `tasks` 数组，首页完成任务后日历立即可见
+- **故事页**：当前独立使用硬编码数据，未接入真实任务
+- **个人主页**：统计数据为硬编码，未接入真实任务
+
+---
+
+## 五、游戏化系统 (GameStats)
+
+| 机制 | 说明 |
+|---|---|
+| **经验值 (XP)** | 每完成 1 个任务 = 10 XP |
+| **等级系统** | 7 级：🌱小种子(0) → 🌿小树苗(10) → 🌸小花朵(25) → 🌳大树(50) → 🏡花园(100) → 🌲森林(200) → ✨传说(500) |
+| **连续天数** | 首页展示连续完成天数（当前硬编码为 5） |
+| **成就徽章** | 5 种：迈出第一步(1任务)、五连发(5)、行动达人(10)、三连击(连续3天)、一周之星(连续7天) |
+
+注意：`GameStats` 组件已实现但**当前未被任何页面引用**，ProfilePage 使用的是独立的硬编码统计。
+
+---
+
+## 六、视觉与交互系统
+
+### 6.1 设计语言
+
+- **配色**：暖金色 Primary (#D4A039)、森林绿 Secondary、珊瑚 Accent，支持 Light/Dark 模式
+- **字体**：正文 Noto Sans SC，标题 Playfair Display（衬线体）
+- **圆角**：大量使用 `rounded-2xl`（1rem）和 `rounded-xl`
+- **阴影**：自定义 `card-glow` 暖色调阴影
+
+### 6.2 动画
+
+| 动画 | 用途 |
+|---|---|
+| `animate-fade-in` | 页面元素入场 |
+| `animate-slide-up` | 故事卡片入场 |
+| `animate-breathe` | 今天时间点脉动、新建按钮脉动 |
+| `animate-celebrate` | 任务完成时卡片弹跳 |
+| `animate-float` | 等级 emoji 浮动 |
+| `animate-bounce-in` | 庆祝弹窗图标弹入 |
+| `ConfettiCanvas` | 完成任务时全屏 Canvas 撒花（80 个粒子，重力 + 旋转 + 透明度衰减） |
+
+### 6.3 图片展示 (PhotoGrid)
+
+微信朋友圈风格的宫格布局：
+- 1 张：16:10 宽幅
+- 2 张：2 列正方形
+- 3 张：首张宽幅 + 下方 2 列
+- 4 张：2×2 网格
+- 5-9 张：3 列网格
+- 超过 9 张：最后一格显示 `+N` 遮罩
+
+---
+
+## 七、技术架构
+
+| 层面 | 技术 |
+|---|---|
+| 框架 | React 18 + TypeScript + Vite |
+| 路由 | React Router v6（单页面 `/`，Tab 切换为组件级） |
+| 样式 | Tailwind CSS + CSS 变量 + 自定义动画 |
+| UI 组件库 | shadcn/ui（Dialog, Sheet, Popover, Tabs 等） |
+| 状态管理 | React useState（无全局状态库） |
+| 数据 | 纯前端 Mock，无后端/数据库 |
+
+---
+
+## 八、当前已知限制
+
+1. **无持久化**：所有数据刷新即丢失，无 localStorage 或后端存储
+2. **故事页 Mock**：未接入真实任务数据，无法反映用户实际行为
+3. **个人主页 Mock**：统计数字硬编码，GameStats 组件虽已实现但未接入
+4. **无用户认证**：退出登录等按钮为 UI 占位
+5. **设置页无功能**：通知/隐私/外观/通用设置均为占位
+6. **分享功能未实现**：故事页的分享按钮无实际逻辑
 
