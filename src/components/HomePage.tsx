@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { format, addDays, subDays, isToday, isFuture, differenceInCalendarDays } from "date-fns";
+import { format, isToday, isFuture, differenceInCalendarDays } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle,
@@ -28,25 +28,6 @@ interface Task {
   completionPhoto?: string;
   deadline?: Date;
 }
-
-const generateMockTasks = (): Task[] => {
-  const today = new Date();
-  return [
-    { id: "1", title: "晨跑 30 分钟", time: "07:00", icon: "dumbbell", completed: true, date: subDays(today, 5), category: "运动" },
-    { id: "2", title: "阅读《人类简史》", time: "09:00", icon: "book", completed: true, date: subDays(today, 4), category: "学习" },
-    { id: "3", title: "和朋友喝咖啡", time: "14:00", icon: "coffee", completed: true, date: subDays(today, 3), category: "社交" },
-    { id: "4", title: "听播客学英语", time: "20:00", icon: "music", completed: true, date: subDays(today, 2), category: "学习" },
-    { id: "5", title: "健身房力量训练", time: "18:00", icon: "dumbbell", completed: true, date: subDays(today, 1), category: "运动" },
-    { id: "6", title: "写日记", time: "22:00", icon: "heart", completed: false, date: today, category: "记录" },
-    { id: "7", title: "冥想 15 分钟", time: "07:30", icon: "star", completed: false, date: today, category: "健康" },
-    { id: "8", title: "学习 React", time: "10:00", icon: "book", completed: false, date: addDays(today, 1), category: "学习" },
-    { id: "9", title: "约朋友看电影", time: "19:00", icon: "heart", completed: false, date: addDays(today, 2), category: "社交" },
-    { id: "10", title: "准备周报", time: "09:00", icon: "star", completed: false, date: addDays(today, 3), category: "工作", deadline: addDays(today, 4) },
-    { id: "11", title: "瑜伽课", time: "18:00", icon: "dumbbell", completed: false, date: addDays(today, 4), category: "运动" },
-    { id: "12", title: "读完一本新书", time: "全天", icon: "book", completed: false, category: "学习", deadline: addDays(today, 7) },
-    { id: "13", title: "学吉他", time: "全天", icon: "music", completed: false, category: "娱乐" },
-  ];
-};
 
 /* ── Deadline 标签 ── */
 const DeadlineTag = ({ deadline }: { deadline: Date }) => {
@@ -122,13 +103,11 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
 };
 
 interface HomePageProps {
-  extraTasks?: Task[];
-  onTasksChange?: (tasks: Task[]) => void;
+  tasks: Task[];
+  onTasksChange: (tasks: Task[]) => void;
 }
 
-const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
-  const [tasks, setTasks] = useState<Task[]>(generateMockTasks);
-  const allTasks = [...tasks, ...extraTasks];
+const HomePage = ({ tasks, onTasksChange }: HomePageProps) => {
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -136,12 +115,12 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const [showBacklog, setShowBacklog] = useState(false);
   const today = new Date();
 
-  const todayTasks = allTasks.filter(t => t.date && isToday(t.date));
-  const futureTasks = allTasks.filter(t => t.date && isFuture(t.date) && !isToday(t.date)).sort((a, b) => a.date!.getTime() - b.date!.getTime());
-  const backlogTasks = allTasks.filter(t => !t.date && !t.completed);
+  const todayTasks = tasks.filter(t => t.date && isToday(t.date));
+  const futureTasks = tasks.filter(t => t.date && isFuture(t.date) && !isToday(t.date)).sort((a, b) => a.date!.getTime() - b.date!.getTime());
+  const backlogTasks = tasks.filter(t => !t.date && !t.completed);
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
-  const allCompleted = allTasks.filter(t => t.completed).length;
+  const allCompleted = tasks.filter(t => t.completed).length;
 
   const handleTaskClick = (task: Task) => {
     if (task.completed) return;
@@ -154,12 +133,9 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
     setShowConfetti(true);
     setJustCompleted(id);
     setTimeout(() => setJustCompleted(null), 1200);
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
-    if (onTasksChange && extraTasks.some(t => t.id === id)) {
-      onTasksChange(extraTasks.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
-    }
+    onTasksChange(tasks.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
     setCompletingTask(null);
-  }, [completingTask, onTasksChange, extraTasks]);
+  }, [completingTask, tasks, onTasksChange]);
 
   const getGreeting = () => {
     const h = new Date().getHours();
