@@ -85,13 +85,13 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
           <Plus size={28} />
         </button>
       </DialogTrigger>
-      <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] overflow-y-auto">
-        <DialogHeader className="p-5 pb-3">
+      <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="p-5 pb-3 flex-shrink-0">
           <DialogTitle className="text-lg font-serif text-foreground">记录一件想做的事 ✨</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">给未来的自己安排一件美好的事吧</DialogDescription>
         </DialogHeader>
 
-        <div className="px-5 pb-5 space-y-5">
+        <div className="px-5 pb-4 space-y-4 overflow-y-auto flex-1 min-h-0">
           {/* Title input */}
           <div>
             <input
@@ -262,7 +262,10 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
             </div>
           </div>
 
-          {/* Submit */}
+        </div>
+
+        {/* Sticky submit */}
+        <div className="px-5 py-4 border-t border-border/30 flex-shrink-0">
           <button
             onClick={handleSubmit}
             disabled={!title.trim()}
