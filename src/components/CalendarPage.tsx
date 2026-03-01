@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import PhotoGrid from "@/components/PhotoGrid";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -40,7 +41,7 @@ interface MockEvent {
   icon: string;
   category: string;
   emoji: string;
-  completionPhoto?: string;
+  photos: string[];
 }
 
 const mockPhotos = [
@@ -70,11 +71,16 @@ const generateMockEvents = (): MockEvent[] => {
         { title: "写日记", icon: "heart", category: "记录", emoji: "📝" },
       ];
       const item = items[Math.floor(Math.random() * items.length)];
-      const hasPhoto = Math.random() > 0.45;
+      // 随机 0-6 张图片
+      const photoCount = Math.random() > 0.35 ? Math.floor(Math.random() * 6) + 1 : 0;
+      const photos: string[] = [];
+      for (let p = 0; p < photoCount; p++) {
+        photos.push(mockPhotos[photoIdx++ % mockPhotos.length]);
+      }
       events.push({
         date,
         ...item,
-        completionPhoto: hasPhoto ? mockPhotos[photoIdx++ % mockPhotos.length] : undefined,
+        photos,
       });
     }
   }
@@ -167,12 +173,12 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
   const monthRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const allEvents = useMemo(() => {
-    const items: { date: Date; id: string; title: string; icon: string; category: string; completionPhoto?: string }[] = [];
+    const items: { date: Date; id: string; title: string; icon: string; category: string; photos: string[] }[] = [];
     mockEvents.forEach(e => {
-      items.push({ date: e.date, id: `mock-${e.date.getTime()}-${e.title}`, title: e.title, icon: e.icon, category: e.category, completionPhoto: e.completionPhoto });
+      items.push({ date: e.date, id: `mock-${e.date.getTime()}-${e.title}`, title: e.title, icon: e.icon, category: e.category, photos: e.photos });
     });
     tasks.forEach(t => {
-      items.push({ date: t.date, id: t.id, title: t.title, icon: t.icon, category: t.category, completionPhoto: t.completionPhoto });
+      items.push({ date: t.date, id: t.id, title: t.title, icon: t.icon, category: t.category, photos: t.completionPhoto ? [t.completionPhoto] : [] });
     });
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     return items;
@@ -299,13 +305,9 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
                           {/* Title */}
                           <p className="text-[15px] font-semibold text-foreground leading-snug">{item.title}</p>
 
-                          {/* Photo */}
-                          {item.completionPhoto && (
-                            <img
-                              src={item.completionPhoto}
-                              alt={item.title}
-                              className="w-full h-36 object-cover rounded-xl mt-2.5"
-                            />
+                          {/* Photos */}
+                          {item.photos.length > 0 && (
+                            <PhotoGrid photos={item.photos} alt={item.title} />
                           )}
                         </div>
                       </div>
