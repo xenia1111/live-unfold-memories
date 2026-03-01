@@ -1,46 +1,23 @@
 
 
-## 方案：用滑动进度条替代日历网格
+## Problem
 
-### 核心思路
-去掉传统的月历网格，改用一个**可拖动的时间滑块**来选择日期。同时提供**月份快速跳转**按钮解决长时间跨度的问题。
+1. Header with month picker and "today" button scrolls away with the page -- useless for navigation
+2. "Back to top" button design is ugly and redundant if we have sticky navigation
 
-### 交互设计
+## Plan
 
-```text
-┌─────────────────────────────┐
-│  ◀ 2025年2月 ▶   [今天]     │  ← 月份切换 + 回到今天
-├─────────────────────────────┤
-│  2/1 ──────●────────── 2/28 │  ← 滑块，拖动选日期
-│         2月15日 周六         │  ← 当前选中日期标签
-├─────────────────────────────┤
-│  ● 晨跑 30分钟    🏃       │
-│    [打卡照片大图]            │  ← 时间轴卡片（含照片）
-│  ● 阅读《人类简史》 📖      │
-│    10:00 · 学习              │
-└─────────────────────────────┘
-```
+### Make header sticky
+- Change the header `div` from normal flow to `fixed` positioning at the top, with backdrop blur and subtle border
+- Add `pt-16` or similar to the content below to compensate for the fixed header height
+- Remove the ugly "back to top" button entirely since the sticky header with month picker + today button serves that purpose
 
-### 实施步骤
+### Refined sticky header design
+- Clean frosted glass bar: `fixed top-0 left-0 right-0 z-40 bg-card/80 backdrop-blur-xl border-b border-border/50`
+- Inner container: `max-w-lg mx-auto px-5 py-3 flex items-center justify-between`
+- Title slightly smaller in sticky mode
+- Month picker and "today" button stay accessible at all times
 
-1. **重构 CalendarPage**
-   - 移除月历网格（7x5 grid）
-   - 顶部保留月份切换（左右箭头），新增「今天」快捷按钮
-   - 中间放一个 Radix Slider，range 为当月 1 日到末日，value 对应选中日期
-   - Slider 下方显示当前选中日期的格式化文本（如"2月15日 星期六"）
-   - Slider 轨道上用小圆点标记有记录的日期
-
-2. **下方展示时间轴+照片**
-   - 从 StoryPage 迁移时间轴卡片样式到 CalendarPage
-   - 卡片中如果任务有 `completionPhoto` 则渲染圆角大图，否则显示 emoji 占位
-   - 接收 `tasks` prop 从 Index.tsx 透传，与 mock 数据合并展示
-
-3. **精简 StoryPage**
-   - 移除 `viewMode` 状态和顶部三个 tab 切换（故事/时间轴/照片墙）
-   - 删除 `timeline` 和 `photos` 视图的全部代码
-   - 仅保留故事叙述部分（period tabs + story card + 分享按钮）
-
-4. **Index.tsx 数据透传**
-   - `CalendarPage` 新增 `tasks` prop
-   - 渲染时传入 `<CalendarPage tasks={tasks} />`
+### Files to modify
+- `src/components/CalendarPage.tsx`: Make header fixed, remove back-to-top button, adjust content padding
 
