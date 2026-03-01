@@ -254,15 +254,19 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
       {/* ── 未来规划预览 ── */}
       {futureTasks.length > 0 && (
         <section className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <div className="flex items-center gap-2 mb-3">
+          <button
+            onClick={() => setShowUpcoming(true)}
+            className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all"
+          >
             <CalendarDays size={14} className="text-primary/60" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              即将到来
+              即将到来 · {futureTasks.length} 件事
             </span>
-          </div>
+            <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
+          </button>
 
           {/* 预览前3条 */}
-          <div className="space-y-2 mb-3">
+          <div className="space-y-2">
             {futureTasks.slice(0, 3).map(task => {
               const Icon = iconMap[task.icon] || Star;
               const diff = Math.ceil((task.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -278,15 +282,6 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
               );
             })}
           </div>
-
-          {/* 查看全部按钮 */}
-          <button
-            onClick={() => setShowUpcoming(true)}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-muted/50 text-xs font-medium text-muted-foreground hover:bg-muted/80 transition-all active:scale-[0.98]"
-          >
-            查看全部 {futureTasks.length} 件事
-            <ChevronRight size={12} />
-          </button>
         </section>
       )}
 
