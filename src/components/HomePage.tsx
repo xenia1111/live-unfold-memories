@@ -120,7 +120,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const today = new Date();
 
   const todayTasks = allTasks.filter(t => isToday(t.date));
-  const futureTasks = allTasks.filter(t => isFuture(t.date) && !isToday(t.date));
+  const futureTasks = allTasks.filter(t => isFuture(t.date) && !isToday(t.date)).sort((a, b) => a.date.getTime() - b.date.getTime());
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
   const allCompleted = allTasks.filter(t => t.completed).length;
