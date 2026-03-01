@@ -59,6 +59,7 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
   const [mockEvents] = useState<MockEvent[]>(generateMockEvents);
   const todayRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const monthRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   // Merge all events and sort by date descending
@@ -117,6 +118,10 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
     todayRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, []);
 
+  const scrollToMonth = useCallback((key: string) => {
+    monthRefs.current.get(key)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   // Track scroll for back-to-top button
   useEffect(() => {
     const handleScroll = () => {
@@ -140,6 +145,22 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
         </button>
       </div>
 
+      {/* Month quick switch */}
+      <div className="flex gap-2 mb-5 overflow-x-auto pb-2 scrollbar-hide animate-fade-in" style={{ animationDelay: "0.05s" }}>
+        {groupedByMonth.map((group) => {
+          const shortLabel = format(new Date(group.items[0].date), "M月", { locale: zhCN });
+          return (
+            <button
+              key={group.key}
+              onClick={() => scrollToMonth(group.key)}
+              className="flex-shrink-0 px-3 py-1.5 rounded-xl bg-muted/60 text-xs font-medium text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+            >
+              {shortLabel}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Endless Vertical Timeline */}
       <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {allEvents.length === 0 ? (
@@ -153,7 +174,7 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
             <div className="absolute left-[7px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary/40 via-secondary/40 to-accent/40 rounded-full" />
 
             {groupedByMonth.map((group) => (
-              <div key={group.key}>
+              <div key={group.key} ref={el => { if (el) monthRefs.current.set(group.key, el); }}>
                 {/* Month label */}
                 <div className="relative mb-3 mt-2">
                   <div className="absolute -left-6 top-1 w-4 h-4 rounded-full bg-primary/30 flex items-center justify-center">
