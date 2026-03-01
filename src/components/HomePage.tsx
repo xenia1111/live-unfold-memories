@@ -289,7 +289,10 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
                   <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground/80 truncate">{task.title}</p>
-                    {task.deadline && <DeadlineTag deadline={task.deadline} />}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                      {task.deadline && <DeadlineTag deadline={task.deadline} />}
+                    </div>
                   </div>
                   <Icon size={14} className="text-muted-foreground/30 flex-shrink-0" />
                 </div>
