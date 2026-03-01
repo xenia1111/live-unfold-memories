@@ -190,53 +190,51 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
 
       {/* Timeline Cards */}
       <div className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
-        {selectedItems.length === 0 ? (
+      {selectedItems.length === 0 ? (
           <div className="bg-card rounded-2xl p-8 card-glow border border-border/50 text-center">
             <div className="text-3xl mb-2">✨</div>
             <p className="text-sm text-muted-foreground">这一天还没有记录哦</p>
           </div>
         ) : (
-          <div className="relative pl-8">
+          <div className="relative pl-6">
             {/* Timeline line */}
-            <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary/40 via-secondary/40 to-accent/40 rounded-full" />
+            <div className="absolute left-[7px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary/40 via-secondary/40 to-accent/40 rounded-full" />
 
             {selectedItems.map((item, i) => {
               const Icon = iconMap[item.icon] || Star;
               return (
-                <div key={item.id} className="relative mb-5 animate-fade-in" style={{ animationDelay: `${i * 0.08}s` }}>
+                <div key={item.id} className="relative mb-4 animate-fade-in" style={{ animationDelay: `${i * 0.08}s` }}>
                   {/* Timeline dot */}
-                  <div className="absolute -left-5 top-1 w-4 h-4 rounded-full bg-card border-2 border-primary flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <div className="absolute -left-6 top-6 w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
                   </div>
 
                   {/* Card */}
-                  <div className="bg-card rounded-2xl overflow-hidden card-glow border border-border/50 hover:border-primary/20 transition-all">
-                    {/* Photo area */}
-                    {item.completionPhoto ? (
+                  <div className="bg-card rounded-2xl card-glow border border-border/50 hover:border-primary/20 transition-all p-4">
+                    {/* Date + Icon row */}
+                    <div className="flex items-start justify-between mb-2">
+                      <span className="text-xs text-muted-foreground">
+                        {format(selectedDate, "M月d日 EEEE", { locale: zhCN })}
+                      </span>
+                      <Icon size={20} className="text-muted-foreground/60" />
+                    </div>
+
+                    {/* Title */}
+                    <p className="text-base font-bold text-foreground mb-2">{item.title}</p>
+
+                    {/* Completion photo */}
+                    {item.completionPhoto && (
                       <img
                         src={item.completionPhoto}
                         alt={item.title}
-                        className="w-full h-40 object-cover"
+                        className="w-full h-40 object-cover rounded-xl mb-2"
                       />
-                    ) : (
-                      <div className="w-full h-28 bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                        <span className="text-4xl">{item.emoji}</span>
-                      </div>
                     )}
 
-                    <div className="p-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-sm font-medium text-foreground">{item.title}</p>
-                        <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
-                          <Icon size={16} className="text-secondary" />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {item.time && (
-                          <span className="text-[10px] text-muted-foreground">{item.time}</span>
-                        )}
-                        <span className="text-[10px] px-1.5 py-0.5 bg-muted/60 rounded-md text-muted-foreground">{item.category}</span>
-                      </div>
+                    {/* Category + Status */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-0.5 bg-muted/60 rounded-md text-muted-foreground">{item.category}</span>
+                      <span className="text-xs text-primary flex items-center gap-0.5">✓ 已完成</span>
                     </div>
                   </div>
                 </div>
