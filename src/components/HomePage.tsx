@@ -1,10 +1,10 @@
-import { useState, useCallback } from "react";
-import { format, addDays, subDays, isToday, isFuture, isPast } from "date-fns";
+import { useState, useCallback, useMemo } from "react";
+import { format, addDays, subDays, isToday, isFuture, isPast, isSameDay } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle, Clock,
   Coffee, Dumbbell, BookOpen, Music, Heart, Star,
-  ChevronDown, Sparkles
+  ChevronDown, Sparkles, CalendarDays, ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
@@ -49,6 +49,65 @@ interface HomePageProps {
   extraTasks?: Task[];
   onTasksChange?: (tasks: Task[]) => void;
 }
+
+/* ── 未来规划分组组件 ── */
+const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => {
+  const grouped = useMemo(() => {
+    const map = new Map<string, Task[]>();
+    const sorted = [...tasks].sort((a, b) => a.date.getTime() - b.date.getTime());
+    sorted.forEach(t => {
+      const key = format(t.date, "yyyy-MM-dd");
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(t);
+    });
+    return Array.from(map.entries()).map(([key, items]) => ({ key, date: items[0].date, items }));
+  }, [tasks]);
+
+  const getDayLabel = (date: Date) => {
+    const diff = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (diff === 1) return "明天";
+    if (diff === 2) return "后天";
+    return format(date, "M月d日 EEEE", { locale: zhCN });
+  };
+
+  return (
+    <div className="space-y-4">
+      {grouped.map(group => (
+        <div key={group.key}>
+          {/* 日期标签 */}
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-[11px] font-bold text-primary">{getDayLabel(group.date)}</span>
+            {Math.ceil((group.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) <= 2 && (
+              <span className="text-[10px] text-muted-foreground">{format(group.date, "M/d EEEE", { locale: zhCN })}</span>
+            )}
+            <div className="flex-1 h-px bg-border/40" />
+          </div>
+          {/* 该日任务 */}
+          <div className="space-y-2">
+            {group.items.map(task => {
+              const Icon = iconMap[task.icon] || Star;
+              return (
+                <div
+                  key={task.id}
+                  className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30 hover:border-primary/15 transition-all"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0">
+                    <Icon size={14} className="text-primary/50" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground/80">{task.title}</p>
+                    <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                  </div>
+                  <ChevronRight size={14} className="text-muted-foreground/20 flex-shrink-0" />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
   const [tasks, setTasks] = useState<Task[]>(generateMockTasks);
@@ -191,16 +250,16 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
         )}
       </section>
 
-      {/* ── 接下来（可折叠）── */}
+      {/* ── 未来规划 ── */}
       {futureTasks.length > 0 && (
         <section className="animate-fade-in" style={{ animationDelay: "0.2s" }}>
           <button
             onClick={() => setShowUpcoming(!showUpcoming)}
             className="flex items-center gap-2 w-full text-left mb-3 group"
           >
-            <Sparkles size={14} className="text-primary/60" />
+            <CalendarDays size={14} className="text-primary/60" />
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              接下来 · {futureTasks.length} 件事
+              未来规划 · {futureTasks.length} 件事
             </span>
             <ChevronDown size={14} className={cn(
               "text-muted-foreground/40 transition-transform ml-auto",
@@ -209,26 +268,7 @@ const HomePage = ({ extraTasks = [], onTasksChange }: HomePageProps) => {
           </button>
 
           {showUpcoming && (
-            <div className="space-y-2">
-              {futureTasks.map((task) => {
-                const Icon = iconMap[task.icon] || Star;
-                const daysFromNow = Math.ceil((task.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                const dayLabel = daysFromNow === 1 ? "明天" : daysFromNow === 2 ? "后天" : `${daysFromNow}天后`;
-                return (
-                  <div
-                    key={task.id}
-                    className="flex items-center gap-3 rounded-xl px-4 py-3 bg-card/50 border border-border/30"
-                  >
-                    <span className="text-[10px] font-medium text-primary/70 w-10 text-center">{dayLabel}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground/80">{task.title}</p>
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
-                    </div>
-                    <Icon size={14} className="text-muted-foreground/30 flex-shrink-0" />
-                  </div>
-                );
-              })}
-            </div>
+            <FuturePlanSection tasks={futureTasks} today={today} />
           )}
         </section>
       )}
