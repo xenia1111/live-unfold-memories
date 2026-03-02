@@ -351,17 +351,28 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     </div>
                   ) : null}
                 </div>
+
+                {/* 分享按钮 */}
+                <button
+                  onClick={() => {
+                    const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}\n\n${story.highlights.join("\n")}${notes[card.key] ? `\n\n📝 ${notes[card.key]}` : ""}`;
+                    if (navigator.share) {
+                      navigator.share({ title: story.title, text }).catch(() => {});
+                    } else {
+                      navigator.clipboard.writeText(text);
+                      toast.success("已复制到剪贴板");
+                    }
+                  }}
+                  className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-muted/30 text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all text-xs font-medium"
+                >
+                  <Share2 size={14} />
+                  <span>分享这段故事</span>
+                </button>
               </div>
             </div>
           );
         })}
       </div>
-
-      {/* Share button */}
-      <button className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-card border border-border/50 card-glow text-foreground hover:text-primary transition-colors text-sm font-medium mt-6">
-        <Share2 size={16} />
-        <span>分享我的故事</span>
-      </button>
     </div>
   );
 };
