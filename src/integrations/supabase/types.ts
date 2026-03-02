@@ -39,20 +39,29 @@ export type Database = {
         Row: {
           born_at: string
           cat_name: string
+          client_id: string | null
+          completed_count: number
           created_at: string
           id: string
+          photo_count: number
         }
         Insert: {
           born_at?: string
           cat_name?: string
+          client_id?: string | null
+          completed_count?: number
           created_at?: string
           id?: string
+          photo_count?: number
         }
         Update: {
           born_at?: string
           cat_name?: string
+          client_id?: string | null
+          completed_count?: number
           created_at?: string
           id?: string
+          photo_count?: number
         }
         Relationships: []
       }

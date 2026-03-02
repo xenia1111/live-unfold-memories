@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { differenceInCalendarDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import type { Task } from "@/hooks/useTasks";
+import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
 
 /* ── 猫咪成长阶段 ── */
 const CAT_STAGES = [
@@ -129,6 +130,17 @@ const getRoundnessTitle = (rate: number) => {
   return title;
 };
 
+// Generate or retrieve a stable client ID
+const getClientId = (): string => {
+  const key = "cat_client_id";
+  let id = localStorage.getItem(key);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(key, id);
+  }
+  return id;
+};
+
 const CatPet = ({ tasks }: CatPetProps) => {
   const completedTasks = useMemo(() => tasks.filter(t => t.completed), [tasks]);
   const completedCount = completedTasks.length;
@@ -139,30 +151,47 @@ const CatPet = ({ tasks }: CatPetProps) => {
     ? Math.min(((completedCount - stage.min) / (stage.next.min - stage.min)) * 100, 100)
     : 100;
 
-  // Cat birth date from DB
+  const [clientId] = useState(getClientId);
   const [bornAt, setBornAt] = useState<Date | null>(null);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  // Ensure cat profile exists
   useEffect(() => {
-    supabase.from("cat_profiles").select("born_at").limit(1).single().then(({ data }) => {
-      if (data) setBornAt(new Date(data.born_at));
-    });
-  }, []);
+    const init = async () => {
+      const { data } = await supabase
+        .from("cat_profiles")
+        .select("*")
+        .eq("client_id", clientId)
+        .maybeSingle();
+
+      if (data) {
+        setBornAt(new Date(data.born_at));
+      } else {
+        const { data: newCat } = await supabase
+          .from("cat_profiles")
+          .insert({ client_id: clientId, cat_name: "小猫咪" })
+          .select()
+          .single();
+        if (newCat) setBornAt(new Date(newCat.born_at));
+      }
+    };
+    init();
+  }, [clientId]);
+
+  // Sync stats to DB
+  useEffect(() => {
+    if (!bornAt) return;
+    supabase
+      .from("cat_profiles")
+      .update({ completed_count: completedCount, photo_count: photoCount })
+      .eq("client_id", clientId)
+      .then(() => {});
+  }, [completedCount, photoCount, clientId, bornAt]);
 
   const aliveDays = bornAt ? Math.max(differenceInCalendarDays(new Date(), bornAt), 1) : 1;
-
-  // 圆润度 = 每天平均吃几顿（养分密度）
   const roundnessRate = aliveDays > 0 ? completedCount / aliveDays : 0;
   const roundness = getRoundnessTitle(roundnessRate);
 
-  // 模拟全球排名百分位（基于圆润度的一个有趣展示）
-  const rankPercent = useMemo(() => {
-    // sigmoid-like mapping: rate -> percentile
-    const x = roundnessRate;
-    if (x <= 0) return 99;
-    if (x >= 3) return 1;
-    return Math.max(1, Math.round(100 - (x / 3) * 90));
-  }, [roundnessRate]);
-
-  // Last completed task for comment
   const lastCompleted = useMemo(() => {
     const sorted = [...completedTasks].sort((a, b) => {
       if (a.date && b.date) return b.date.getTime() - a.date.getTime();
@@ -195,84 +224,95 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const levelIndex = CAT_STAGES.indexOf(stage) + 1;
 
   return (
-    <div className="relative rounded-3xl bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 border border-border/40 p-5 overflow-hidden">
-      {/* 顶部信息条 */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold text-primary/80 px-2 py-0.5 rounded-full bg-primary/10">
-            Lv.{levelIndex} {stage.label}
-          </span>
-          <span className="text-[10px] text-muted-foreground/50">
-            存活 {aliveDays} 天
-          </span>
-        </div>
-        <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent-foreground/70">
-          <span>{roundness.emoji}</span>
-          <span className="font-medium">{roundness.label}</span>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-4">
-        {/* 猫咪区域 */}
-        <button
-          onClick={refreshComment}
-          className="flex-shrink-0 flex flex-col items-center gap-1 active:scale-95 transition-transform"
-        >
-          <div className={cn(
-            "text-5xl transition-all duration-500 select-none",
-            isEating && "animate-bounce",
-            !isEating && completedCount > 0 && "animate-float",
-          )}>
-            {stage.emoji}
+    <>
+      <div className="relative rounded-3xl bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 border border-border/40 p-5 overflow-hidden">
+        {/* 顶部信息条 */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold text-primary/80 px-2 py-0.5 rounded-full bg-primary/10">
+              Lv.{levelIndex} {stage.label}
+            </span>
+            <span className="text-[10px] text-muted-foreground/50">
+              存活 {aliveDays} 天
+            </span>
           </div>
-        </button>
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent-foreground/70 hover:bg-accent/20 active:scale-95 transition-all"
+          >
+            <span>{roundness.emoji}</span>
+            <span className="font-medium">{roundness.label}</span>
+            <span className="text-muted-foreground/40 ml-0.5">›</span>
+          </button>
+        </div>
 
-        {/* 对话气泡 + 信息 */}
-        <div className="flex-1 min-w-0">
-          {showBubble && (
-            <div className="relative mb-2.5 animate-fade-in">
-              <div className="bg-card rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-border/50 shadow-sm">
-                <p className="text-xs text-foreground/80 leading-relaxed">{comment}</p>
-              </div>
-              <div className="absolute -bottom-0 left-3 w-2 h-2 bg-card border-b border-l border-border/50 transform rotate-[-45deg] -translate-y-1" />
+        <div className="flex items-start gap-4">
+          <button
+            onClick={refreshComment}
+            className="flex-shrink-0 flex flex-col items-center gap-1 active:scale-95 transition-transform"
+          >
+            <div className={cn(
+              "text-5xl transition-all duration-500 select-none",
+              isEating && "animate-bounce",
+              !isEating && completedCount > 0 && "animate-float",
+            )}>
+              {stage.emoji}
             </div>
-          )}
+          </button>
 
-          {/* 状态标签 */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
-              <span>🍖</span>
-              <span className="font-medium text-foreground">{completedCount} 顿饭</span>
-            </div>
-            {photoCount > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
-                <span>📸</span>
-                <span className="font-medium text-foreground">{photoCount} 张图</span>
+          <div className="flex-1 min-w-0">
+            {showBubble && (
+              <div className="relative mb-2.5 animate-fade-in">
+                <div className="bg-card rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-border/50 shadow-sm">
+                  <p className="text-xs text-foreground/80 leading-relaxed">{comment}</p>
+                </div>
+                <div className="absolute -bottom-0 left-3 w-2 h-2 bg-card border-b border-l border-border/50 transform rotate-[-45deg] -translate-y-1" />
               </div>
             )}
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
-              <span>🌍</span>
-              <span className="font-medium text-foreground">圆润度 Top {rankPercent}%</span>
-            </div>
-          </div>
 
-          {/* 成长进度 */}
-          {stage.next && (
-            <div className="mt-2 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-primary/60 to-accent/60 transition-all duration-700"
-                  style={{ width: `${progress}%` }}
-                />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
+                <span>🍖</span>
+                <span className="font-medium text-foreground">{completedCount} 顿饭</span>
               </div>
-              <span className="text-[9px] text-muted-foreground/50 whitespace-nowrap">
-                → {stage.next.emoji} {stage.next.label}
-              </span>
+              {photoCount > 0 && (
+                <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
+                  <span>📸</span>
+                  <span className="font-medium text-foreground">{photoCount} 张图</span>
+                </div>
+              )}
+              <button
+                onClick={() => setShowLeaderboard(true)}
+                className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px] hover:border-primary/30 active:scale-95 transition-all"
+              >
+                <span>🏆</span>
+                <span className="font-medium text-foreground">排行榜</span>
+              </button>
             </div>
-          )}
+
+            {stage.next && (
+              <div className="mt-2 flex items-center gap-2">
+                <div className="flex-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-primary/60 to-accent/60 transition-all duration-700"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <span className="text-[9px] text-muted-foreground/50 whitespace-nowrap">
+                  → {stage.next.emoji} {stage.next.label}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      <RoundnessLeaderboard
+        open={showLeaderboard}
+        onOpenChange={setShowLeaderboard}
+        myClientId={clientId}
+      />
+    </>
   );
 };
 
