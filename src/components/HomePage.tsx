@@ -127,7 +127,7 @@ const HomePage = ({ tasks, onTasksChange }: HomePageProps) => {
     setCompletingTask(task);
   };
 
-  const handleCompleteConfirm = useCallback((photo?: string) => {
+  const handleCompleteConfirm = useCallback((photo?: string, note?: string) => {
     if (!completingTask) return;
     const id = completingTask.id;
     setShowConfetti(true);

@@ -18,11 +18,12 @@ interface CompletionPhotoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   taskTitle: string;
-  onConfirm: (photo?: string) => void;
+  onConfirm: (photo?: string, note?: string) => void;
 }
 
 const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: CompletionPhotoDialogProps) => {
   const [photo, setPhoto] = useState<string | null>(null);
+  const [note, setNote] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const message = useMemo(() => CELEBRATION_MESSAGES[Math.floor(Math.random() * CELEBRATION_MESSAGES.length)], [open]);
 
@@ -36,13 +37,15 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
   };
 
   const handleConfirm = () => {
-    onConfirm(photo || undefined);
+    onConfirm(photo || undefined, note || undefined);
     setPhoto(null);
+    setNote("");
   };
 
   const handleSkip = () => {
-    onConfirm(undefined);
+    onConfirm(undefined, undefined);
     setPhoto(null);
+    setNote("");
   };
 
   return (
@@ -98,6 +101,14 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
               <span className="text-sm font-medium">拍照 / 选择照片</span>
             </button>
           )}
+
+          {/* 随笔区域 */}
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="写点什么记录此刻的感受吧..."
+            className="w-full h-24 rounded-xl border border-border/50 bg-muted/30 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 transition-all"
+          />
 
           <div className="flex gap-3">
             <button
