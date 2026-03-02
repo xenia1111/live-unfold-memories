@@ -4,6 +4,7 @@ import { differenceInCalendarDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import type { Task } from "@/hooks/useTasks";
 import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
+import { getCatPersonality } from "@/lib/catPersonality";
 
 /* ── 猫咪成长阶段 ── */
 const CAT_STAGES = [
@@ -88,16 +89,12 @@ const PHOTO_COMMENTS = [
   "好漂亮的饭！味道还不错！（舔屏中）",
 ];
 
-const DEFAULT_COMMENTS = [
-  "喵...猫猫饿了...快去做点什么喂猫猫吧～",
-  "（打哈欠）什么时候开饭呀...",
-  "猫猫蹲在碗旁边等了好久了喵～",
-  "...zZZ...（等待投喂中）",
-];
+/* DEFAULT_COMMENTS moved to catPersonality.ts idleLines */
 
-const getComment = (task?: Task): string => {
+const getComment = (task?: Task, idleLines?: string[]): string => {
   if (!task) {
-    return DEFAULT_COMMENTS[Math.floor(Math.random() * DEFAULT_COMMENTS.length)];
+    const pool = idleLines && idleLines.length > 0 ? idleLines : ["喵...猫猫饿了...快去做点什么喂猫猫吧～"];
+    return pool[Math.floor(Math.random() * pool.length)];
   }
   if (task.completionPhoto) {
     return PHOTO_COMMENTS[Math.floor(Math.random() * PHOTO_COMMENTS.length)];
@@ -146,6 +143,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const completedCount = completedTasks.length;
   const photoCount = useMemo(() => completedTasks.filter(t => t.completionPhoto).length, [completedTasks]);
 
+  const personality = useMemo(() => getCatPersonality(tasks), [tasks]);
   const stage = getCatStage(completedCount);
   const progress = stage.next
     ? Math.min(((completedCount - stage.min) / (stage.next.min - stage.min)) * 100, 100)
@@ -200,22 +198,22 @@ const CatPet = ({ tasks }: CatPetProps) => {
     return sorted[0] || undefined;
   }, [completedTasks]);
 
-  const [comment, setComment] = useState(() => getComment(lastCompleted));
+  const [comment, setComment] = useState(() => getComment(lastCompleted, personality.idleLines));
   const [showBubble, setShowBubble] = useState(true);
   const [isEating, setIsEating] = useState(false);
 
   useEffect(() => {
-    setComment(getComment(lastCompleted));
+    setComment(getComment(lastCompleted, personality.idleLines));
     if (lastCompleted) {
       setIsEating(true);
       setShowBubble(true);
       const timer = setTimeout(() => setIsEating(false), 2000);
       return () => clearTimeout(timer);
     }
-  }, [lastCompleted?.id]);
+  }, [lastCompleted?.id, personality.label]);
 
   const refreshComment = () => {
-    setComment(getComment(lastCompleted));
+    setComment(getComment(lastCompleted, personality.idleLines));
     setIsEating(true);
     setShowBubble(true);
     setTimeout(() => setIsEating(false), 1500);
@@ -232,6 +230,11 @@ const CatPet = ({ tasks }: CatPetProps) => {
             <span className="text-[10px] font-bold text-primary/80 px-2 py-0.5 rounded-full bg-primary/10">
               Lv.{levelIndex} {stage.label}
             </span>
+            {personality.label !== "杂食猫" && (
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary/40 text-secondary-foreground/80">
+                {personality.emoji} {personality.label}
+              </span>
+            )}
             <span className="text-[10px] text-muted-foreground/50">
               存活 {aliveDays} 天
             </span>
