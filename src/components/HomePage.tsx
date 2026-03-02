@@ -4,30 +4,18 @@ import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle,
   Coffee, Dumbbell, BookOpen, Music, Heart, Star,
-  ChevronRight, CalendarDays, Inbox, AlertCircle
+  ChevronRight, CalendarDays, Inbox, AlertCircle, Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
 import ConfettiCanvas from "@/components/ConfettiCanvas";
+import type { Task } from "@/hooks/useTasks";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
   music: Music, heart: Heart, star: Star,
 };
-
-interface Task {
-  id: string;
-  title: string;
-  time: string;
-  icon: string;
-  completed: boolean;
-  date?: Date;
-  category: string;
-  coverImage?: string;
-  completionPhoto?: string;
-  deadline?: Date;
-}
 
 /* ── Deadline 标签 ── */
 const DeadlineTag = ({ deadline }: { deadline: Date }) => {
@@ -104,10 +92,11 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
 
 interface HomePageProps {
   tasks: Task[];
-  onTasksChange: (tasks: Task[]) => void;
+  loading: boolean;
+  onCompleteTask: (id: string, photo?: string, note?: string) => Promise<void>;
 }
 
-const HomePage = ({ tasks, onTasksChange }: HomePageProps) => {
+const HomePage = ({ tasks, loading, onCompleteTask }: HomePageProps) => {
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -127,15 +116,15 @@ const HomePage = ({ tasks, onTasksChange }: HomePageProps) => {
     setCompletingTask(task);
   };
 
-  const handleCompleteConfirm = useCallback((photo?: string, note?: string) => {
+  const handleCompleteConfirm = useCallback(async (photo?: string, note?: string) => {
     if (!completingTask) return;
     const id = completingTask.id;
     setShowConfetti(true);
     setJustCompleted(id);
     setTimeout(() => setJustCompleted(null), 1200);
-    onTasksChange(tasks.map(t => t.id === id ? { ...t, completed: true, completionPhoto: photo } : t));
+    await onCompleteTask(id, photo, note);
     setCompletingTask(null);
-  }, [completingTask, tasks, onTasksChange]);
+  }, [completingTask, onCompleteTask]);
 
   const getGreeting = () => {
     const h = new Date().getHours();
@@ -150,6 +139,17 @@ const HomePage = ({ tasks, onTasksChange }: HomePageProps) => {
 
   const greeting = getGreeting();
   const progressPercent = todayTotal > 0 ? Math.round((todayCompleted / todayTotal) * 100) : 0;
+
+  if (loading) {
+    return (
+      <div className="px-5 pt-14 pb-24 max-w-lg mx-auto flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 size={28} className="animate-spin text-primary" />
+          <span className="text-sm text-muted-foreground">加载中...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-5 pt-14 pb-24 max-w-lg mx-auto">
