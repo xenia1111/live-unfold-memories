@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_stories: {
+        Row: {
+          created_at: string
+          id: string
+          period_key: string
+          story_data: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          period_key: string
+          story_data: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          period_key?: string
+          story_data?: Json
+        }
+        Relationships: []
+      }
+      story_notes: {
+        Row: {
+          created_at: string
+          id: string
+          note: string
+          period_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string
+          period_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string
+          period_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          category: string
+          completed: boolean
+          completion_note: string | null
+          completion_photo: string | null
+          cover_image: string | null
+          created_at: string
+          date: string | null
+          deadline: string | null
+          icon: string
+          id: string
+          time: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          completed?: boolean
+          completion_note?: string | null
+          completion_photo?: string | null
+          cover_image?: string | null
+          created_at?: string
+          date?: string | null
+          deadline?: string | null
+          icon?: string
+          id?: string
+          time?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          completed?: boolean
+          completion_note?: string | null
+          completion_photo?: string | null
+          cover_image?: string | null
+          created_at?: string
+          date?: string | null
+          deadline?: string | null
+          icon?: string
+          id?: string
+          time?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

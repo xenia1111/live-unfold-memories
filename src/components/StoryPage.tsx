@@ -5,26 +5,12 @@ import {
   startOfWeek, endOfWeek, subWeeks,
   startOfMonth, endOfMonth, subMonths,
   startOfQuarter, endOfQuarter, subQuarters,
-  isWithinInterval, format, differenceInCalendarDays,
-  isBefore
+  isWithinInterval, format,
 } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface Task {
-  id: string;
-  title: string;
-  time: string;
-  icon: string;
-  completed: boolean;
-  date?: Date;
-  category: string;
-  coverImage?: string;
-  completionPhoto?: string;
-  deadline?: Date;
-}
-
-type Period = "week" | "month" | "quarter" | "half";
+import { useStoryNotes, useAiStories } from "@/hooks/useStoryData";
+import type { Task } from "@/hooks/useTasks";
 
 interface StoryData {
   title: string;
@@ -35,17 +21,7 @@ interface StoryData {
   emoji: string;
 }
 
-interface StoryCard {
-  label: string;
-  timeRange: string;
-  isCurrent: boolean;
-  color: string;
-  // Static fallback
-  fallback: StoryData;
-  // AI generated
-  ai?: StoryData;
-  loading: boolean;
-}
+type Period = "week" | "month" | "quarter" | "half";
 
 const categoryEmoji: Record<string, string> = {
   "运动": "🏃", "学习": "📖", "社交": "☕", "工作": "💼",
@@ -60,7 +36,6 @@ const getMoodColor = (rate: number, total: number): string => {
   return "from-secondary/10 to-muted/20";
 };
 
-// Simple fallback when AI is not yet loaded
 const buildFallback = (tasks: Task[], total: number, completed: number, rate: number): StoryData => {
   const catCount: Record<string, number> = {};
   tasks.filter(t => t.completed).forEach(t => {
@@ -87,12 +62,7 @@ const buildFallback = (tasks: Task[], total: number, completed: number, rate: nu
   };
 };
 
-interface PeriodRange {
-  label: string;
-  start: Date;
-  end: Date;
-  isCurrent: boolean;
-}
+interface PeriodRange { label: string; start: Date; end: Date; isCurrent: boolean; }
 
 const getPeriodRanges = (period: Period): PeriodRange[] => {
   const now = new Date();
@@ -134,10 +104,6 @@ const formatRange = (start: Date, end: Date, period: Period): string => {
   return `${format(start, "yyyy年M月")} - ${format(end, "yyyy年M月")}`;
 };
 
-interface StoryPageProps {
-  tasks: Task[];
-}
-
 const periodTabs = [
   { id: "week" as Period, label: "一周", emoji: "📅" },
   { id: "month" as Period, label: "一月", emoji: "🗓️" },
@@ -145,14 +111,15 @@ const periodTabs = [
   { id: "half" as Period, label: "半年", emoji: "🌍" },
 ];
 
+interface StoryPageProps { tasks: Task[]; }
+
 const StoryPage = ({ tasks }: StoryPageProps) => {
   const [activePeriod, setActivePeriod] = useState<Period>("week");
-  const [aiStories, setAiStories] = useState<Record<string, StoryData>>({});
+  const { notes, saveNote } = useStoryNotes();
+  const { aiStories, saveAiStory } = useAiStories();
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
-  const [notes, setNotes] = useState<Record<string, string>>({});
   const [editingNote, setEditingNote] = useState<string | null>(null);
 
-  // Build base cards with fallback data
   const cards = useMemo(() => {
     const ranges = getPeriodRanges(activePeriod);
     return ranges.map(range => {
@@ -172,9 +139,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         color: getMoodColor(rate, total),
         fallback: buildFallback(allTasks, total, completed, rate),
         tasks: allTasks.map(t => ({
-          title: t.title,
-          category: t.category,
-          completed: t.completed,
+          title: t.title, category: t.category, completed: t.completed,
           deadline: t.deadline ? t.deadline.toISOString() : undefined,
         })),
       };
@@ -189,7 +154,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       });
       if (error) throw error;
       if (data.error) throw new Error(data.error);
-      setAiStories(prev => ({ ...prev, [key]: data }));
+      await saveAiStory(key, data);
     } catch (e: any) {
       console.error("AI story generation failed:", e);
       toast.error("故事生成失败，显示基础总结", { description: e.message });
@@ -200,11 +165,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         return next;
       });
     }
-  }, []);
+  }, [saveAiStory]);
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
-      {/* Header */}
       <div className="animate-fade-in mb-5">
         <div className="flex items-center gap-2 mb-1">
           <BookOpen size={20} className="text-primary" />
@@ -213,7 +177,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         <h1 className="text-3xl font-bold text-foreground font-serif">你的故事</h1>
       </div>
 
-      {/* Period Tabs */}
       <div className="flex gap-2 mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {periodTabs.map(tab => (
           <button
@@ -232,7 +195,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         ))}
       </div>
 
-      {/* Stories List */}
       <div className="space-y-6" key={activePeriod}>
         {cards.map((card, storyIndex) => {
           const story = aiStories[card.key] || card.fallback;
@@ -241,7 +203,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
           return (
             <div key={card.key} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.1}s` }}>
-              {/* Period time badge */}
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs font-bold text-primary">{card.label}</span>
                 <span className="text-[10px] text-muted-foreground">{card.timeRange}</span>
@@ -251,7 +212,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                 )}
               </div>
 
-              {/* Story Card */}
               <div className={cn("rounded-t-2xl px-6 pt-5 pb-4 bg-gradient-to-br", card.color)}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-3">
@@ -281,7 +241,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   </div>
                 </div>
 
-                {/* AI Generate / Regenerate button */}
                 <button
                   onClick={() => generateAIStory(card.key, card.tasks, card.label, card.timeRange)}
                   disabled={isLoading}
@@ -293,20 +252,11 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   )}
                 >
                   {isLoading ? (
-                    <>
-                      <Loader2 size={14} className="animate-spin" />
-                      <span>AI 正在撰写故事...</span>
-                    </>
+                    <><Loader2 size={14} className="animate-spin" /><span>AI 正在撰写故事...</span></>
                   ) : hasAI ? (
-                    <>
-                      <RefreshCw size={14} />
-                      <span>换一个版本</span>
-                    </>
+                    <><RefreshCw size={14} /><span>换一个版本</span></>
                   ) : (
-                    <>
-                      <Sparkles size={14} />
-                      <span>✨ 用 AI 生成有温度的故事</span>
-                    </>
+                    <><Sparkles size={14} /><span>✨ 用 AI 生成有温度的故事</span></>
                   )}
                 </button>
 
@@ -319,11 +269,13 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     </div>
                     {editingNote === card.key ? (
                       <button
-                        onClick={() => setEditingNote(null)}
+                        onClick={() => {
+                          setEditingNote(null);
+                          saveNote(card.key, notes[card.key] || "");
+                        }}
                         className="flex items-center gap-1 text-[11px] text-primary"
                       >
-                        <Check size={12} />
-                        <span>完成</span>
+                        <Check size={12} /><span>完成</span>
                       </button>
                     ) : (
                       <button
@@ -338,7 +290,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     <textarea
                       autoFocus
                       value={notes[card.key] || ""}
-                      onChange={e => setNotes(prev => ({ ...prev, [card.key]: e.target.value }))}
+                      onChange={e => saveNote(card.key, e.target.value)}
                       placeholder="记录这段时间的感受、想法、或任何值得留住的瞬间..."
                       className="w-full min-h-[80px] p-3 rounded-xl bg-muted/30 border border-border/40 text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 leading-relaxed"
                     />
@@ -352,7 +304,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   ) : null}
                 </div>
 
-                {/* 分享按钮 */}
                 <button
                   onClick={() => {
                     const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}\n\n${story.highlights.join("\n")}${notes[card.key] ? `\n\n📝 ${notes[card.key]}` : ""}`;
@@ -365,8 +316,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   }}
                   className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-muted/30 text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all text-xs font-medium"
                 >
-                  <Share2 size={14} />
-                  <span>分享这段故事</span>
+                  <Share2 size={14} /><span>分享这段故事</span>
                 </button>
               </div>
             </div>
