@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
 import ConfettiCanvas from "@/components/ConfettiCanvas";
+import CatPet from "@/components/CatPet";
 import type { Task } from "@/hooks/useTasks";
 
 const iconMap: Record<string, any> = {
@@ -177,16 +178,11 @@ const HomePage = ({ tasks, loading, onCompleteTask }: HomePageProps) => {
         {todayTotal > 0 && todayCompleted === todayTotal && (
           <p className="text-xs text-secondary font-medium mt-2">🎉 今天全部完成！太棒了</p>
         )}
-        <div className="mt-4 flex gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card border border-border/50 text-xs">
-            <span className="text-accent">🔥</span>
-            <span className="font-medium text-foreground">5 天连续</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card border border-border/50 text-xs">
-            <span className="text-primary">⚡</span>
-            <span className="font-medium text-foreground">{allCompleted * 10} XP</span>
-          </div>
-        </div>
+      </div>
+
+      {/* ── 猫咪互动区 ── */}
+      <div className="mb-6 animate-fade-in" style={{ animationDelay: "0.05s" }}>
+        <CatPet tasks={tasks} />
       </div>
 
       {/* ── 今天的任务 ── */}
