@@ -35,6 +35,27 @@ export type Database = {
         }
         Relationships: []
       }
+      cat_profiles: {
+        Row: {
+          born_at: string
+          cat_name: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          born_at?: string
+          cat_name?: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          born_at?: string
+          cat_name?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       story_notes: {
         Row: {
           created_at: string

@@ -1,5 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { differenceInCalendarDays } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 import type { Task } from "@/hooks/useTasks";
 
 /* ── 猫咪成长阶段 ── */
@@ -108,6 +110,25 @@ interface CatPetProps {
   tasks: Task[];
 }
 
+/* ── 圆润度计算 ── */
+const ROUNDNESS_TITLES = [
+  { min: 0,   label: "骨瘦如柴", emoji: "🦴" },
+  { min: 0.3, label: "微微圆润", emoji: "🫧" },
+  { min: 0.6, label: "小有肉感", emoji: "🍡" },
+  { min: 1.0, label: "圆滚滚", emoji: "🟠" },
+  { min: 1.5, label: "弹弹球", emoji: "⚽" },
+  { min: 2.5, label: "圆到起飞", emoji: "🎈" },
+  { min: 4.0, label: "宇宙级圆", emoji: "🪐" },
+];
+
+const getRoundnessTitle = (rate: number) => {
+  let title = ROUNDNESS_TITLES[0];
+  for (const t of ROUNDNESS_TITLES) {
+    if (rate >= t.min) title = t;
+  }
+  return title;
+};
+
 const CatPet = ({ tasks }: CatPetProps) => {
   const completedTasks = useMemo(() => tasks.filter(t => t.completed), [tasks]);
   const completedCount = completedTasks.length;
@@ -118,17 +139,38 @@ const CatPet = ({ tasks }: CatPetProps) => {
     ? Math.min(((completedCount - stage.min) / (stage.next.min - stage.min)) * 100, 100)
     : 100;
 
-  // Get last completed task for comment
+  // Cat birth date from DB
+  const [bornAt, setBornAt] = useState<Date | null>(null);
+  useEffect(() => {
+    supabase.from("cat_profiles").select("born_at").limit(1).single().then(({ data }) => {
+      if (data) setBornAt(new Date(data.born_at));
+    });
+  }, []);
+
+  const aliveDays = bornAt ? Math.max(differenceInCalendarDays(new Date(), bornAt), 1) : 1;
+
+  // 圆润度 = 每天平均吃几顿（养分密度）
+  const roundnessRate = aliveDays > 0 ? completedCount / aliveDays : 0;
+  const roundness = getRoundnessTitle(roundnessRate);
+
+  // 模拟全球排名百分位（基于圆润度的一个有趣展示）
+  const rankPercent = useMemo(() => {
+    // sigmoid-like mapping: rate -> percentile
+    const x = roundnessRate;
+    if (x <= 0) return 99;
+    if (x >= 3) return 1;
+    return Math.max(1, Math.round(100 - (x / 3) * 90));
+  }, [roundnessRate]);
+
+  // Last completed task for comment
   const lastCompleted = useMemo(() => {
     const sorted = [...completedTasks].sort((a, b) => {
-      // Sort by date descending, fallback to id
       if (a.date && b.date) return b.date.getTime() - a.date.getTime();
       return b.id.localeCompare(a.id);
     });
     return sorted[0] || undefined;
   }, [completedTasks]);
 
-  // Stable comment that changes only when lastCompleted changes
   const [comment, setComment] = useState(() => getComment(lastCompleted));
   const [showBubble, setShowBubble] = useState(true);
   const [isEating, setIsEating] = useState(false);
@@ -150,11 +192,24 @@ const CatPet = ({ tasks }: CatPetProps) => {
     setTimeout(() => setIsEating(false), 1500);
   };
 
+  const levelIndex = CAT_STAGES.indexOf(stage) + 1;
+
   return (
     <div className="relative rounded-3xl bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 border border-border/40 p-5 overflow-hidden">
-      {/* 背景装饰 */}
-      <div className="absolute top-2 right-3 text-[10px] text-muted-foreground/30 font-mono">
-        Lv.{CAT_STAGES.indexOf(stage) + 1}
+      {/* 顶部信息条 */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-bold text-primary/80 px-2 py-0.5 rounded-full bg-primary/10">
+            Lv.{levelIndex} {stage.label}
+          </span>
+          <span className="text-[10px] text-muted-foreground/50">
+            存活 {aliveDays} 天
+          </span>
+        </div>
+        <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent-foreground/70">
+          <span>{roundness.emoji}</span>
+          <span className="font-medium">{roundness.label}</span>
+        </div>
       </div>
 
       <div className="flex items-start gap-4">
@@ -170,24 +225,21 @@ const CatPet = ({ tasks }: CatPetProps) => {
           )}>
             {stage.emoji}
           </div>
-          <span className="text-[10px] font-bold text-primary/70">{stage.label}</span>
         </button>
 
         {/* 对话气泡 + 信息 */}
         <div className="flex-1 min-w-0">
-          {/* 气泡 */}
           {showBubble && (
             <div className="relative mb-2.5 animate-fade-in">
               <div className="bg-card rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-border/50 shadow-sm">
                 <p className="text-xs text-foreground/80 leading-relaxed">{comment}</p>
               </div>
-              {/* 气泡三角 */}
               <div className="absolute -bottom-0 left-3 w-2 h-2 bg-card border-b border-l border-border/50 transform rotate-[-45deg] -translate-y-1" />
             </div>
           )}
 
-          {/* 状态信息 */}
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* 状态标签 */}
+          <div className="flex items-center gap-1.5 flex-wrap">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
               <span>🍖</span>
               <span className="font-medium text-foreground">{completedCount} 顿饭</span>
@@ -198,6 +250,10 @@ const CatPet = ({ tasks }: CatPetProps) => {
                 <span className="font-medium text-foreground">{photoCount} 张图</span>
               </div>
             )}
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
+              <span>🌍</span>
+              <span className="font-medium text-foreground">圆润度 Top {rankPercent}%</span>
+            </div>
           </div>
 
           {/* 成长进度 */}
