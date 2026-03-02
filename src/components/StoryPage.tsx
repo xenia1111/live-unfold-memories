@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from "react";
-import { BookOpen, Sparkles, Share2, RefreshCw, Loader2 } from "lucide-react";
+import { BookOpen, Sparkles, Share2, RefreshCw, Loader2, PenLine, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   startOfWeek, endOfWeek, subWeeks,
@@ -149,6 +149,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [activePeriod, setActivePeriod] = useState<Period>("week");
   const [aiStories, setAiStories] = useState<Record<string, StoryData>>({});
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [editingNote, setEditingNote] = useState<string | null>(null);
 
   // Build base cards with fallback data
   const cards = useMemo(() => {
@@ -307,6 +309,48 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     </>
                   )}
                 </button>
+
+                {/* 随笔区域 */}
+                <div className="mt-4 pt-4 border-t border-border/30">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <PenLine size={14} className="text-primary" />
+                      <span className="text-xs font-semibold text-foreground">随笔</span>
+                    </div>
+                    {editingNote === card.key ? (
+                      <button
+                        onClick={() => setEditingNote(null)}
+                        className="flex items-center gap-1 text-[11px] text-primary"
+                      >
+                        <Check size={12} />
+                        <span>完成</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setEditingNote(card.key)}
+                        className="text-[11px] text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {notes[card.key] ? "编辑" : "写点什么..."}
+                      </button>
+                    )}
+                  </div>
+                  {editingNote === card.key ? (
+                    <textarea
+                      autoFocus
+                      value={notes[card.key] || ""}
+                      onChange={e => setNotes(prev => ({ ...prev, [card.key]: e.target.value }))}
+                      placeholder="记录这段时间的感受、想法、或任何值得留住的瞬间..."
+                      className="w-full min-h-[80px] p-3 rounded-xl bg-muted/30 border border-border/40 text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 leading-relaxed"
+                    />
+                  ) : notes[card.key] ? (
+                    <div
+                      onClick={() => setEditingNote(card.key)}
+                      className="px-3 py-2.5 rounded-xl bg-muted/20 text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap cursor-pointer hover:bg-muted/30 transition-colors"
+                    >
+                      {notes[card.key]}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </div>
           );
