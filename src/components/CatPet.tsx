@@ -4,6 +4,7 @@ import { differenceInCalendarDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import type { Task } from "@/hooks/useTasks";
 import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
+import CatRadarDialog from "@/components/CatRadarDialog";
 import { getCatPersonality } from "@/lib/catPersonality";
 
 /* ── 猫咪成长阶段 ── */
@@ -152,6 +153,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const [clientId] = useState(getClientId);
   const [bornAt, setBornAt] = useState<Date | null>(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showRadar, setShowRadar] = useState(false);
 
   // Ensure cat profile exists
   useEffect(() => {
@@ -251,7 +253,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
 
         <div className="flex items-start gap-4">
           <button
-            onClick={refreshComment}
+            onClick={() => setShowRadar(true)}
             className="flex-shrink-0 flex flex-col items-center gap-1 active:scale-95 transition-transform"
           >
             <div className={cn(
@@ -261,6 +263,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
             )}>
               {stage.emoji}
             </div>
+            <span className="text-[9px] text-muted-foreground/40">点我查看</span>
           </button>
 
           <div className="flex-1 min-w-0">
@@ -314,6 +317,11 @@ const CatPet = ({ tasks }: CatPetProps) => {
         open={showLeaderboard}
         onOpenChange={setShowLeaderboard}
         myClientId={clientId}
+      />
+      <CatRadarDialog
+        open={showRadar}
+        onOpenChange={setShowRadar}
+        tasks={tasks}
       />
     </>
   );
