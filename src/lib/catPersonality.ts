@@ -73,6 +73,24 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
       "快乐是第一生产力！猫猫说的！",
     ],
   },
+  "美食": {
+    emoji: "🍜", label: "干饭猫", desc: "吃太多美食，猫猫变成真正的美食家了",
+    category: "美食",
+    idleLines: [
+      "今天吃什么好呢...猫猫已经在想晚饭了🤤",
+      "猫猫的梦想是吃遍全世界的小鱼干！",
+      "闻到香味了！是谁在做饭！猫猫要去看看！",
+    ],
+  },
+  "美景": {
+    emoji: "🏔️", label: "旅行猫", desc: "看太多美景，猫猫想去流浪了",
+    category: "美景",
+    idleLines: [
+      "今天去哪里看风景呀？猫猫想跟着去～🌸",
+      "世界那么大，猫猫也想去看看...",
+      "窗外的云好漂亮...猫猫发呆中☁️",
+    ],
+  },
 };
 
 const DEFAULT_PERSONALITY: CatPersonality = {

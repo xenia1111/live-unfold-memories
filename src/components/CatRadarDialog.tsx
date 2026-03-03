@@ -24,6 +24,8 @@ const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
   "健康": { emoji: "🧘", label: "健康" },
   "记录": { emoji: "✍️", label: "记录" },
   "娱乐": { emoji: "🎮", label: "娱乐" },
+  "美食": { emoji: "🍜", label: "美食" },
+  "美景": { emoji: "🏔️", label: "美景" },
 };
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_META);
