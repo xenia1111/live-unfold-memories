@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
-import { BookOpen, Sparkles, Share2, RefreshCw, Loader2, PenLine, Check } from "lucide-react";
+import { BookOpen, Sparkles, Share2, RefreshCw, Loader2, PenLine, Check, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
+import CategoryStoryView from "./CategoryStoryView";
 import {
   startOfWeek, endOfWeek, subWeeks,
   startOfMonth, endOfMonth, subMonths,
@@ -22,6 +23,7 @@ interface StoryData {
 }
 
 type Period = "week" | "month" | "quarter" | "half";
+type ViewMode = "period" | "category";
 
 const categoryEmoji: Record<string, string> = {
   "运动": "🏃", "学习": "📖", "社交": "☕", "工作": "💼",
@@ -114,6 +116,7 @@ const periodTabs = [
 interface StoryPageProps { tasks: Task[]; }
 
 const StoryPage = ({ tasks }: StoryPageProps) => {
+  const [viewMode, setViewMode] = useState<ViewMode>("period");
   const [activePeriod, setActivePeriod] = useState<Period>("week");
   const { notes, saveNote } = useStoryNotes();
   const { aiStories, saveAiStory } = useAiStories();
@@ -169,7 +172,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
-      <div className="animate-fade-in mb-5">
+      <div className="animate-fade-in mb-4">
         <div className="flex items-center gap-2 mb-1">
           <BookOpen size={20} className="text-primary" />
           <span className="text-sm text-muted-foreground">回忆是最美的礼物</span>
@@ -177,6 +180,36 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         <h1 className="text-3xl font-bold text-foreground font-serif">你的故事</h1>
       </div>
 
+      {/* Mode toggle */}
+      <div className="flex gap-2 mb-4 animate-fade-in" style={{ animationDelay: "0.05s" }}>
+        <button
+          onClick={() => setViewMode("period")}
+          className={cn(
+            "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5",
+            viewMode === "period"
+              ? "gradient-warm text-primary-foreground shadow-md"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <BookOpen size={14} /><span>按时间</span>
+        </button>
+        <button
+          onClick={() => setViewMode("category")}
+          className={cn(
+            "flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5",
+            viewMode === "category"
+              ? "gradient-warm text-primary-foreground shadow-md"
+              : "bg-muted text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Layers size={14} /><span>按类目</span>
+        </button>
+      </div>
+
+      {viewMode === "category" ? (
+        <CategoryStoryView tasks={tasks} />
+      ) : (
+      <>
       <div className="flex gap-2 mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {periodTabs.map(tab => (
           <button
@@ -323,6 +356,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           );
         })}
       </div>
+      </>
+      )}
     </div>
   );
 };
