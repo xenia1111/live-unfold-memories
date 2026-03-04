@@ -285,8 +285,8 @@ const CatPet = ({ tasks }: CatPetProps) => {
               <img
                 src={pixelCatImg}
                 alt="pixel cat"
-                className="h-14 w-14 object-contain drop-shadow-lg"
-                style={{ imageRendering: "pixelated" }}
+                className="h-14 w-14 object-contain"
+                style={{ imageRendering: "pixelated", mixBlendMode: "multiply" }}
               />
             </button>
           </div>
