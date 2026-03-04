@@ -86,15 +86,13 @@ const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTask
     onOpenChange(false);
   };
 
-  if (!task) return null;
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open && !!task} onOpenChange={onOpenChange}>
       <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="p-5 pb-3 flex-shrink-0">
           <DialogTitle className="text-lg font-serif text-foreground">编辑记录 ✏️</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
-            {task.date ? format(task.date, "M月d日 EEEE", { locale: zhCN }) : "未指定日期"}
+            {task?.date ? format(task.date, "M月d日 EEEE", { locale: zhCN }) : "未指定日期"}
           </DialogDescription>
         </DialogHeader>
 
