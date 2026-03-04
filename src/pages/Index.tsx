@@ -9,15 +9,15 @@ import { useTasks } from "@/hooks/useTasks";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home");
-  const { tasks, loading, addTask, completeTask } = useTasks();
+  const { tasks, loading, addTask, completeTask, updateTask, deleteTask } = useTasks();
 
   const renderPage = () => {
     switch (activeTab) {
-      case "home": return <HomePage tasks={tasks} loading={loading} onCompleteTask={completeTask} />;
+      case "home": return <HomePage tasks={tasks} loading={loading} onCompleteTask={completeTask} onUpdateTask={updateTask} onDeleteTask={deleteTask} />;
       case "calendar": return <CalendarPage tasks={tasks} />;
       case "story": return <StoryPage tasks={tasks} />;
       case "profile": return <ProfilePage />;
-      default: return <HomePage tasks={tasks} loading={loading} onCompleteTask={completeTask} />;
+      default: return <HomePage tasks={tasks} loading={loading} onCompleteTask={completeTask} onUpdateTask={updateTask} onDeleteTask={deleteTask} />;
     }
   };
 

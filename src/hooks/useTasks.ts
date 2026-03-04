@@ -105,5 +105,35 @@ export function useTasks() {
     ));
   }, []);
 
-  return { tasks, loading, addTask, completeTask, setTasks };
+  const updateTask = useCallback(async (id: string, updates: Partial<Omit<Task, 'id'>>) => {
+    const row: Record<string, any> = {};
+    if (updates.title !== undefined) row.title = updates.title;
+    if (updates.time !== undefined) row.time = updates.time;
+    if (updates.icon !== undefined) row.icon = updates.icon;
+    if (updates.category !== undefined) row.category = updates.category;
+    if (updates.date !== undefined) row.date = formatDate(updates.date);
+    if (updates.deadline !== undefined) row.deadline = formatDate(updates.deadline);
+    if (updates.coverImage !== undefined) row.cover_image = updates.coverImage || null;
+    if (updates.completionPhoto !== undefined) row.completion_photo = updates.completionPhoto || null;
+    if (updates.completionNote !== undefined) row.completion_note = updates.completionNote || null;
+    if (updates.completed !== undefined) row.completed = updates.completed;
+
+    const { error } = await supabase.from("tasks").update(row).eq("id", id);
+    if (error) {
+      toast.error("更新任务失败");
+      return;
+    }
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
+  }, []);
+
+  const deleteTask = useCallback(async (id: string) => {
+    const { error } = await supabase.from("tasks").delete().eq("id", id);
+    if (error) {
+      toast.error("删除任务失败");
+      return;
+    }
+    setTasks(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  return { tasks, loading, addTask, completeTask, updateTask, deleteTask, setTasks };
 }
