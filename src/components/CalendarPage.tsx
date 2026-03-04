@@ -275,9 +275,12 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
 
                         {/* Card */}
                         <div
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log('[CalendarClick]', { id: item.id, title: item.title, isMock: item.id.startsWith('mock-') });
                             if (!item.id.startsWith('mock-')) {
                               const found = tasks.find(t => t.id === item.id);
+                              console.log('[CalendarClick] found task:', found);
                               if (found) setEditingTask(found);
                             }
                           }}
