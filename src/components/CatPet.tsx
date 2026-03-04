@@ -275,19 +275,13 @@ const CatPet = ({ tasks }: CatPetProps) => {
             </button>
           </div>
 
-          {/* 像素猫走动区域 */}
+          {/* 猫咪走动区域 */}
           <div className="relative h-20 mb-2">
             <button
               onClick={() => setShowRadar(true)}
-              className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0"
-              style={{ imageRendering: "pixelated" }}
+              className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer"
             >
-              <img
-                src={pixelCatImg}
-                alt="pixel cat"
-                className="h-14 w-14 object-contain"
-                style={{ imageRendering: "pixelated", mixBlendMode: "multiply" }}
-              />
+              <span className="text-5xl leading-none drop-shadow-lg select-none">🐱</span>
             </button>
           </div>
 
