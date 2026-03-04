@@ -206,4 +206,11 @@
   .animate-cat-walk {
     animation: cat-walk 8s linear infinite;
   }
+  @keyframes sprite-walk {
+    from { background-position: 0 0; }
+    to { background-position: -256px 0; }
+  }
+  .animate-sprite-walk {
+    animation: sprite-walk 0.4s steps(4) infinite;
+  }
 }
