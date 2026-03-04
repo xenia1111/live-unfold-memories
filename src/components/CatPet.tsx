@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { differenceInCalendarDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,6 +6,8 @@ import type { Task } from "@/hooks/useTasks";
 import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
 import CatRadarDialog from "@/components/CatRadarDialog";
 import { getCatPersonality } from "@/lib/catPersonality";
+import ghibliBg from "@/assets/ghibli-summer-bg.jpg";
+import pixelCatImg from "@/assets/pixel-cat.png";
 
 /* ── 猫咪成长阶段 ── */
 const CAT_STAGES = [
@@ -239,91 +241,99 @@ const CatPet = ({ tasks }: CatPetProps) => {
 
   return (
     <>
-      <div className="relative rounded-3xl bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 border border-border/40 p-5 overflow-hidden">
-        {/* 顶部信息条 */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-primary/80 px-2 py-0.5 rounded-full bg-primary/10">
-              Lv.{levelIndex} {stage.label}
-            </span>
-            {personality.label !== "杂食猫" && (
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary/40 text-secondary-foreground/80">
-                {personality.emoji} {personality.label}
+      <div className="relative rounded-3xl border border-border/40 overflow-hidden">
+        {/* Ghibli 背景 */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${ghibliBg})` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+
+        <div className="relative z-10 p-5">
+          {/* 顶部信息条 */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm">
+                Lv.{levelIndex} {stage.label}
               </span>
-            )}
-            <span className="text-[10px] text-muted-foreground/50">
-              存活 {aliveDays} 天
-            </span>
-          </div>
-          <button
-            onClick={() => setShowLeaderboard(true)}
-            className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-accent/10 text-accent-foreground/70 hover:bg-accent/20 active:scale-95 transition-all"
-          >
-            <span>{roundness.emoji}</span>
-            <span className="font-medium">{roundness.label}</span>
-            <span className="text-muted-foreground/40 ml-0.5">›</span>
-          </button>
-        </div>
-
-        <div className="flex items-start gap-4">
-          <button
-            onClick={() => setShowRadar(true)}
-            className="flex-shrink-0 flex flex-col items-center gap-1 active:scale-95 transition-transform"
-          >
-            <div className={cn(
-              "text-5xl transition-all duration-500 select-none",
-              isEating && "animate-bounce",
-              !isEating && completedCount > 0 && "animate-float",
-            )}>
-              {stage.emoji}
-            </div>
-            <span className="text-[9px] text-muted-foreground/40">点我查看</span>
-          </button>
-
-          <div className="flex-1 min-w-0">
-            {showBubble && (
-              <div className="relative mb-2.5 animate-fade-in">
-                <div className="bg-card rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-border/50 shadow-sm">
-                  <p className="text-xs text-foreground/80 leading-relaxed">{comment}</p>
-                </div>
-                <div className="absolute -bottom-0 left-3 w-2 h-2 bg-card border-b border-l border-border/50 transform rotate-[-45deg] -translate-y-1" />
-              </div>
-            )}
-
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
-                <span>🍖</span>
-                <span className="font-medium text-foreground">{completedCount} 顿饭</span>
-              </div>
-              {photoCount > 0 && (
-                <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px]">
-                  <span>📸</span>
-                  <span className="font-medium text-foreground">{photoCount} 张图</span>
-                </div>
-              )}
-              <button
-                onClick={() => setShowLeaderboard(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-full bg-card border border-border/40 text-[10px] hover:border-primary/30 active:scale-95 transition-all"
-              >
-                <span>🏆</span>
-                <span className="font-medium text-foreground">排行榜</span>
-              </button>
-            </div>
-
-            {stage.next && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="flex-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary/60 to-accent/60 transition-all duration-700"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <span className="text-[9px] text-muted-foreground/50 whitespace-nowrap">
-                  → {stage.next.emoji} {stage.next.label}
+              {personality.label !== "杂食猫" && (
+                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-sm text-white">
+                  {personality.emoji} {personality.label}
                 </span>
+              )}
+              <span className="text-[10px] text-white/70">
+                存活 {aliveDays} 天
+              </span>
+            </div>
+            <button
+              onClick={() => setShowLeaderboard(true)}
+              className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/30 active:scale-95 transition-all"
+            >
+              <span>{roundness.emoji}</span>
+              <span className="font-medium">{roundness.label}</span>
+              <span className="text-white/50 ml-0.5">›</span>
+            </button>
+          </div>
+
+          {/* 像素猫走动区域 */}
+          <div className="relative h-20 mb-2">
+            <button
+              onClick={() => setShowRadar(true)}
+              className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform"
+              style={{ imageRendering: "pixelated" }}
+            >
+              <img
+                src={pixelCatImg}
+                alt="pixel cat"
+                className="h-14 w-14 object-contain drop-shadow-lg"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </button>
+          </div>
+
+          {/* 对话气泡 */}
+          {showBubble && (
+            <div className="relative mb-2.5 animate-fade-in">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-white/50 shadow-sm">
+                <p className="text-xs text-foreground/90 leading-relaxed">{comment}</p>
+              </div>
+            </div>
+          )}
+
+          {/* 底部统计 */}
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
+              <span>🍖</span>
+              <span className="font-medium text-foreground">{completedCount} 顿饭</span>
+            </div>
+            {photoCount > 0 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
+                <span>📸</span>
+                <span className="font-medium text-foreground">{photoCount} 张图</span>
               </div>
             )}
+            <button
+              onClick={() => setShowLeaderboard(true)}
+              className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px] hover:bg-white/90 active:scale-95 transition-all"
+            >
+              <span>🏆</span>
+              <span className="font-medium text-foreground">排行榜</span>
+            </button>
           </div>
+
+          {stage.next && (
+            <div className="mt-2 flex items-center gap-2">
+              <div className="flex-1 h-1.5 bg-white/40 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-400 transition-all duration-700"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <span className="text-[9px] text-white/80 whitespace-nowrap drop-shadow-sm">
+                → {stage.next.emoji} {stage.next.label}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
