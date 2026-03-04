@@ -172,6 +172,13 @@
     70% { transform: scale(0.92); }
     100% { transform: scale(1); opacity: 1; }
   }
+  @keyframes cat-walk {
+    0% { left: -10%; transform: scaleX(1); }
+    45% { left: 85%; transform: scaleX(1); }
+    50% { left: 85%; transform: scaleX(-1); }
+    95% { left: -10%; transform: scaleX(-1); }
+    100% { left: -10%; transform: scaleX(1); }
+  }
 
   .animate-float {
     animation: float 3s ease-in-out infinite;
@@ -195,5 +202,8 @@
   }
   .animate-glow-pulse {
     animation: glow-pulse 2s ease-in-out infinite;
+  }
+  .animate-cat-walk {
+    animation: cat-walk 8s linear infinite;
   }
 }
