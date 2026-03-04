@@ -9,6 +9,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
+import EditTaskDialog from "@/components/EditTaskDialog";
 import ConfettiCanvas from "@/components/ConfettiCanvas";
 import CatPet from "@/components/CatPet";
 import type { Task } from "@/hooks/useTasks";
@@ -95,11 +96,14 @@ interface HomePageProps {
   tasks: Task[];
   loading: boolean;
   onCompleteTask: (id: string, photo?: string, note?: string) => Promise<void>;
+  onUpdateTask: (id: string, updates: Partial<Omit<Task, 'id'>>) => Promise<void>;
+  onDeleteTask: (id: string) => Promise<void>;
 }
 
-const HomePage = ({ tasks, loading, onCompleteTask }: HomePageProps) => {
+const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }: HomePageProps) => {
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showUpcoming, setShowUpcoming] = useState(false);
   const [showBacklog, setShowBacklog] = useState(false);
@@ -113,7 +117,10 @@ const HomePage = ({ tasks, loading, onCompleteTask }: HomePageProps) => {
   const allCompleted = tasks.filter(t => t.completed).length;
 
   const handleTaskClick = (task: Task) => {
-    if (task.completed) return;
+    if (task.completed) {
+      setEditingTask(task);
+      return;
+    }
     setCompletingTask(task);
   };
 
@@ -361,6 +368,14 @@ const HomePage = ({ tasks, loading, onCompleteTask }: HomePageProps) => {
         onOpenChange={(open) => !open && setCompletingTask(null)}
         taskTitle={completingTask?.title || ""}
         onConfirm={handleCompleteConfirm}
+      />
+
+      <EditTaskDialog
+        task={editingTask}
+        open={!!editingTask}
+        onOpenChange={(open) => !open && setEditingTask(null)}
+        onSave={onUpdateTask}
+        onDelete={onDeleteTask}
       />
     </div>
   );
