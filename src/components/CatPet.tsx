@@ -7,7 +7,7 @@ import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
 import CatRadarDialog from "@/components/CatRadarDialog";
 import { getCatPersonality } from "@/lib/catPersonality";
 import ghibliBg from "@/assets/ghibli-summer-bg.jpg";
-import pixelCatImg from "@/assets/pixel-cat.png";
+import catWalkSprite from "@/assets/cat-walk-sprite.png";
 
 /* ── 猫咪成长阶段 ── */
 const CAT_STAGES = [
@@ -275,13 +275,21 @@ const CatPet = ({ tasks }: CatPetProps) => {
             </button>
           </div>
 
-          {/* 猫咪走动区域 */}
+          {/* 像素猫走动区域 */}
           <div className="relative h-20 mb-2">
             <button
               onClick={() => setShowRadar(true)}
               className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer"
             >
-              <span className="text-5xl leading-none drop-shadow-lg select-none">🐱</span>
+              <div
+                className="w-16 h-16 animate-sprite-walk"
+                style={{
+                  backgroundImage: `url(${catWalkSprite})`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "auto 100%",
+                  imageRendering: "pixelated",
+                }}
+              />
             </button>
           </div>
 
