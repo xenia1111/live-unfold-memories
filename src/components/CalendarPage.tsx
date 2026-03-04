@@ -4,6 +4,8 @@ import { zhCN } from "date-fns/locale";
 import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import PhotoGrid from "@/components/PhotoGrid";
+import EditTaskDialog from "@/components/EditTaskDialog";
+import type { Task } from "@/hooks/useTasks";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -23,18 +25,6 @@ const categoryColorMap: Record<string, string> = {
   "记录": "bg-primary/15 text-primary",
 };
 
-interface Task {
-  id: string;
-  title: string;
-  time: string;
-  icon: string;
-  completed: boolean;
-  date?: Date;
-  category: string;
-  coverImage?: string;
-  completionPhoto?: string;
-  deadline?: Date;
-}
 
 interface MockEvent {
   date: Date;
@@ -165,10 +155,13 @@ const MonthPicker = ({ months, onSelect, currentMonthKey }: MonthPickerProps) =>
 
 interface CalendarPageProps {
   tasks?: Task[];
+  onUpdateTask?: (id: string, updates: Partial<Omit<Task, 'id'>>) => Promise<void>;
+  onDeleteTask?: (id: string) => Promise<void>;
 }
 
-const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
+const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPageProps) => {
   const [mockEvents] = useState<MockEvent[]>(generateMockEvents);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const todayRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const monthRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -281,11 +274,21 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
                         </div>
 
                         {/* Card */}
-                        <div className={`rounded-2xl transition-all p-4 ${
-                          isToday
-                            ? 'bg-primary/5 border-2 border-primary/25 shadow-md'
-                            : 'bg-card border border-border/40 card-glow hover:border-primary/15'
-                        }`}>
+                        <div
+                          onClick={() => {
+                            if (!item.id.startsWith('mock-')) {
+                              const found = tasks.find(t => t.id === item.id);
+                              if (found) setEditingTask(found);
+                            }
+                          }}
+                          className={`rounded-2xl transition-all p-4 ${
+                            !item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''
+                          } ${
+                            isToday
+                              ? 'bg-primary/5 border-2 border-primary/25 shadow-md'
+                              : 'bg-card border border-border/40 card-glow hover:border-primary/15'
+                          }`}
+                        >
                           {/* Date + tag row */}
                           <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-2">
@@ -328,6 +331,16 @@ const CalendarPage = ({ tasks = [] }: CalendarPageProps) => {
           )}
         </div>
       </div>
+
+      {onUpdateTask && onDeleteTask && (
+        <EditTaskDialog
+          task={editingTask}
+          open={!!editingTask}
+          onOpenChange={(open) => { if (!open) setEditingTask(null); }}
+          onSave={onUpdateTask}
+          onDelete={onDeleteTask}
+        />
+      )}
     </div>
   );
 };
