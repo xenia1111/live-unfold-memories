@@ -279,7 +279,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
           <div className="relative h-20 mb-2">
             <button
               onClick={() => setShowRadar(true)}
-              className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform"
+              className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0"
               style={{ imageRendering: "pixelated" }}
             >
               <img
