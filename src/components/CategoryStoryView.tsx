@@ -9,14 +9,15 @@ import type { Task } from "@/hooks/useTasks";
 
 const CATEGORY_CONFIG: Record<string, { emoji: string; color: string; vibe: string }> = {
   "美食": { emoji: "🍜", color: "from-orange-100/60 to-amber-50/40", vibe: "每一口都是幸福的味道" },
-  "美景": { emoji: "🏔️", color: "from-emerald-100/60 to-sky-50/40", vibe: "眼睛装满了世界的美" },
-  "社交": { emoji: "☕", color: "from-pink-100/60 to-rose-50/40", vibe: "有人陪伴的日子最温暖" },
-  "运动": { emoji: "🏃", color: "from-blue-100/60 to-cyan-50/40", vibe: "流汗的每一刻都在发光" },
   "学习": { emoji: "📖", color: "from-violet-100/60 to-purple-50/40", vibe: "知识让灵魂更自由" },
+  "运动": { emoji: "🏃", color: "from-blue-100/60 to-cyan-50/40", vibe: "流汗的每一刻都在发光" },
+  "社交": { emoji: "☕", color: "from-pink-100/60 to-rose-50/40", vibe: "有人陪伴的日子最温暖" },
   "工作": { emoji: "💼", color: "from-slate-100/60 to-gray-50/40", vibe: "努力的样子最好看" },
-  "健康": { emoji: "🧘", color: "from-teal-100/60 to-green-50/40", vibe: "善待身体，它会回报你" },
-  "记录": { emoji: "📝", color: "from-amber-100/60 to-yellow-50/40", vibe: "记下来，就不会忘记" },
+  "美景": { emoji: "🏔️", color: "from-emerald-100/60 to-sky-50/40", vibe: "眼睛装满了世界的美" },
   "娱乐": { emoji: "🎵", color: "from-fuchsia-100/60 to-pink-50/40", vibe: "快乐就是生活的意义" },
+  "记录": { emoji: "📝", color: "from-amber-100/60 to-yellow-50/40", vibe: "记下来，就不会忘记" },
+  "健康": { emoji: "🧘", color: "from-teal-100/60 to-green-50/40", vibe: "善待身体，它会回报你" },
+  "美丽": { emoji: "💄", color: "from-rose-100/60 to-pink-50/40", vibe: "精致生活，从爱自己开始" },
 };
 
 interface CategoryCard {
