@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
-import { Plus, X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, CalendarOff } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Plus, X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, CalendarOff, Mic, Loader2 } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
 } from "@/components/ui/dialog";
