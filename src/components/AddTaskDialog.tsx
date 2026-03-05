@@ -401,6 +401,43 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* First-time voice tip */}
+    <Dialog open={showVoiceTip} onOpenChange={setShowVoiceTip}>
+      <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[85vw] sm:max-w-sm p-6 gap-4">
+        <DialogHeader>
+          <DialogTitle className="text-base font-serif text-foreground">🎙️ 语音智能填写</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">试试用一句话快速创建任务</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 text-sm text-foreground">
+          <div className="flex items-start gap-3">
+            <span className="w-6 h-6 rounded-full bg-primary/15 text-primary flex items-center justify-center flex-shrink-0 text-xs font-bold">1</span>
+            <p className="text-muted-foreground">点击麦克风，<span className="text-foreground font-medium">说出你想做的事</span></p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="w-6 h-6 rounded-full bg-primary/15 text-primary flex items-center justify-center flex-shrink-0 text-xs font-bold">2</span>
+            <p className="text-muted-foreground">AI 会自动解析并填入<span className="text-foreground font-medium">标题、时间、分类</span>等</p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="w-6 h-6 rounded-full bg-primary/15 text-primary flex items-center justify-center flex-shrink-0 text-xs font-bold">3</span>
+            <p className="text-muted-foreground">确认无误后点击<span className="text-foreground font-medium">提交即可</span> ✨</p>
+          </div>
+          <div className="bg-muted/40 rounded-xl px-3 py-2 text-xs text-muted-foreground">
+            💡 试试说：「明天下午三点和朋友去咖啡馆看书」
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            setShowVoiceTip(false);
+            setVoiceMode(true);
+            startListening();
+          }}
+          className="w-full py-3 rounded-xl text-sm font-medium bg-primary text-primary-foreground active:scale-[0.98] transition-all"
+        >
+          知道了，开始说话 🎙️
+        </button>
+      </DialogContent>
+    </Dialog>
   );
 };
 
