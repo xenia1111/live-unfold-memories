@@ -439,6 +439,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
         </button>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
