@@ -76,16 +76,17 @@ export function getCatStage(food: number): { current: CatStage; next: CatStage |
 
 /* ── 背景系统 ── */
 export interface CatBackground {
-  level: number; // unlocked at this cat level (0-6)
+  level: number;
   name: string;
-  gradient: string; // CSS gradient for the background
+  gradient: string; // fallback CSS gradient
   emoji: string;
+  imageKey?: string; // key to match imported images in component
 }
 
 export const CAT_BACKGROUNDS: CatBackground[] = [
-  { level: 0, name: "草地", emoji: "🌿", gradient: "linear-gradient(180deg, #87CEEB 0%, #98FB98 60%, #228B22 100%)" },
-  { level: 1, name: "小屋", emoji: "🏠", gradient: "linear-gradient(180deg, #87CEEB 0%, #DEB887 50%, #8B7355 100%)" },
-  { level: 2, name: "花园", emoji: "🌸", gradient: "linear-gradient(180deg, #FFB6C1 0%, #98FB98 50%, #90EE90 100%)" },
+  { level: 0, name: "草地", emoji: "🌿", gradient: "linear-gradient(180deg, #87CEEB 0%, #98FB98 60%, #228B22 100%)", imageKey: "grassland" },
+  { level: 1, name: "小屋", emoji: "🏠", gradient: "linear-gradient(180deg, #87CEEB 0%, #DEB887 50%, #8B7355 100%)", imageKey: "cottage" },
+  { level: 2, name: "花园", emoji: "🌸", gradient: "linear-gradient(180deg, #FFB6C1 0%, #98FB98 50%, #90EE90 100%)", imageKey: "garden" },
   { level: 3, name: "森林", emoji: "🌲", gradient: "linear-gradient(180deg, #4682B4 0%, #2E8B57 40%, #006400 100%)" },
   { level: 4, name: "山顶", emoji: "⛰️", gradient: "linear-gradient(180deg, #1E90FF 0%, #B0C4DE 40%, #708090 100%)" },
   { level: 5, name: "星空", emoji: "🌌", gradient: "linear-gradient(180deg, #0B0B3B 0%, #191970 50%, #4B0082 100%)" },
