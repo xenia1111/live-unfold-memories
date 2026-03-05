@@ -130,6 +130,8 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
     setSelectedDayOffset(0);
     setCoverImage(null);
     setDeadlineOffset(null);
+    setVoiceText("");
+    setVoiceMode(false);
   };
 
   const handleSubmit = () => {
