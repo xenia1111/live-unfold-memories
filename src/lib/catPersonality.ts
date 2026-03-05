@@ -91,6 +91,15 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
       "窗外的云好漂亮...猫猫发呆中☁️",
     ],
   },
+  "美丽": {
+    emoji: "💄", label: "精致猫", desc: "爱美的猫猫，每天都要打扮得漂漂亮亮",
+    category: "美丽",
+    idleLines: [
+      "猫猫在照镜子...觉得自己今天特别好看🪞",
+      "美丽是一种态度！猫猫也要护肤！",
+      "今天涂了猫猫色的口红...等等猫猫没有嘴唇💋",
+    ],
+  },
 };
 
 const DEFAULT_PERSONALITY: CatPersonality = {
