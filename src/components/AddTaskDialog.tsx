@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
-import { Plus, X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, CalendarOff } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Plus, X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, CalendarOff, Mic, Loader2 } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
 } from "@/components/ui/dialog";
@@ -33,7 +35,74 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
   const [selectedDayOffset, setSelectedDayOffset] = useState<number | null>(0);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [deadlineOffset, setDeadlineOffset] = useState<number | null>(null);
+  const [voiceText, setVoiceText] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const startListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("您的浏览器不支持语音识别");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "zh-CN";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognitionRef.current = recognition;
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((r: any) => r[0].transcript)
+        .join("");
+      setVoiceText(transcript);
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast.error("语音识别出错，请重试");
+    };
+
+    setIsListening(true);
+    setVoiceText("");
+    recognition.start();
+  }, []);
+
+  const stopListening = useCallback(() => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  }, []);
+
+  const parseVoiceInput = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    setIsParsing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("parse-voice-task", {
+        body: { text: text.trim() },
+      });
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+
+      // Auto-fill fields
+      if (data.title) setTitle(data.title);
+      if (data.icon) setSelectedIcon(data.icon);
+      if (data.category) setSelectedCategory(data.category);
+      if (data.time) setSelectedTime(data.time);
+      if (data.dayOffset !== undefined && data.dayOffset !== null) {
+        setSelectedDayOffset(data.dayOffset);
+      }
+      setVoiceMode(false);
+      toast.success("已智能填入，请确认后提交 ✨");
+    } catch (e: any) {
+      console.error("Voice parse error:", e);
+      toast.error(e.message || "解析失败，请重试");
+    } finally {
+      setIsParsing(false);
+    }
+  }, []);
 
   const today = new Date();
   const dayOptions = Array.from({ length: 7 }, (_, i) => ({
@@ -61,6 +130,8 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
     setSelectedDayOffset(0);
     setCoverImage(null);
     setDeadlineOffset(null);
+    setVoiceText("");
+    setVoiceMode(false);
   };
 
   const handleSubmit = () => {
@@ -87,12 +158,97 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
       </DialogTrigger>
       <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="p-5 pb-3 flex-shrink-0">
-          <DialogTitle className="text-lg font-serif text-foreground">记录一件想做的事 ✨</DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">给未来的自己安排一件美好的事吧</DialogDescription>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-lg font-serif text-foreground">
+              {voiceMode ? "语音输入 🎙️" : "记录一件想做的事 ✨"}
+            </DialogTitle>
+            <button
+              onClick={() => setVoiceMode(!voiceMode)}
+              className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center transition-all",
+                voiceMode
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <Mic size={16} />
+            </button>
+          </div>
+          <DialogDescription className="text-sm text-muted-foreground">
+            {voiceMode ? "说一句话，AI 帮你自动填写" : "给未来的自己安排一件美好的事吧"}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="px-5 pb-4 space-y-4 overflow-y-auto flex-1 min-h-0">
-          {/* Title input */}
+          {/* Voice input mode */}
+          {voiceMode && (
+            <div className="space-y-3">
+              <div className="flex flex-col items-center gap-4 py-4">
+                <button
+                  onClick={isListening ? stopListening : startListening}
+                  disabled={isParsing}
+                  className={cn(
+                    "w-20 h-20 rounded-full flex items-center justify-center transition-all",
+                    isListening
+                      ? "bg-destructive text-destructive-foreground animate-pulse scale-110"
+                      : isParsing
+                      ? "bg-muted text-muted-foreground cursor-not-allowed"
+                      : "bg-primary text-primary-foreground hover:scale-105 active:scale-95"
+                  )}
+                >
+                  {isParsing ? <Loader2 size={28} className="animate-spin" /> : <Mic size={28} />}
+                </button>
+                <p className="text-xs text-muted-foreground">
+                  {isListening ? "正在听...点击停止" : isParsing ? "AI 正在分析..." : "点击开始说话"}
+                </p>
+              </div>
+
+              {voiceText && (
+                <div className="bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground border border-border/30">
+                  <p className="text-[10px] text-muted-foreground mb-1">识别结果：</p>
+                  {voiceText}
+                </div>
+              )}
+
+              {voiceText && !isListening && !isParsing && (
+                <button
+                  onClick={() => parseVoiceInput(voiceText)}
+                  className="w-full py-3 rounded-xl text-sm font-medium bg-primary text-primary-foreground active:scale-[0.98] transition-all"
+                >
+                  AI 智能填写 ✨
+                </button>
+              )}
+
+              {/* Manual text input fallback */}
+              <div className="pt-2 border-t border-border/20">
+                <p className="text-[10px] text-muted-foreground mb-1.5">或直接输入文字：</p>
+                <div className="flex gap-2">
+                  <input
+                    value={voiceText}
+                    onChange={(e) => setVoiceText(e.target.value)}
+                    placeholder="明天下午三点和朋友去咖啡馆..."
+                    className="flex-1 bg-muted/50 rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 border border-border/30 focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                  <button
+                    onClick={() => parseVoiceInput(voiceText)}
+                    disabled={!voiceText.trim() || isParsing}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                      voiceText.trim() && !isParsing
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted text-muted-foreground cursor-not-allowed"
+                    )}
+                  >
+                    解析
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Manual form fields */}
+          {!voiceMode && (
+          <>
           <div>
             <input
               value={title}
@@ -243,8 +399,31 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
               ))}
             </div>
           </div>
+          </>
+          )}
 
         </div>
+
+        {/* Parsed result preview in voice mode */}
+        {voiceMode && title.trim() && (
+          <div className="px-5 pb-2 space-y-2">
+            <p className="text-xs text-muted-foreground">🤖 AI 解析结果：</p>
+            <div className="bg-muted/30 rounded-xl p-3 space-y-1.5 text-xs text-foreground">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">标题：</span>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} className="flex-1 bg-transparent border-b border-border/30 focus:outline-none focus:border-primary/40 px-1 py-0.5" />
+              </div>
+              <div className="flex gap-4">
+                <span><span className="text-muted-foreground">分类：</span>{selectedCategory}</span>
+                <span><span className="text-muted-foreground">时间：</span>{selectedTime}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">日期：</span>
+                {selectedDayOffset === null ? "不指定" : selectedDayOffset === 0 ? "今天" : selectedDayOffset === 1 ? "明天" : `${selectedDayOffset}天后`}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Sticky submit */}
         <div className="px-5 py-4 border-t border-border/30 flex-shrink-0">
@@ -258,7 +437,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             )}
           >
-            添加到生活 💫
+            {voiceMode && title.trim() ? "确认添加 ✅" : "添加到生活 💫"}
           </button>
         </div>
       </DialogContent>
