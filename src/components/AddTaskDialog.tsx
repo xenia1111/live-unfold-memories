@@ -35,7 +35,74 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
   const [selectedDayOffset, setSelectedDayOffset] = useState<number | null>(0);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [deadlineOffset, setDeadlineOffset] = useState<number | null>(null);
+  const [voiceText, setVoiceText] = useState("");
+  const [isListening, setIsListening] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [voiceMode, setVoiceMode] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const startListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("您的浏览器不支持语音识别");
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = "zh-CN";
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognitionRef.current = recognition;
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((r: any) => r[0].transcript)
+        .join("");
+      setVoiceText(transcript);
+    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => {
+      setIsListening(false);
+      toast.error("语音识别出错，请重试");
+    };
+
+    setIsListening(true);
+    setVoiceText("");
+    recognition.start();
+  }, []);
+
+  const stopListening = useCallback(() => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  }, []);
+
+  const parseVoiceInput = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    setIsParsing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("parse-voice-task", {
+        body: { text: text.trim() },
+      });
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+
+      // Auto-fill fields
+      if (data.title) setTitle(data.title);
+      if (data.icon) setSelectedIcon(data.icon);
+      if (data.category) setSelectedCategory(data.category);
+      if (data.time) setSelectedTime(data.time);
+      if (data.dayOffset !== undefined && data.dayOffset !== null) {
+        setSelectedDayOffset(data.dayOffset);
+      }
+      setVoiceMode(false);
+      toast.success("已智能填入，请确认后提交 ✨");
+    } catch (e: any) {
+      console.error("Voice parse error:", e);
+      toast.error(e.message || "解析失败，请重试");
+    } finally {
+      setIsParsing(false);
+    }
+  }, []);
 
   const today = new Date();
   const dayOptions = Array.from({ length: 7 }, (_, i) => ({
