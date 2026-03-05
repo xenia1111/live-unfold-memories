@@ -180,8 +180,14 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
                 } else if (voiceMode && voiceText.trim()) {
                   parseVoiceInput(voiceText);
                 } else {
-                  setVoiceMode(true);
-                  startListening();
+                  const hasUsedVoice = localStorage.getItem("voice_tip_shown");
+                  if (!hasUsedVoice) {
+                    setShowVoiceTip(true);
+                    localStorage.setItem("voice_tip_shown", "1");
+                  } else {
+                    setVoiceMode(true);
+                    startListening();
+                  }
                 }
               }}
               disabled={isParsing}
