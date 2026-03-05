@@ -17,15 +17,16 @@ import type { Task } from "@/hooks/useTasks";
 import { getCatPersonality } from "@/lib/catPersonality";
 
 const CATEGORY_META: Record<string, { emoji: string; label: string }> = {
+  "美食": { emoji: "🍜", label: "美食" },
   "学习": { emoji: "📚", label: "学习" },
   "运动": { emoji: "💪", label: "运动" },
   "社交": { emoji: "💬", label: "社交" },
   "工作": { emoji: "💼", label: "工作" },
-  "健康": { emoji: "🧘", label: "健康" },
-  "记录": { emoji: "✍️", label: "记录" },
-  "娱乐": { emoji: "🎮", label: "娱乐" },
-  "美食": { emoji: "🍜", label: "美食" },
   "美景": { emoji: "🏔️", label: "美景" },
+  "娱乐": { emoji: "🎮", label: "娱乐" },
+  "记录": { emoji: "✍️", label: "记录" },
+  "健康": { emoji: "🧘", label: "健康" },
+  "美丽": { emoji: "💄", label: "美丽" },
 };
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_META);
