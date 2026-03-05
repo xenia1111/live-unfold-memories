@@ -39,6 +39,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
   const [isListening, setIsListening] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
+  const [showVoiceTip, setShowVoiceTip] = useState(false);
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
