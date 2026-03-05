@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { differenceInCalendarDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,93 +6,60 @@ import type { Task } from "@/hooks/useTasks";
 import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
 import CatRadarDialog from "@/components/CatRadarDialog";
 import { getCatPersonality } from "@/lib/catPersonality";
-import ghibliBg from "@/assets/ghibli-summer-bg.jpg";
+import { calcCatFood, calcStreak, getCatStage, getCurrentBackground, STREAK_REWARDS } from "@/lib/catGrowth";
 import catWalkSprite from "@/assets/cat-walk-sprite.png";
-
-/* ── 猫咪成长阶段 ── */
-const CAT_STAGES = [
-  { min: 0,  emoji: "🥚",  label: "神秘蛋蛋", desc: "等待第一次喂食..." },
-  { min: 1,  emoji: "🐣",  label: "破壳小猫", desc: "喵呜...刚到这个世界" },
-  { min: 3,  emoji: "🐱",  label: "奶猫咪咪", desc: "小小的，但很能吃" },
-  { min: 8,  emoji: "😺",  label: "好奇猫猫", desc: "开始到处探索啦" },
-  { min: 15, emoji: "😸",  label: "元气橘猫", desc: "精力充沛，胃口更大了" },
-  { min: 30, emoji: "😻",  label: "优雅大猫", desc: "见过世面的美食家" },
-  { min: 50, emoji: "👑",  label: "猫界传说", desc: "什么都吃过，什么都见过" },
-];
-
-const getCatStage = (completedCount: number) => {
-  let stage = CAT_STAGES[0];
-  for (const s of CAT_STAGES) {
-    if (completedCount >= s.min) stage = s;
-  }
-  const nextStage = CAT_STAGES[CAT_STAGES.indexOf(stage) + 1];
-  return { ...stage, next: nextStage };
-};
 
 /* ── 品尝评价模板（按分类） ── */
 const TASTE_COMMENTS: Record<string, string[]> = {
   "运动": [
     "miamiamia~汗水味的！咸咸的！但是很提神！",
     "呼...这个有肌肉的味道，猫猫也想变壮💪",
-    "跑步的风好大，差点把猫吹走了喵～",
     "运动完的你...味道好像更浓了呢（捂鼻）",
-    "这顿饭有点累但很饱！猫猫打了个健康的嗝",
   ],
   "学习": [
     "嚼嚼嚼...知识的味道，有点苦但回甘很好",
-    "这本书好像有点硬...猫牙差点崩了📖",
     "墨水味的！猫猫舌头变黑了喵～",
     "学习是鱼罐头里最高级的那种，要细品",
-    "嗯...这个知识点，需要反刍一下🐄等等我又不是牛",
   ],
   "社交": [
     "朋友的味道！暖暖的，像被窝一样舒服～",
     "miamiamia！这顿有人情味！是猫最爱的！",
-    "和朋友在一起就像晒太阳，猫猫也想加入喵",
-    "社交能量满满，猫猫也被感染了，呼噜呼噜",
     "咖啡味的友情，苦中带甜，上头！",
   ],
   "工作": [
     "嚼...这个...有点996的味道...",
     "打工人的饭，虽然不太好吃但很饱腹",
-    "Excel 味的...猫猫不太喜欢，但尊重👔",
     "工作完成了！这顿加了绩效调料，不错不错",
-    "会议的味道...无味...猫猫快睡着了zzz",
   ],
   "健康": [
     "冥想味的...安静...空灵...猫猫也闭眼了😌",
-    "这个好清淡啊！但是对身体好！乖乖吃完",
     "健康是猫罐头里的营养膏，不好吃但必须吃",
-    "呼吸的味道...原来空气也是有味道的喵",
     "养生局！猫猫也泡了枸杞水🧋",
   ],
   "记录": [
     "日记味的！有点甜，像回忆里加了蜜糖🍯",
     "文字的味道，每一笔都是生活的调味料",
-    "写东西的时候特别安静，猫猫蹲在旁边看",
-    "记录下来就不会忘了！猫猫帮你记住！",
     "miamiamia...这段文字入口即化，是好散文",
   ],
   "娱乐": [
     "好快乐的味道！猫猫也想一起玩！🎮",
-    "音乐味的！猫猫耳朵竖起来了，在跟着打拍子",
     "这顿饭全是多巴胺！猫猫转圈圈了！",
     "快乐是小鱼干味的，怎么吃都不够",
-    "电影味的爆米花！猫猫看得入迷了🍿",
   ],
   "美食": [
     "！！！这个！！猫猫闻到了！！是真的好吃的！！🤤",
     "miamiamia！终于不是抽象的味道了！是真·美食！",
-    "猫猫流口水了...这顿饭有画面有味道📸🍜",
     "好吃到猫猫翻肚皮了！再来一份！",
-    "人间烟火气，最抚猫猫心～🍲",
   ],
   "美景": [
     "哇...好漂亮...猫猫的瞳孔放大了✨",
     "这个风景！猫猫想住在里面！永远不出来！",
-    "看到美景猫猫心情好好，呼噜呼噜呼噜～🏔️",
     "大自然的味道！有草的清香和风的自由🌿",
-    "猫猫趴在窗台上看风景...这就是幸福吧",
+  ],
+  "美丽": [
+    "哇！变漂亮了！猫猫也想做个美甲💅",
+    "美美的味道！猫猫照镜子去了🪞",
+    "精致的味道，猫猫觉得自己也变好看了✨",
   ],
 };
 
@@ -102,11 +69,7 @@ const PHOTO_COMMENTS = [
   "有图有真相！猫猫认证：这是真实的美好",
   "照片的味道就像罐头开封的瞬间，鲜！",
   "这张照片，猫猫要裱起来挂墙上喵",
-  "啊！大海啊，全是水，全是咸咸的水🌊",
-  "好漂亮的饭！味道还不错！（舔屏中）",
 ];
-
-/* DEFAULT_COMMENTS moved to catPersonality.ts idleLines */
 
 const getComment = (task?: Task, idleLines?: string[]): string => {
   if (!task) {
@@ -120,14 +83,9 @@ const getComment = (task?: Task, idleLines?: string[]): string => {
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
-/* ── 猫咪组件 ── */
-interface CatPetProps {
-  tasks: Task[];
-}
-
-/* ── 圆润度计算 ── */
+/* ── 圆润度 ── */
 const ROUNDNESS_TITLES = [
-  { min: 0,   label: "骨瘦如柴", emoji: "🦴" },
+  { min: 0, label: "骨瘦如柴", emoji: "🦴" },
   { min: 0.3, label: "微微圆润", emoji: "🫧" },
   { min: 0.6, label: "小有肉感", emoji: "🍡" },
   { min: 1.0, label: "圆滚滚", emoji: "🟠" },
@@ -144,7 +102,6 @@ const getRoundnessTitle = (rate: number) => {
   return title;
 };
 
-// Generate or retrieve a stable client ID
 const getClientId = (): string => {
   const key = "cat_client_id";
   let id = localStorage.getItem(key);
@@ -155,16 +112,21 @@ const getClientId = (): string => {
   return id;
 };
 
+/* ── 组件 ── */
+interface CatPetProps {
+  tasks: Task[];
+}
+
 const CatPet = ({ tasks }: CatPetProps) => {
   const completedTasks = useMemo(() => tasks.filter(t => t.completed), [tasks]);
   const completedCount = completedTasks.length;
   const photoCount = useMemo(() => completedTasks.filter(t => t.completionPhoto).length, [completedTasks]);
 
   const personality = useMemo(() => getCatPersonality(tasks), [tasks]);
-  const stage = getCatStage(completedCount);
-  const progress = stage.next
-    ? Math.min(((completedCount - stage.min) / (stage.next.min - stage.min)) * 100, 100)
-    : 100;
+  const catFood = useMemo(() => calcCatFood(tasks), [tasks]);
+  const streak = useMemo(() => calcStreak(tasks), [tasks]);
+  const { current: stage, next: nextStage, progress } = useMemo(() => getCatStage(catFood), [catFood]);
+  const background = useMemo(() => getCurrentBackground(stage.level), [stage.level]);
 
   const [clientId] = useState(getClientId);
   const [bornAt, setBornAt] = useState<Date | null>(null);
@@ -179,7 +141,6 @@ const CatPet = ({ tasks }: CatPetProps) => {
         .select("*")
         .eq("client_id", clientId)
         .maybeSingle();
-
       if (data) {
         setBornAt(new Date(data.born_at));
       } else {
@@ -194,7 +155,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
     init();
   }, [clientId]);
 
-  // Sync stats to DB
+  // Sync stats
   useEffect(() => {
     if (!bornAt) return;
     supabase
@@ -237,37 +198,64 @@ const CatPet = ({ tasks }: CatPetProps) => {
     setTimeout(() => setIsEating(false), 1500);
   };
 
-  const levelIndex = CAT_STAGES.indexOf(stage) + 1;
+  // Determine if text should be light (for dark backgrounds like 星空/宇宙)
+  const isDarkBg = stage.level >= 5;
 
   return (
     <>
       <div className="relative rounded-3xl border border-border/40 overflow-hidden">
-        {/* Ghibli 背景 */}
+        {/* 动态背景 */}
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${ghibliBg})` }}
+          className="absolute inset-0"
+          style={{ background: stage.level >= 0 ? background.gradient : "linear-gradient(180deg, #E8E0D0 0%, #D4C8B0 100%)" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        {/* 背景装饰 */}
+        {stage.level >= 5 && (
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 70}%`,
+                  animationDelay: `${Math.random() * 3}s`,
+                  opacity: 0.3 + Math.random() * 0.5,
+                }}
+              />
+            ))}
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
         <div className="relative z-10 p-5">
           {/* 顶部信息条 */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold text-white px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-sm">
-                Lv.{levelIndex} {stage.label}
+              <span className={cn(
+                "text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm",
+                isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white"
+              )}>
+                {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stage.label}
               </span>
               {personality.label !== "杂食猫" && (
-                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-sm text-white">
+                <span className={cn(
+                  "text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm",
+                  isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white"
+                )}>
                   {personality.emoji} {personality.label}
                 </span>
               )}
-              <span className="text-[10px] text-white/70">
+              <span className={cn("text-[10px]", isDarkBg ? "text-white/70" : "text-white/70")}>
                 存活 {aliveDays} 天
               </span>
             </div>
             <button
               onClick={() => setShowLeaderboard(true)}
-              className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/30 active:scale-95 transition-all"
+              className={cn(
+                "flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm hover:bg-black/30 active:scale-95 transition-all",
+                isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white"
+              )}
             >
               <span>{roundness.emoji}</span>
               <span className="font-medium">{roundness.label}</span>
@@ -306,8 +294,14 @@ const CatPet = ({ tasks }: CatPetProps) => {
           <div className="flex items-center gap-1.5 flex-wrap">
             <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
               <span>🍖</span>
-              <span className="font-medium text-foreground">{completedCount} 顿饭</span>
+              <span className="font-medium text-foreground">{catFood} 猫粮</span>
             </div>
+            {streak > 0 && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
+                <span>🔥</span>
+                <span className="font-medium text-foreground">连续 {streak} 天</span>
+              </div>
+            )}
             {photoCount > 0 && (
               <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
                 <span>📸</span>
@@ -323,7 +317,8 @@ const CatPet = ({ tasks }: CatPetProps) => {
             </button>
           </div>
 
-          {stage.next && (
+          {/* 成长进度条 */}
+          {nextStage && (
             <div className="mt-2 flex items-center gap-2">
               <div className="flex-1 h-1.5 bg-white/40 rounded-full overflow-hidden">
                 <div
@@ -331,9 +326,22 @@ const CatPet = ({ tasks }: CatPetProps) => {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="text-[9px] text-white/80 whitespace-nowrap drop-shadow-sm">
-                → {stage.next.emoji} {stage.next.label}
+              <span className={cn(
+                "text-[9px] whitespace-nowrap drop-shadow-sm",
+                isDarkBg ? "text-white/80" : "text-white/80"
+              )}>
+                → {nextStage.emoji} {nextStage.label}
               </span>
+            </div>
+          )}
+
+          {/* 背景名称 */}
+          {stage.level >= 0 && (
+            <div className={cn(
+              "mt-1.5 text-[9px] text-right",
+              isDarkBg ? "text-white/40" : "text-white/50"
+            )}>
+              {background.emoji} {background.name}
             </div>
           )}
         </div>
