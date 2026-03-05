@@ -246,8 +246,9 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
             </div>
           )}
 
-          {/* Title input */}
+          {/* Manual form fields */}
           {!voiceMode && (
+          <>
           <div>
             <input
               value={title}
