@@ -165,9 +165,6 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
 
       {/* ── Hero ── */}
       <div className="mb-8 animate-fade-in">
-        <p className="text-sm text-muted-foreground mb-1">
-          {format(today, "M月d日 EEEE", { locale: zhCN })}
-        </p>
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
           {greeting.emoji} {greeting.text}
         </h1>

@@ -172,13 +172,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
-      <div className="animate-fade-in mb-4">
-        <div className="flex items-center gap-2 mb-1">
-          <BookOpen size={20} className="text-primary" />
-          <span className="text-sm text-muted-foreground">回忆是最美的礼物</span>
-        </div>
-        <h1 className="text-3xl font-bold text-foreground font-serif">你的故事</h1>
-      </div>
 
       {/* Mode toggle */}
       <div className="flex gap-2 mb-4 animate-fade-in" style={{ animationDelay: "0.05s" }}>
