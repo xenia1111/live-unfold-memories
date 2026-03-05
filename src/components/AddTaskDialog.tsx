@@ -158,106 +158,81 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
       </DialogTrigger>
       <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="p-5 pb-3 flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-serif text-foreground">
-              {voiceMode ? "语音输入 🎙️" : "记录一件想做的事 ✨"}
-            </DialogTitle>
-            <button
-              onClick={() => setVoiceMode(!voiceMode)}
-              className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center transition-all",
-                voiceMode
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
-              )}
-            >
-              <Mic size={16} />
-            </button>
-          </div>
-          <DialogDescription className="text-sm text-muted-foreground">
-            {voiceMode ? "说一句话，AI 帮你自动填写" : "给未来的自己安排一件美好的事吧"}
-          </DialogDescription>
+          <DialogTitle className="text-lg font-serif text-foreground">记录一件想做的事 ✨</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">给未来的自己安排一件美好的事吧</DialogDescription>
         </DialogHeader>
 
         <div className="px-5 pb-4 space-y-4 overflow-y-auto flex-1 min-h-0">
-          {/* Voice input mode */}
-          {voiceMode && (
-            <div className="space-y-3">
-              <div className="flex flex-col items-center gap-4 py-4">
-                <button
-                  onClick={isListening ? stopListening : startListening}
-                  disabled={isParsing}
-                  className={cn(
-                    "w-20 h-20 rounded-full flex items-center justify-center transition-all",
-                    isListening
-                      ? "bg-destructive text-destructive-foreground animate-pulse scale-110"
-                      : isParsing
-                      ? "bg-muted text-muted-foreground cursor-not-allowed"
-                      : "bg-primary text-primary-foreground hover:scale-105 active:scale-95"
-                  )}
-                >
-                  {isParsing ? <Loader2 size={28} className="animate-spin" /> : <Mic size={28} />}
-                </button>
-                <p className="text-xs text-muted-foreground">
-                  {isListening ? "正在听...点击停止" : isParsing ? "AI 正在分析..." : "点击开始说话"}
-                </p>
-              </div>
-
-              {voiceText && (
-                <div className="bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground border border-border/30">
-                  <p className="text-[10px] text-muted-foreground mb-1">识别结果：</p>
-                  {voiceText}
-                </div>
+          {/* Title input with voice button */}
+          <div className="flex gap-2">
+            <input
+              value={voiceMode ? voiceText : title}
+              onChange={(e) => voiceMode ? setVoiceText(e.target.value) : setTitle(e.target.value)}
+              placeholder={voiceMode ? "说一句话，AI 帮你填写..." : "比如：和朋友去看日落 🌅"}
+              className="flex-1 bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 border border-border/30 focus:outline-none focus:border-primary/40 transition-colors"
+              autoFocus
+            />
+            <button
+              onClick={() => {
+                if (isListening) {
+                  stopListening();
+                } else if (voiceMode && voiceText.trim()) {
+                  parseVoiceInput(voiceText);
+                } else {
+                  setVoiceMode(true);
+                  startListening();
+                }
+              }}
+              disabled={isParsing}
+              className={cn(
+                "w-12 h-12 rounded-xl flex items-center justify-center transition-all flex-shrink-0",
+                isListening
+                  ? "bg-destructive text-destructive-foreground animate-pulse"
+                  : isParsing
+                  ? "bg-muted text-muted-foreground"
+                  : voiceMode && voiceText.trim()
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-primary/10 text-primary hover:bg-primary/20"
               )}
+            >
+              {isParsing ? <Loader2 size={20} className="animate-spin" /> : 
+               isListening ? <Mic size={20} /> :
+               voiceMode && voiceText.trim() ? <Star size={20} /> :
+               <Mic size={20} />}
+            </button>
+          </div>
 
-              {voiceText && !isListening && !isParsing && (
-                <button
-                  onClick={() => parseVoiceInput(voiceText)}
-                  className="w-full py-3 rounded-xl text-sm font-medium bg-primary text-primary-foreground active:scale-[0.98] transition-all"
-                >
-                  AI 智能填写 ✨
+          {/* Voice status hint */}
+          {(isListening || isParsing || voiceMode) && (
+            <div className="flex items-center gap-2">
+              <p className="text-[10px] text-muted-foreground flex-1">
+                {isListening ? "🔴 正在听你说..." : isParsing ? "🤖 AI 正在分析..." : voiceText ? "点击 ✨ 按钮让 AI 智能填写" : "点击麦克风开始说话"}
+              </p>
+              {voiceMode && !isListening && !isParsing && (
+                <button onClick={() => { setVoiceMode(false); setVoiceText(""); }} className="text-[10px] text-muted-foreground/60 underline">
+                  取消
                 </button>
               )}
-
-              {/* Manual text input fallback */}
-              <div className="pt-2 border-t border-border/20">
-                <p className="text-[10px] text-muted-foreground mb-1.5">或直接输入文字：</p>
-                <div className="flex gap-2">
-                  <input
-                    value={voiceText}
-                    onChange={(e) => setVoiceText(e.target.value)}
-                    placeholder="明天下午三点和朋友去咖啡馆..."
-                    className="flex-1 bg-muted/50 rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 border border-border/30 focus:outline-none focus:border-primary/40 transition-colors"
-                  />
-                  <button
-                    onClick={() => parseVoiceInput(voiceText)}
-                    disabled={!voiceText.trim() || isParsing}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-sm font-medium transition-all",
-                      voiceText.trim() && !isParsing
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground cursor-not-allowed"
-                    )}
-                  >
-                    解析
-                  </button>
-                </div>
-              </div>
             </div>
           )}
 
-          {/* Manual form fields */}
-          {!voiceMode && (
-          <>
-          <div>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="比如：和朋友去看日落 🌅"
-              className="w-full bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 border border-border/30 focus:outline-none focus:border-primary/40 transition-colors"
-              autoFocus
-            />
-          </div>
+          {/* AI parsed result preview */}
+          {voiceMode && title.trim() && !isParsing && (
+            <div className="bg-primary/5 rounded-xl p-3 space-y-1.5 text-xs border border-primary/15">
+              <p className="text-primary font-medium text-[10px]">🤖 AI 已填写，请确认：</p>
+              <div className="flex items-center gap-2 text-foreground">
+                <span className="text-muted-foreground">标题：</span>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} className="flex-1 bg-transparent border-b border-border/30 focus:outline-none focus:border-primary/40 px-1 py-0.5 text-sm" />
+              </div>
+              <div className="flex gap-4 text-foreground">
+                <span><span className="text-muted-foreground">分类：</span>{selectedCategory}</span>
+                <span><span className="text-muted-foreground">时间：</span>{selectedTime}</span>
+                <span><span className="text-muted-foreground">日期：</span>
+                  {selectedDayOffset === null ? "不定" : selectedDayOffset === 0 ? "今天" : selectedDayOffset === 1 ? "明天" : `${selectedDayOffset}天后`}
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Cover image */}
           <div>
