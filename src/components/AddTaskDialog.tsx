@@ -404,6 +404,27 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
 
         </div>
 
+        {/* Parsed result preview in voice mode */}
+        {voiceMode && title.trim() && (
+          <div className="px-5 pb-2 space-y-2">
+            <p className="text-xs text-muted-foreground">🤖 AI 解析结果：</p>
+            <div className="bg-muted/30 rounded-xl p-3 space-y-1.5 text-xs text-foreground">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">标题：</span>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} className="flex-1 bg-transparent border-b border-border/30 focus:outline-none focus:border-primary/40 px-1 py-0.5" />
+              </div>
+              <div className="flex gap-4">
+                <span><span className="text-muted-foreground">分类：</span>{selectedCategory}</span>
+                <span><span className="text-muted-foreground">时间：</span>{selectedTime}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground">日期：</span>
+                {selectedDayOffset === null ? "不指定" : selectedDayOffset === 0 ? "今天" : selectedDayOffset === 1 ? "明天" : `${selectedDayOffset}天后`}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Sticky submit */}
         <div className="px-5 py-4 border-t border-border/30 flex-shrink-0">
           <button
@@ -416,7 +437,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
                 : "bg-muted text-muted-foreground cursor-not-allowed"
             )}
           >
-            添加到生活 💫
+            {voiceMode && title.trim() ? "确认添加 ✅" : "添加到生活 💫"}
           </button>
         </div>
       </DialogContent>
