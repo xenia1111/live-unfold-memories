@@ -351,15 +351,6 @@ const CatPet = ({ tasks }: CatPetProps) => {
             </div>
           )}
 
-          {/* 背景名称 */}
-          {stage.level >= 0 && (
-            <div className={cn(
-              "mt-1.5 text-[9px] text-right",
-              isDarkBg ? "text-white/40" : "text-white/50"
-            )}>
-              {background.emoji} {background.name}
-            </div>
-          )}
         </div>
       </div>
 
