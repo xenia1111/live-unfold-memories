@@ -399,6 +399,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
               ))}
             </div>
           </div>
+          </>
           )}
 
         </div>
