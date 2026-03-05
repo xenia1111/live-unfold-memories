@@ -8,6 +8,15 @@ import CatRadarDialog from "@/components/CatRadarDialog";
 import { getCatPersonality } from "@/lib/catPersonality";
 import { calcCatFood, calcStreak, getCatStage, getCurrentBackground, STREAK_REWARDS } from "@/lib/catGrowth";
 import catWalkSprite from "@/assets/cat-walk-sprite.png";
+import bgGrassland from "@/assets/bg-grassland.png";
+import bgCottage from "@/assets/bg-cottage.png";
+import bgGarden from "@/assets/bg-garden.png";
+
+const BG_IMAGES: Record<string, string> = {
+  grassland: bgGrassland,
+  cottage: bgCottage,
+  garden: bgGarden,
+};
 
 /* ── 品尝评价模板（按分类） ── */
 const TASTE_COMMENTS: Record<string, string[]> = {
@@ -205,10 +214,17 @@ const CatPet = ({ tasks }: CatPetProps) => {
     <>
       <div className="relative rounded-3xl border border-border/40 overflow-hidden">
         {/* 动态背景 */}
-        <div
-          className="absolute inset-0"
-          style={{ background: stage.level >= 0 ? background.gradient : "linear-gradient(180deg, #E8E0D0 0%, #D4C8B0 100%)" }}
-        />
+        {background.imageKey && BG_IMAGES[background.imageKey] ? (
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${BG_IMAGES[background.imageKey!]})` }}
+          />
+        ) : (
+          <div
+            className="absolute inset-0"
+            style={{ background: stage.level >= 0 ? background.gradient : "linear-gradient(180deg, #E8E0D0 0%, #D4C8B0 100%)" }}
+          />
+        )}
         {/* 背景装饰 */}
         {stage.level >= 5 && (
           <div className="absolute inset-0 overflow-hidden">
