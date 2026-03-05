@@ -18,7 +18,7 @@ const iconOptions = [
 
 const categoryOptions = ["美食", "学习", "运动", "社交", "工作", "美景", "娱乐", "记录", "健康", "美丽"];
 
-const timeOptions = ["07:00", "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "全天"];
+import TimePicker from "@/components/TimePicker";
 
 interface AddTaskDialogProps {
   onAdd: (task: { title: string; time: string; icon: string; category: string; date?: Date; coverImage?: string; deadline?: Date }) => void;
@@ -159,25 +159,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
 
           {/* Time selector — only when date is set */}
           {selectedDayOffset !== null && (
-            <div>
-              <p className="text-xs text-muted-foreground mb-2">⏰ 什么时候？</p>
-              <div className="flex gap-1.5 flex-wrap">
-                {timeOptions.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs transition-all",
-                      selectedTime === time
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted/50 text-muted-foreground hover:bg-muted"
-                    )}
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <TimePicker value={selectedTime} onChange={setSelectedTime} />
           )}
 
           {/* Deadline selector */}
