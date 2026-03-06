@@ -12,10 +12,10 @@ import type { Language } from "@/lib/i18n";
 const APP_VERSION = "1.0.0";
 
 const languages = [
-  { code: "zh" as Language, label: "中文", flag: "🇨🇳" },
   { code: "en" as Language, label: "English", flag: "🇬🇧" },
   { code: "fr" as Language, label: "Français", flag: "🇫🇷" },
   { code: "es" as Language, label: "Español", flag: "🇪🇸" },
+  { code: "zh" as Language, label: "中文", flag: "🇨🇳" },
   { code: "ja" as Language, label: "日本語", flag: "🇯🇵" },
 ];
 
