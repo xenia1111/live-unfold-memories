@@ -13,9 +13,11 @@ import eggNest from "@/assets/egg-nest.png";
 import bgGrassland from "@/assets/bg-grassland.png";
 import bgCottage from "@/assets/bg-cottage.png";
 import bgGarden from "@/assets/bg-garden.png";
+import bgCardboardBox from "@/assets/bg-cardboard-box.png";
+import EggHatchEffect from "@/components/EggHatchEffect";
 import { useI18n, interpolate } from "@/lib/i18n";
 
-const BG_IMAGES: Record<string, string> = { grassland: bgGrassland, cottage: bgCottage, garden: bgGarden };
+const BG_IMAGES: Record<string, string> = { grassland: bgGrassland, cottage: bgCottage, garden: bgGarden, cardboard: bgCardboardBox };
 
 const TASTE_COMMENTS: Record<string, string[]> = {
   "运动": ["miamiamia~汗水味的！咸咸的！但是很提神！","呼...这个有肌肉的味道，猫猫也想变壮💪","运动完的你...味道好像更浓了呢（捂鼻）"],
