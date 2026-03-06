@@ -122,7 +122,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
                 {personality.emoji} {personalityLabel}
               </span>
             )}
-            <span className={cn("text-[10px] whitespace-nowrap", isDarkBg ? "text-white/70" : "text-white/70")}>
+            <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/20 text-white")}>
               {interpolate(t("cat.alive"), { n: aliveDays })}
             </span>
             <button onClick={() => setShowLeaderboard(true)} className={cn("ml-auto flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm hover:bg-black/30 active:scale-95 transition-all whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
