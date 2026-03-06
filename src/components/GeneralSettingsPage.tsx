@@ -6,16 +6,17 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
 
-const LANG_KEY = "app_language";
 const APP_VERSION = "1.0.0";
 
 const languages = [
-  { code: "zh", label: "中文", flag: "🇨🇳" },
-  { code: "en", label: "English", flag: "🇬🇧" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "es", label: "Español", flag: "🇪🇸" },
-  { code: "ja", label: "日本語", flag: "🇯🇵" },
+  { code: "zh" as Language, label: "中文", flag: "🇨🇳" },
+  { code: "en" as Language, label: "English", flag: "🇬🇧" },
+  { code: "fr" as Language, label: "Français", flag: "🇫🇷" },
+  { code: "es" as Language, label: "Español", flag: "🇪🇸" },
+  { code: "ja" as Language, label: "日本語", flag: "🇯🇵" },
 ];
 
 interface Props {
@@ -23,51 +24,43 @@ interface Props {
 }
 
 const GeneralSettingsPage = ({ onBack }: Props) => {
-  const [currentLang, setCurrentLang] = useState("zh");
+  const { lang, setLang, t } = useI18n();
   const [showLangDialog, setShowLangDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  useEffect(() => {
-    const saved = localStorage.getItem(LANG_KEY);
-    if (saved) setCurrentLang(saved);
-  }, []);
-
-  const handleLangChange = (code: string) => {
-    setCurrentLang(code);
-    localStorage.setItem(LANG_KEY, code);
+  const handleLangChange = (code: Language) => {
+    setLang(code);
     setShowLangDialog(false);
-    toast.success("语言已切换 🌍");
+    toast.success(t("settings.langChanged"));
   };
 
   const handlePasswordChange = () => {
     if (!oldPassword || !newPassword) {
-      toast.error("请填写完整");
+      toast.error(t("settings.fillAll"));
       return;
     }
     if (newPassword.length < 6) {
-      toast.error("新密码至少 6 位");
+      toast.error(t("settings.minLength"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("两次密码不一致");
+      toast.error(t("settings.mismatch"));
       return;
     }
-    // Placeholder — no real auth yet
-    toast.success("密码已更新 🔒");
+    toast.success(t("settings.passwordUpdated"));
     setShowPasswordDialog(false);
     setOldPassword("");
     setNewPassword("");
     setConfirmPassword("");
   };
 
-  const currentLangLabel = languages.find(l => l.code === currentLang);
+  const currentLangLabel = languages.find(l => l.code === lang);
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto animate-fade-in">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <button
           onClick={onBack}
@@ -75,11 +68,10 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
         >
           <ArrowLeft size={18} className="text-foreground" />
         </button>
-        <h1 className="text-lg font-bold text-foreground font-serif">通用设置</h1>
+        <h1 className="text-lg font-bold text-foreground font-serif">{t("settings.title")}</h1>
       </div>
 
       <div className="space-y-2">
-        {/* Password */}
         <button
           onClick={() => setShowPasswordDialog(true)}
           className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]"
@@ -88,13 +80,12 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
             <Lock size={18} className="text-foreground" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">账户密码</p>
-            <p className="text-xs text-muted-foreground">修改登录密码</p>
+            <p className="text-sm font-medium text-foreground">{t("settings.password")}</p>
+            <p className="text-xs text-muted-foreground">{t("settings.passwordDesc")}</p>
           </div>
           <ChevronRight size={16} className="text-muted-foreground" />
         </button>
 
-        {/* Language */}
         <button
           onClick={() => setShowLangDialog(true)}
           className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]"
@@ -103,7 +94,7 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
             <Globe size={18} className="text-foreground" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">语言</p>
+            <p className="text-sm font-medium text-foreground">{t("settings.language")}</p>
             <p className="text-xs text-muted-foreground">
               {currentLangLabel ? `${currentLangLabel.flag} ${currentLangLabel.label}` : "中文"}
             </p>
@@ -111,38 +102,36 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
           <ChevronRight size={16} className="text-muted-foreground" />
         </button>
 
-        {/* Version */}
         <div className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left">
           <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
             <Info size={18} className="text-foreground" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">版本号</p>
+            <p className="text-sm font-medium text-foreground">{t("settings.version")}</p>
             <p className="text-xs text-muted-foreground">v{APP_VERSION}</p>
           </div>
         </div>
       </div>
 
-      {/* Language Dialog */}
       <Dialog open={showLangDialog} onOpenChange={setShowLangDialog}>
         <DialogContent className="max-w-[300px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-center">选择语言</DialogTitle>
+            <DialogTitle className="text-center">{t("settings.selectLang")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-2 py-2">
-            {languages.map(lang => (
+            {languages.map(l => (
               <button
-                key={lang.code}
-                onClick={() => handleLangChange(lang.code)}
+                key={l.code}
+                onClick={() => handleLangChange(l.code)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors active:scale-[0.98] ${
-                  currentLang === lang.code
+                  lang === l.code
                     ? "bg-primary/10 border border-primary/30"
                     : "bg-muted hover:bg-muted/80"
                 }`}
               >
-                <span className="text-lg">{lang.flag}</span>
-                <span className="text-sm font-medium text-foreground">{lang.label}</span>
-                {currentLang === lang.code && (
+                <span className="text-lg">{l.flag}</span>
+                <span className="text-sm font-medium text-foreground">{l.label}</span>
+                {lang === l.code && (
                   <span className="ml-auto text-xs text-primary font-medium">✓</span>
                 )}
               </button>
@@ -151,37 +140,16 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
         </DialogContent>
       </Dialog>
 
-      {/* Password Dialog */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
         <DialogContent className="max-w-[320px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-center">修改密码</DialogTitle>
+            <DialogTitle className="text-center">{t("settings.changePassword")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3 py-2">
-            <Input
-              type="password"
-              placeholder="当前密码"
-              value={oldPassword}
-              onChange={e => setOldPassword(e.target.value)}
-              className="rounded-xl"
-            />
-            <Input
-              type="password"
-              placeholder="新密码（至少6位）"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              className="rounded-xl"
-            />
-            <Input
-              type="password"
-              placeholder="确认新密码"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              className="rounded-xl"
-            />
-            <Button onClick={handlePasswordChange} className="rounded-xl mt-1">
-              确认修改
-            </Button>
+            <Input type="password" placeholder={t("settings.oldPassword")} value={oldPassword} onChange={e => setOldPassword(e.target.value)} className="rounded-xl" />
+            <Input type="password" placeholder={t("settings.newPassword")} value={newPassword} onChange={e => setNewPassword(e.target.value)} className="rounded-xl" />
+            <Input type="password" placeholder={t("settings.confirmPassword")} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="rounded-xl" />
+            <Button onClick={handlePasswordChange} className="rounded-xl mt-1">{t("settings.confirmChange")}</Button>
           </div>
         </DialogContent>
       </Dialog>

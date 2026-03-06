@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
 import { format, isToday, isFuture, differenceInCalendarDays } from "date-fns";
-import { zhCN } from "date-fns/locale";
 import {
   CheckCircle2, Circle,
   Coffee, Dumbbell, BookOpen, Music, Heart, Star,
@@ -13,6 +12,7 @@ import EditTaskDialog from "@/components/EditTaskDialog";
 import ConfettiCanvas from "@/components/ConfettiCanvas";
 import CatPet from "@/components/CatPet";
 import type { Task } from "@/hooks/useTasks";
+import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -21,9 +21,10 @@ const iconMap: Record<string, any> = {
 
 /* ── Deadline 标签 ── */
 const DeadlineTag = ({ deadline }: { deadline: Date }) => {
+  const { t } = useI18n();
   const days = differenceInCalendarDays(deadline, new Date());
   const isUrgent = days <= 2;
-  const label = days <= 0 ? "已到期" : days === 1 ? "明天截止" : `还剩${days}天`;
+  const label = days <= 0 ? t("home.expired") : days === 1 ? t("home.dueTomorrow") : interpolate(t("home.daysLeft"), { n: days });
   return (
     <span className={cn(
       "text-[10px] px-1.5 py-0.5 rounded-md font-medium",
@@ -37,6 +38,9 @@ const DeadlineTag = ({ deadline }: { deadline: Date }) => {
 
 /* ── 未来规划分组组件 ── */
 const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => {
+  const { t, locale, dateFormat } = useI18n();
+  const catName = useCategoryName();
+
   const grouped = useMemo(() => {
     const map = new Map<string, Task[]>();
     const sorted = [...tasks].sort((a, b) => a.date!.getTime() - b.date!.getTime());
@@ -50,9 +54,9 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
 
   const getDayLabel = (date: Date) => {
     const diff = differenceInCalendarDays(date, today);
-    if (diff === 1) return "明天";
-    if (diff === 2) return "后天";
-    return format(date, "M月d日 EEEE", { locale: zhCN });
+    if (diff === 1) return t("home.tomorrow");
+    if (diff === 2) return t("home.dayAfter");
+    return format(date, dateFormat, { locale });
   };
 
   return (
@@ -62,7 +66,7 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[11px] font-bold text-primary">{getDayLabel(group.date)}</span>
             {differenceInCalendarDays(group.date, today) <= 2 && (
-              <span className="text-[10px] text-muted-foreground">{format(group.date, "M/d EEEE", { locale: zhCN })}</span>
+              <span className="text-[10px] text-muted-foreground">{format(group.date, "M/d EEEE", { locale })}</span>
             )}
             <div className="flex-1 h-px bg-border/40" />
           </div>
@@ -77,7 +81,7 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground/80">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
@@ -101,6 +105,8 @@ interface HomePageProps {
 }
 
 const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }: HomePageProps) => {
+  const { t, locale, shortDateFormat } = useI18n();
+  const catName = useCategoryName();
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -114,13 +120,9 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
   const backlogTasks = tasks.filter(t => !t.date && !t.completed);
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
-  const allCompleted = tasks.filter(t => t.completed).length;
 
   const handleTaskClick = (task: Task) => {
-    if (task.completed) {
-      setEditingTask(task);
-      return;
-    }
+    if (task.completed) { setEditingTask(task); return; }
     setCompletingTask(task);
   };
 
@@ -136,13 +138,13 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
 
   const getGreeting = () => {
     const h = new Date().getHours();
-    if (h < 6) return { text: "夜深了", emoji: "🌙" };
-    if (h < 9) return { text: "早安", emoji: "🌅" };
-    if (h < 12) return { text: "上午好", emoji: "☀️" };
-    if (h < 14) return { text: "午安", emoji: "🍵" };
-    if (h < 18) return { text: "下午好", emoji: "🌤️" };
-    if (h < 21) return { text: "傍晚好", emoji: "🌇" };
-    return { text: "晚安", emoji: "🌛" };
+    if (h < 6) return { text: t("greeting.lateNight"), emoji: "🌙" };
+    if (h < 9) return { text: t("greeting.morning"), emoji: "🌅" };
+    if (h < 12) return { text: t("greeting.forenoon"), emoji: "☀️" };
+    if (h < 14) return { text: t("greeting.noon"), emoji: "🍵" };
+    if (h < 18) return { text: t("greeting.afternoon"), emoji: "🌤️" };
+    if (h < 21) return { text: t("greeting.evening"), emoji: "🌇" };
+    return { text: t("greeting.night"), emoji: "🌛" };
   };
 
   const greeting = getGreeting();
@@ -153,7 +155,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
       <div className="px-5 pt-14 pb-24 max-w-lg mx-auto flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-3">
           <Loader2 size={28} className="animate-spin text-primary" />
-          <span className="text-sm text-muted-foreground">加载中...</span>
+          <span className="text-sm text-muted-foreground">{t("home.loading")}</span>
         </div>
       </div>
     );
@@ -163,39 +165,31 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
     <div className="px-5 pt-14 pb-24 max-w-lg mx-auto">
       <ConfettiCanvas active={showConfetti} onDone={() => setShowConfetti(false)} />
 
-      {/* ── Hero ── */}
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
           {greeting.emoji} {greeting.text}
         </h1>
         <div className="mt-4 flex items-center gap-3">
           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full rounded-full gradient-progress transition-all duration-700 ease-out"
-              style={{ width: `${progressPercent}%` }}
-            />
+            <div className="h-full rounded-full gradient-progress transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
           </div>
-          <span className="text-xs font-semibold text-foreground whitespace-nowrap">
-            {todayCompleted}/{todayTotal}
-          </span>
+          <span className="text-xs font-semibold text-foreground whitespace-nowrap">{todayCompleted}/{todayTotal}</span>
         </div>
         {todayTotal > 0 && todayCompleted === todayTotal && (
-          <p className="text-xs text-secondary font-medium mt-2">🎉 今天全部完成！太棒了</p>
+          <p className="text-xs text-secondary font-medium mt-2">{t("home.allDone")}</p>
         )}
       </div>
 
-      {/* ── 猫咪互动区 ── */}
       <div className="mb-6 animate-fade-in" style={{ animationDelay: "0.05s" }}>
         <CatPet tasks={tasks} />
       </div>
 
-      {/* ── 今天的任务 ── */}
       <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {todayTotal === 0 ? (
           <div className="text-center py-12">
             <p className="text-4xl mb-3">🌿</p>
-            <p className="text-sm text-muted-foreground">今天还没有安排</p>
-            <p className="text-xs text-muted-foreground/60 mt-1">点击右下角 + 添加一件想做的事</p>
+            <p className="text-sm text-muted-foreground">{t("home.noTasks")}</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">{t("home.addHint")}</p>
           </div>
         ) : (
           <div className="space-y-2.5">
@@ -208,33 +202,20 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
                   onClick={() => handleTaskClick(task)}
                   className={cn(
                     "w-full flex items-center gap-3.5 rounded-2xl p-4 text-left transition-all",
-                    task.completed
-                      ? "bg-card/60 border border-border/30"
-                      : "bg-card border border-border/50 card-glow active:scale-[0.98]",
+                    task.completed ? "bg-card/60 border border-border/30" : "bg-card border border-border/50 card-glow active:scale-[0.98]",
                     isCelebrating && "animate-celebrate"
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  {task.completed
-                    ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" />
-                    : <Circle size={22} className="text-muted-foreground/30 flex-shrink-0" />
-                  }
+                  {task.completed ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" /> : <Circle size={22} className="text-muted-foreground/30 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <p className={cn(
-                      "text-sm font-medium",
-                      task.completed ? "line-through text-muted-foreground/60" : "text-foreground"
-                    )}>
-                      {task.title}
-                    </p>
+                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-muted-foreground/60" : "text-foreground")}>{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                      <span className="text-[11px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <div className={cn(
-                    "w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0",
-                    task.completed ? "bg-secondary/10" : "bg-muted/40"
-                  )}>
+                  <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", task.completed ? "bg-secondary/10" : "bg-muted/40")}>
                     <Icon size={14} className={task.completed ? "text-secondary" : "text-primary/40"} />
                   </div>
                 </button>
@@ -244,29 +225,25 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
         )}
       </section>
 
-      {/* ── 即将到来 ── */}
       {futureTasks.length > 0 && (
         <section className="mb-4 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <button
-            onClick={() => setShowUpcoming(true)}
-            className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all"
-          >
+          <button onClick={() => setShowUpcoming(true)} className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all">
             <CalendarDays size={14} className="text-primary/60" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">即将到来</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.upcoming")}</span>
             <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
           </button>
           <div className="space-y-2">
             {futureTasks.slice(0, 3).map(task => {
               const Icon = iconMap[task.icon] || Star;
               const diff = differenceInCalendarDays(task.date!, today);
-              const dayLabel = diff === 1 ? "明天" : diff === 2 ? "后天" : format(task.date!, "M/d EEE", { locale: zhCN });
+              const dayLabel = diff === 1 ? t("home.tomorrow") : diff === 2 ? t("home.dayAfter") : format(task.date!, shortDateFormat, { locale });
               return (
                 <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
                   <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground/80 truncate">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {task.category}</span>
+                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
@@ -278,15 +255,11 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
         </section>
       )}
 
-      {/* ── 计划中（无日期） ── */}
       {backlogTasks.length > 0 && (
         <section className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          <button
-            onClick={() => setShowBacklog(true)}
-            className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all"
-          >
+          <button onClick={() => setShowBacklog(true)} className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all">
             <Inbox size={14} className="text-primary/60" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">计划中</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.backlog")}</span>
             <span className="text-[10px] text-muted-foreground/40 ml-1">{backlogTasks.length}</span>
             <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
           </button>
@@ -301,7 +274,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground/70 truncate">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/40">{task.category}</span>
+                      <span className="text-[10px] text-muted-foreground/40">{catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
@@ -312,11 +285,10 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
         </section>
       )}
 
-      {/* ── 未来规划 Sheet ── */}
       <Sheet open={showUpcoming} onOpenChange={setShowUpcoming}>
         <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-0 pb-0">
           <SheetHeader className="px-5 pb-3 border-b border-border/50">
-            <SheetTitle className="text-lg font-bold font-serif">未来规划</SheetTitle>
+            <SheetTitle className="text-lg font-bold font-serif">{t("home.futurePlan")}</SheetTitle>
           </SheetHeader>
           <div className="overflow-y-auto px-5 pt-4 pb-8 h-full">
             <FuturePlanSection tasks={futureTasks} today={today} />
@@ -324,28 +296,23 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
         </SheetContent>
       </Sheet>
 
-      {/* ── 计划中 Sheet ── */}
       <Sheet open={showBacklog} onOpenChange={setShowBacklog}>
         <SheetContent side="bottom" className="h-[70vh] rounded-t-3xl px-0 pb-0">
           <SheetHeader className="px-5 pb-3 border-b border-border/50">
-            <SheetTitle className="text-lg font-bold font-serif">计划中</SheetTitle>
-            <p className="text-xs text-muted-foreground">还没安排具体日期的事</p>
+            <SheetTitle className="text-lg font-bold font-serif">{t("home.backlogSheet")}</SheetTitle>
+            <p className="text-xs text-muted-foreground">{t("home.backlogDesc")}</p>
           </SheetHeader>
           <div className="overflow-y-auto px-5 pt-4 pb-8 h-full">
             <div className="space-y-2.5">
               {backlogTasks.map(task => {
                 const Icon = iconMap[task.icon] || Star;
                 return (
-                  <button
-                    key={task.id}
-                    onClick={() => handleTaskClick(task)}
-                    className="w-full flex items-center gap-3.5 rounded-2xl p-4 text-left bg-card border border-border/50 active:scale-[0.98] transition-all"
-                  >
+                  <button key={task.id} onClick={() => handleTaskClick(task)} className="w-full flex items-center gap-3.5 rounded-2xl p-4 text-left bg-card border border-border/50 active:scale-[0.98] transition-all">
                     <Circle size={22} className="text-muted-foreground/30 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground">{task.title}</p>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[11px] text-muted-foreground/50">{task.category}</span>
+                        <span className="text-[11px] text-muted-foreground/50">{catName(task.category)}</span>
                         {task.deadline && <DeadlineTag deadline={task.deadline} />}
                       </div>
                     </div>
