@@ -22,7 +22,7 @@ interface StoryData {
   emoji: string;
 }
 
-type Period = "week" | "month" | "quarter" | "half";
+type Period = "week" | "month" | "quarter" | "half" | "year";
 type ViewMode = "period" | "category";
 
 const categoryEmoji: Record<string, string> = {
@@ -97,6 +97,13 @@ const getPeriodRanges = (period: Period): PeriodRange[] => {
         end: i === 0 ? now : endOfMonth(subMonths(startOfMonth(now), i * 6)),
         isCurrent: i === 0,
       }));
+    case "year":
+      return [0, 1].map(i => ({
+        label: i === 0 ? "今年" : "去年",
+        start: subMonths(startOfMonth(now), i * 12 + 11),
+        end: i === 0 ? now : endOfMonth(subMonths(startOfMonth(now), i * 12)),
+        isCurrent: i === 0,
+      }));
   }
 };
 
@@ -111,6 +118,7 @@ const periodTabs = [
   { id: "month" as Period, label: "一月", emoji: "🗓️" },
   { id: "quarter" as Period, label: "一季", emoji: "🍂" },
   { id: "half" as Period, label: "半年", emoji: "🌍" },
+  { id: "year" as Period, label: "一年", emoji: "🎆" },
 ];
 
 interface StoryPageProps { tasks: Task[]; }
