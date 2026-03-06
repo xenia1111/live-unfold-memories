@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useI18n, interpolate } from "@/lib/i18n";
 
-interface CatEntry { id: string; cat_name: string; born_at: string; completed_count: number; photo_count: number; client_id: string; }
+interface CatEntry { id: string; cat_name: string; born_at: string; completed_count: number; photo_count: number; user_id: string | null; }
 
 const ROUNDNESS_KEYS = [
   { min: 0, key: "roundness.0", emoji: "🦴" }, { min: 0.3, key: "roundness.1", emoji: "🫧" },
@@ -24,9 +24,9 @@ const RANK_MEDAL = [
   { bg: "bg-orange-300/15", border: "border-orange-400/30", text: "text-orange-600" },
 ];
 
-interface RoundnessLeaderboardProps { open: boolean; onOpenChange: (open: boolean) => void; myClientId: string; }
+interface RoundnessLeaderboardProps { open: boolean; onOpenChange: (open: boolean) => void; myUserId: string; }
 
-const RoundnessLeaderboard = ({ open, onOpenChange, myClientId }: RoundnessLeaderboardProps) => {
+const RoundnessLeaderboard = ({ open, onOpenChange, myUserId }: RoundnessLeaderboardProps) => {
   const { t } = useI18n();
   const [entries, setEntries] = useState<CatEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ const RoundnessLeaderboard = ({ open, onOpenChange, myClientId }: RoundnessLeade
     return entries.map(e => { const aliveDays = Math.max(differenceInCalendarDays(now, new Date(e.born_at)), 1); const rate = e.completed_count / aliveDays; return { ...e, aliveDays, rate, roundness: getRoundnessTitle(rate) }; }).sort((a, b) => b.rate - a.rate);
   }, [entries, t]);
 
-  const myRank = ranked.findIndex(r => r.client_id === myClientId) + 1;
+  const myRank = ranked.findIndex(r => r.user_id === myUserId) + 1;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -57,7 +57,7 @@ const RoundnessLeaderboard = ({ open, onOpenChange, myClientId }: RoundnessLeade
           ) : (
             <div className="space-y-2">
               {ranked.map((entry, index) => {
-                const isMe = entry.client_id === myClientId;
+                const isMe = entry.user_id === myUserId;
                 const medal = RANK_MEDAL[index] || null;
                 return (
                   <div key={entry.id} className={cn("flex items-center gap-3 rounded-2xl px-4 py-3 border transition-all", isMe ? "bg-primary/8 border-primary/20 ring-1 ring-primary/10" : medal ? `${medal.bg} ${medal.border}` : "bg-card/50 border-border/30")}>
