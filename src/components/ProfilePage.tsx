@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
-  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus, Pencil
+  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import ProfileEditPage from "@/components/ProfileEditPage";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -29,18 +30,21 @@ const menuItems = [
 const ProfilePage = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
-  const [showNameDialog, setShowNameDialog] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [displayName, setDisplayName] = useState("探索者");
-  const [nameInput, setNameInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const loadName = () => {
+    const savedName = localStorage.getItem(NAME_KEY);
+    if (savedName) setDisplayName(savedName);
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem(AVATAR_KEY);
     if (saved) setAvatarUrl(saved);
-    const savedName = localStorage.getItem(NAME_KEY);
-    if (savedName) setDisplayName(savedName);
+    loadName();
   }, []);
 
   const uploadAvatar = async (file: File) => {
@@ -77,6 +81,10 @@ const ProfilePage = () => {
     if (file) uploadAvatar(file);
     e.target.value = "";
   };
+
+  if (showProfileEdit) {
+    return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadName(); }} />;
+  }
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
@@ -119,11 +127,11 @@ const ProfilePage = () => {
           </div>
         </button>
         <button
-          onClick={() => { setNameInput(displayName); setShowNameDialog(true); }}
+          onClick={() => setShowProfileEdit(true)}
           className="flex items-center gap-1.5 group/name"
         >
           <h1 className="text-xl font-bold text-foreground font-serif">{displayName}</h1>
-          <Pencil size={14} className="text-muted-foreground opacity-0 group-active/name:opacity-100 transition-opacity" />
+          <ChevronRight size={14} className="text-muted-foreground" />
         </button>
         <p className="text-sm text-muted-foreground mt-0.5">让每一天都鲜活</p>
       </div>
@@ -158,38 +166,8 @@ const ProfilePage = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Name edit dialog */}
-      <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
-        <DialogContent className="max-w-[280px] rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-center">修改昵称</DialogTitle>
-          </DialogHeader>
-          <input
-            value={nameInput}
-            onChange={e => setNameInput(e.target.value)}
-            maxLength={20}
-            placeholder="输入新昵称"
-            className="w-full rounded-xl border border-border bg-muted px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-primary/30"
-          />
-          <button
-            disabled={!nameInput.trim()}
-            onClick={() => {
-              const name = nameInput.trim();
-              if (name) {
-                setDisplayName(name);
-                localStorage.setItem(NAME_KEY, name);
-                setShowNameDialog(false);
-                toast.success("昵称已更新");
-              }
-            }}
-            className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium active:scale-[0.98] transition-transform disabled:opacity-50"
-          >
-            保存
-          </button>
-        </DialogContent>
-      </Dialog>
 
-      {/* Stats */}
+
       <div className="grid grid-cols-3 gap-3 mb-8 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {stats.map(stat => {
           const Icon = stat.icon;
