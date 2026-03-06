@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeft, ChevronRight, Globe, Lock, Info } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
