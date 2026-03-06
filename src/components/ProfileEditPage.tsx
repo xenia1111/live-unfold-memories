@@ -1,15 +1,73 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { format } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { toast } from "sonner";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const PROFILE_KEY = "user_profile_data";
+
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: currentYear - 1930 + 1 }, (_, i) => currentYear - i);
+const months = Array.from({ length: 12 }, (_, i) => i + 1);
+const getDaysInMonth = (y: number, m: number) => new Date(y, m, 0).getDate();
+
+const BirthdayPicker = ({ value, onConfirm }: { value: string; onConfirm: (v: string) => void }) => {
+  const init = value ? new Date(value) : new Date(2000, 0, 1);
+  const [year, setYear] = useState(init.getFullYear());
+  const [month, setMonth] = useState(init.getMonth() + 1);
+  const [day, setDay] = useState(init.getDate());
+
+  const days = useMemo(() => {
+    const max = getDaysInMonth(year, month);
+    if (day > max) setDay(max);
+    return Array.from({ length: max }, (_, i) => i + 1);
+  }, [year, month]);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2">
+        <select
+          value={year}
+          onChange={e => setYear(Number(e.target.value))}
+          className="flex-1 rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground appearance-none text-center"
+        >
+          {years.map(y => <option key={y} value={y}>{y}年</option>)}
+        </select>
+        <select
+          value={month}
+          onChange={e => setMonth(Number(e.target.value))}
+          className="flex-1 rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground appearance-none text-center"
+        >
+          {months.map(m => <option key={m} value={m}>{m}月</option>)}
+        </select>
+        <select
+          value={day}
+          onChange={e => setDay(Number(e.target.value))}
+          className="flex-1 rounded-xl border border-border bg-muted px-3 py-2.5 text-sm text-foreground appearance-none text-center"
+        >
+          {days.map(d => <option key={d} value={d}>{d}日</option>)}
+        </select>
+      </div>
+      <button
+        onClick={() => {
+          const date = new Date(year, month - 1, day);
+          if (date > new Date()) {
+            toast.error("生日不能是未来日期");
+            return;
+          }
+          onConfirm(date.toISOString());
+        }}
+        className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium active:scale-[0.98] transition-transform"
+      >
+        确认
+      </button>
+    </div>
+  );
+};
 const NAME_KEY = "user_display_name";
 
 const GENDER_OPTIONS = ["男", "女", "其他", "保密"];
@@ -193,26 +251,15 @@ const ProfileEditPage = ({ onBack }: Props) => {
         </DialogContent>
       </Dialog>
 
-      {/* Birthday Dialog */}
+      {/* Birthday Dialog - custom scroll picker */}
       <Dialog open={editField === "birthday"} onOpenChange={open => !open && setEditField(null)}>
-        <DialogContent className="max-w-[340px] rounded-2xl p-4">
+        <DialogContent className="max-w-[300px] rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-center">选择生日</DialogTitle>
           </DialogHeader>
-          <Calendar
-            mode="single"
-            selected={calendarDate}
-            onSelect={(date) => {
-              if (date) {
-                setCalendarDate(date);
-                saveField("birthday", date.toISOString());
-              }
-            }}
-            disabled={(date) => date > new Date()}
-            captionLayout="dropdown-buttons"
-            fromYear={1930}
-            toYear={new Date().getFullYear()}
-            className={cn("p-3 pointer-events-auto mx-auto")}
+          <BirthdayPicker
+            value={profile.birthday}
+            onConfirm={(dateStr) => saveField("birthday", dateStr)}
           />
         </DialogContent>
       </Dialog>
