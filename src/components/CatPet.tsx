@@ -38,6 +38,13 @@ import catSocialLv3 from "@/assets/cat-social-lv3.png";
 import catSocialLv4 from "@/assets/cat-social-lv4.png";
 import catSocialLv5 from "@/assets/cat-social-lv5.png";
 import catSocialLv6 from "@/assets/cat-social-lv6.png";
+import catSceneryLv0 from "@/assets/cat-scenery-lv0.png";
+import catSceneryLv1 from "@/assets/cat-scenery-lv1.png";
+import catSceneryLv2 from "@/assets/cat-scenery-lv2.png";
+import catSceneryLv3 from "@/assets/cat-scenery-lv3.png";
+import catSceneryLv4 from "@/assets/cat-scenery-lv4.png";
+import catSceneryLv5 from "@/assets/cat-scenery-lv5.png";
+import catSceneryLv6 from "@/assets/cat-scenery-lv6.png";
 
 const CAT_IMAGES: Record<string, Record<number, string>> = {
   default: { 0: catLv0, 1: catLv1, 2: catLv2, 3: catLv3, 4: catLv4, 5: catLv5, 6: catLv6 },
@@ -45,6 +52,7 @@ const CAT_IMAGES: Record<string, Record<number, string>> = {
   "学习": { 0: catScholarLv0, 1: catScholarLv1, 2: catScholarLv2, 3: catScholarLv3, 4: catScholarLv4, 5: catScholarLv5, 6: catScholarLv6 },
   "运动": { 0: catSportLv0, 1: catSportLv1, 2: catSportLv2, 3: catSportLv3, 4: catSportLv4, 5: catSportLv5, 6: catSportLv6 },
   "社交": { 0: catSocialLv0, 1: catSocialLv1, 2: catSocialLv2, 3: catSocialLv3, 4: catSocialLv4, 5: catSocialLv5, 6: catSocialLv6 },
+  "美景": { 0: catSceneryLv0, 1: catSceneryLv1, 2: catSceneryLv2, 3: catSceneryLv3, 4: catSceneryLv4, 5: catSceneryLv5, 6: catSceneryLv6 },
 };
 
 const getCatImage = (level: number, category: string): string => {
