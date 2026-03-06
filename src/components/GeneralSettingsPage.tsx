@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeft, ChevronRight, Globe, Lock, Info } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
@@ -37,7 +38,9 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
     toast.success(t("settings.langChanged"));
   };
 
-  const handlePasswordChange = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handlePasswordChange = async () => {
     if (!oldPassword || !newPassword) {
       toast.error(t("settings.fillAll"));
       return;
@@ -50,11 +53,36 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
       toast.error(t("settings.mismatch"));
       return;
     }
-    toast.success(t("settings.passwordUpdated"));
-    setShowPasswordDialog(false);
-    setOldPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+
+    setLoading(true);
+    try {
+      // Verify current password by re-signing in
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error("未找到用户");
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: oldPassword,
+      });
+      if (signInError) {
+        toast.error("当前密码不正确");
+        return;
+      }
+
+      // Update password
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+
+      toast.success(t("settings.passwordUpdated"));
+      setShowPasswordDialog(false);
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (e: any) {
+      toast.error(e.message || "修改密码失败");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const currentLangLabel = languages.find(l => l.code === lang);
@@ -149,7 +177,9 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
             <Input type="password" placeholder={t("settings.oldPassword")} value={oldPassword} onChange={e => setOldPassword(e.target.value)} className="rounded-xl" />
             <Input type="password" placeholder={t("settings.newPassword")} value={newPassword} onChange={e => setNewPassword(e.target.value)} className="rounded-xl" />
             <Input type="password" placeholder={t("settings.confirmPassword")} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="rounded-xl" />
-            <Button onClick={handlePasswordChange} className="rounded-xl mt-1">{t("settings.confirmChange")}</Button>
+            <Button onClick={handlePasswordChange} disabled={loading} className="rounded-xl mt-1">
+              {loading ? "处理中..." : t("settings.confirmChange")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
