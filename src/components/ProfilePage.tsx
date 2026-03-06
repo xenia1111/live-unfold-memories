@@ -29,13 +29,18 @@ const menuItems = [
 const ProfilePage = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
+  const [showNameDialog, setShowNameDialog] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [displayName, setDisplayName] = useState("探索者");
+  const [nameInput, setNameInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem(AVATAR_KEY);
     if (saved) setAvatarUrl(saved);
+    const savedName = localStorage.getItem(NAME_KEY);
+    if (savedName) setDisplayName(savedName);
   }, []);
 
   const uploadAvatar = async (file: File) => {
