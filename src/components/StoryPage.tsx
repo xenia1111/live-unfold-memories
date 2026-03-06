@@ -22,7 +22,7 @@ interface StoryData {
   emoji: string;
 }
 
-type Period = "week" | "month" | "quarter" | "half";
+type Period = "week" | "month" | "quarter" | "half" | "year";
 type ViewMode = "period" | "category";
 
 const categoryEmoji: Record<string, string> = {
