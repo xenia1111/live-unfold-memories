@@ -133,10 +133,14 @@ const CatPet = ({ tasks }: CatPetProps) => {
   return (
     <>
       <div className="relative rounded-3xl border border-border/40 overflow-hidden">
-        {background.imageKey && BG_IMAGES[background.imageKey] ? (
+        {/* Background */}
+        {stage.level < 0 ? (
+          /* 蛋阶段：纸箱内部背景 */
+          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${bgCardboardBox})` }} />
+        ) : background.imageKey && BG_IMAGES[background.imageKey] ? (
           <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${BG_IMAGES[background.imageKey!]})` }} />
         ) : (
-          <div className="absolute inset-0" style={{ background: stage.level >= 0 ? background.gradient : "linear-gradient(180deg, #E8E0D0 0%, #D4C8B0 100%)" }} />
+          <div className="absolute inset-0" style={{ background: background.gradient }} />
         )}
         {stage.level >= 5 && <div className="absolute inset-0 overflow-hidden">{[...Array(12)].map((_, i) => (<div key={i} className="absolute w-1 h-1 bg-white rounded-full animate-pulse" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 70}%`, animationDelay: `${Math.random() * 3}s`, opacity: 0.3 + Math.random() * 0.5 }} />))}</div>}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
