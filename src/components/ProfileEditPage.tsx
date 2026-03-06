@@ -193,26 +193,15 @@ const ProfileEditPage = ({ onBack }: Props) => {
         </DialogContent>
       </Dialog>
 
-      {/* Birthday Dialog */}
+      {/* Birthday Dialog - custom scroll picker */}
       <Dialog open={editField === "birthday"} onOpenChange={open => !open && setEditField(null)}>
-        <DialogContent className="max-w-[340px] rounded-2xl p-4">
+        <DialogContent className="max-w-[300px] rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-center">选择生日</DialogTitle>
           </DialogHeader>
-          <Calendar
-            mode="single"
-            selected={calendarDate}
-            onSelect={(date) => {
-              if (date) {
-                setCalendarDate(date);
-                saveField("birthday", date.toISOString());
-              }
-            }}
-            disabled={(date) => date > new Date()}
-            captionLayout="dropdown-buttons"
-            fromYear={1930}
-            toYear={new Date().getFullYear()}
-            className={cn("p-3 pointer-events-auto mx-auto")}
+          <BirthdayPicker
+            value={profile.birthday}
+            onConfirm={(dateStr) => saveField("birthday", dateStr)}
           />
         </DialogContent>
       </Dialog>
