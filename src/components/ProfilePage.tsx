@@ -82,6 +82,10 @@ const ProfilePage = () => {
     e.target.value = "";
   };
 
+  if (showProfileEdit) {
+    return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadName(); }} />;
+  }
+
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
       {/* Hidden file inputs */}
