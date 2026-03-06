@@ -17,9 +17,22 @@ import catLv3 from "@/assets/cat-lv3.png";
 import catLv4 from "@/assets/cat-lv4.png";
 import catLv5 from "@/assets/cat-lv5.png";
 import catLv6 from "@/assets/cat-lv6.png";
+import catScholarLv0 from "@/assets/cat-scholar-lv0.png";
+import catScholarLv1 from "@/assets/cat-scholar-lv1.png";
+import catScholarLv2 from "@/assets/cat-scholar-lv2.png";
+import catScholarLv3 from "@/assets/cat-scholar-lv3.png";
+import catScholarLv4 from "@/assets/cat-scholar-lv4.png";
+import catScholarLv5 from "@/assets/cat-scholar-lv5.png";
+import catScholarLv6 from "@/assets/cat-scholar-lv6.png";
 
-const CAT_LEVEL_IMAGES: Record<number, string> = {
-  0: catLv0, 1: catLv1, 2: catLv2, 3: catLv3, 4: catLv4, 5: catLv5, 6: catLv6,
+const CAT_IMAGES: Record<string, Record<number, string>> = {
+  default: { 0: catLv0, 1: catLv1, 2: catLv2, 3: catLv3, 4: catLv4, 5: catLv5, 6: catLv6 },
+  "学习": { 0: catScholarLv0, 1: catScholarLv1, 2: catScholarLv2, 3: catScholarLv3, 4: catScholarLv4, 5: catScholarLv5, 6: catScholarLv6 },
+};
+
+const getCatImage = (level: number, category: string): string => {
+  const images = CAT_IMAGES[category] || CAT_IMAGES.default;
+  return images[level] || CAT_IMAGES.default[0];
 };
 import bgGrassland from "@/assets/bg-grassland.png";
 import bgCottage from "@/assets/bg-cottage.png";
