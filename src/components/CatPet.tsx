@@ -9,6 +9,7 @@ import CatRadarDialog from "@/components/CatRadarDialog";
 import { getCatPersonality } from "@/lib/catPersonality";
 import { calcCatFood, calcStreak, getCatStage, getCurrentBackground, STREAK_REWARDS } from "@/lib/catGrowth";
 import catWalkSprite from "@/assets/cat-walk-sprite.png";
+import eggNest from "@/assets/egg-nest.png";
 import bgGrassland from "@/assets/bg-grassland.png";
 import bgCottage from "@/assets/bg-cottage.png";
 import bgGarden from "@/assets/bg-garden.png";
@@ -142,10 +143,18 @@ const CatPet = ({ tasks }: CatPetProps) => {
             </button>
           </div>
 
-          <div className="relative h-20 mb-2">
-            <button onClick={() => setShowRadar(true)} className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-              <div className="w-16 h-16 animate-sprite-walk" style={{ backgroundImage: `url(${catWalkSprite})`, backgroundRepeat: "no-repeat", backgroundSize: "auto 100%", imageRendering: "pixelated" }} />
-            </button>
+          <div className="relative h-24 mb-2 flex items-end justify-center">
+            {stage.level < 0 ? (
+              /* 蛋阶段：巢里的蛋左右晃动 */
+              <button onClick={() => setShowRadar(true)} className="animate-egg-wobble active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
+                <img src={eggNest} alt="egg" className="w-24 h-24 object-contain" style={{ imageRendering: "pixelated" }} />
+              </button>
+            ) : (
+              /* 猫阶段：走来走去 */
+              <button onClick={() => setShowRadar(true)} className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
+                <div className="w-16 h-16 animate-sprite-walk" style={{ backgroundImage: `url(${catWalkSprite})`, backgroundRepeat: "no-repeat", backgroundSize: "auto 100%", imageRendering: "pixelated" }} />
+              </button>
+            )}
           </div>
 
           {showBubble && (

@@ -213,4 +213,15 @@
   .animate-sprite-walk {
     animation: sprite-walk 0.4s steps(4) infinite;
   }
+  @keyframes egg-wobble {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-6deg); }
+    40% { transform: rotate(5deg); }
+    60% { transform: rotate(-4deg); }
+    80% { transform: rotate(3deg); }
+  }
+  .animate-egg-wobble {
+    animation: egg-wobble 2.5s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
 }
