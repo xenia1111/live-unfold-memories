@@ -31,7 +31,7 @@ export function useStoryNotes() {
     setNotes(prev => ({ ...prev, [key]: note }));
     await supabase.from("story_notes").upsert(
       { period_key: key, note, user_id: user.id },
-      { onConflict: "period_key" }
+      { onConflict: "user_id,period_key" }
     );
   }, [user]);
 
@@ -58,7 +58,7 @@ export function useAiStories() {
     setAiStories(prev => ({ ...prev, [key]: story }));
     await supabase.from("ai_stories").upsert(
       { period_key: key, story_data: story as any, user_id: user.id },
-      { onConflict: "period_key" }
+      { onConflict: "user_id,period_key" }
     );
   }, [user]);
 
