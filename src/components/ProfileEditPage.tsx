@@ -5,9 +5,9 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
-const PROFILE_KEY = "user_profile_data";
-const NAME_KEY = "user_display_name";
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: currentYear - 1930 + 1 }, (_, i) => currentYear - i);
 const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -24,7 +24,8 @@ const defaultProfile: ProfileData = { name: "探索者", gender: "", birthday: "
 interface Props { onBack: () => void; }
 
 const ProfileEditPage = ({ onBack }: Props) => {
-  const { t, locale, dateFormat } = useI18n();
+  const { t } = useI18n();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [editField, setEditField] = useState<string | null>(null);
   const [tempValue, setTempValue] = useState("");
@@ -33,16 +34,33 @@ const ProfileEditPage = ({ onBack }: Props) => {
   const [bdDay, setBdDay] = useState(1);
 
   useEffect(() => {
-    const saved = localStorage.getItem(PROFILE_KEY);
-    if (saved) setProfile(JSON.parse(saved));
-    else { const savedName = localStorage.getItem(NAME_KEY); if (savedName) setProfile(p => ({ ...p, name: savedName })); }
-  }, []);
+    if (!user) return;
+    supabase.from("profiles").select("*").eq("id", user.id).single().then(({ data }) => {
+      if (data) {
+        setProfile({
+          name: data.display_name || "探索者",
+          gender: data.gender || "",
+          birthday: data.birthday || "",
+          region: data.region || "",
+        });
+      }
+    });
+  }, [user]);
 
-  const saveField = (field: keyof ProfileData, value: string) => {
+  const saveField = async (field: keyof ProfileData, value: string) => {
+    if (!user) return;
     const updated = { ...profile, [field]: value };
-    setProfile(updated); localStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
-    if (field === "name") localStorage.setItem(NAME_KEY, value);
-    toast.success(t("profileEdit.saved")); setEditField(null);
+    setProfile(updated);
+
+    const dbUpdate: Record<string, any> = {};
+    if (field === "name") dbUpdate.display_name = value;
+    else if (field === "gender") dbUpdate.gender = value;
+    else if (field === "birthday") dbUpdate.birthday = value.split("T")[0];
+    else if (field === "region") dbUpdate.region = value;
+
+    await supabase.from("profiles").update(dbUpdate).eq("id", user.id);
+    toast.success(t("profileEdit.saved"));
+    setEditField(null);
   };
 
   const getGenderDisplay = (dbVal: string) => {
