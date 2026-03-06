@@ -113,21 +113,19 @@ const CatPet = ({ tasks }: CatPetProps) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
         <div className="relative z-10 p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
-                {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stageLabel}
+          <div className="flex flex-wrap items-center gap-1.5 mb-3">
+            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
+              {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stageLabel}
+            </span>
+            {personality.category && (
+              <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
+                {personality.emoji} {personalityLabel}
               </span>
-              {personality.category && (
-                <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
-                  {personality.emoji} {personalityLabel}
-                </span>
-              )}
-              <span className={cn("text-[10px]", isDarkBg ? "text-white/70" : "text-white/70")}>
-                {interpolate(t("cat.alive"), { n: aliveDays })}
-              </span>
-            </div>
-            <button onClick={() => setShowLeaderboard(true)} className={cn("flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm hover:bg-black/30 active:scale-95 transition-all", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
+            )}
+            <span className={cn("text-[10px] whitespace-nowrap", isDarkBg ? "text-white/70" : "text-white/70")}>
+              {interpolate(t("cat.alive"), { n: aliveDays })}
+            </span>
+            <button onClick={() => setShowLeaderboard(true)} className={cn("ml-auto flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm hover:bg-black/30 active:scale-95 transition-all whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
               <span>{roundness.emoji}</span><span className="font-medium">{roundness.label}</span><span className="text-white/50 ml-0.5">›</span>
             </button>
           </div>
