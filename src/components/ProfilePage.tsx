@@ -118,7 +118,13 @@ const ProfilePage = () => {
             <Camera size={20} className="text-white" />
           </div>
         </button>
-        <h1 className="text-xl font-bold text-foreground font-serif">探索者</h1>
+        <button
+          onClick={() => { setNameInput(displayName); setShowNameDialog(true); }}
+          className="flex items-center gap-1.5 group/name"
+        >
+          <h1 className="text-xl font-bold text-foreground font-serif">{displayName}</h1>
+          <Pencil size={14} className="text-muted-foreground opacity-0 group-active/name:opacity-100 transition-opacity" />
+        </button>
         <p className="text-sm text-muted-foreground mt-0.5">让每一天都鲜活</p>
       </div>
 
