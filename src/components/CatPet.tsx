@@ -145,6 +145,9 @@ const CatPet = ({ tasks }: CatPetProps) => {
         {stage.level >= 5 && <div className="absolute inset-0 overflow-hidden">{[...Array(12)].map((_, i) => (<div key={i} className="absolute w-1 h-1 bg-white rounded-full animate-pulse" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 70}%`, animationDelay: `${Math.random() * 3}s`, opacity: 0.3 + Math.random() * 0.5 }} />))}</div>}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
+        {/* Hatching effect overlay */}
+        {isHatching && <EggHatchEffect onComplete={() => setIsHatching(false)} />}
+
         <div className="relative z-10 p-5">
           <div className="flex flex-wrap items-center gap-1.5 mb-3">
             <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
