@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { differenceInCalendarDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import type { Task } from "@/hooks/useTasks";
 import RoundnessLeaderboard from "@/components/RoundnessLeaderboard";
 import CatRadarDialog from "@/components/CatRadarDialog";
@@ -43,12 +44,11 @@ const ROUNDNESS_TITLES = [
   { min: 4.0, key: "roundness.6", emoji: "🪐" },
 ];
 
-const getClientId = (): string => { const key = "cat_client_id"; let id = localStorage.getItem(key); if (!id) { id = crypto.randomUUID(); localStorage.setItem(key, id); } return id; };
-
 interface CatPetProps { tasks: Task[]; }
 
 const CatPet = ({ tasks }: CatPetProps) => {
   const { t } = useI18n();
+  const { user } = useAuth();
   const completedTasks = useMemo(() => tasks.filter(t => t.completed), [tasks]);
   const completedCount = completedTasks.length;
   const photoCount = useMemo(() => completedTasks.filter(t => t.completionPhoto).length, [completedTasks]);
@@ -67,21 +67,33 @@ const CatPet = ({ tasks }: CatPetProps) => {
     return { ...title, label: t(title.key) };
   };
 
-  const [clientId] = useState(getClientId);
+  const [catProfileId, setCatProfileId] = useState<string | null>(null);
   const [bornAt, setBornAt] = useState<Date | null>(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showRadar, setShowRadar] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     const init = async () => {
-      const { data } = await supabase.from("cat_profiles").select("*").eq("client_id", clientId).maybeSingle();
-      if (data) setBornAt(new Date(data.born_at));
-      else { const { data: newCat } = await supabase.from("cat_profiles").insert({ client_id: clientId, cat_name: "小猫咪" }).select().single(); if (newCat) setBornAt(new Date(newCat.born_at)); }
+      const { data } = await supabase.from("cat_profiles").select("*").eq("user_id", user.id).maybeSingle();
+      if (data) {
+        setBornAt(new Date(data.born_at));
+        setCatProfileId(data.id);
+      } else {
+        const { data: newCat } = await supabase.from("cat_profiles").insert({ user_id: user.id, cat_name: "小猫咪" }).select().single();
+        if (newCat) {
+          setBornAt(new Date(newCat.born_at));
+          setCatProfileId(newCat.id);
+        }
+      }
     };
     init();
-  }, [clientId]);
+  }, [user]);
 
-  useEffect(() => { if (!bornAt) return; supabase.from("cat_profiles").update({ completed_count: completedCount, photo_count: photoCount }).eq("client_id", clientId).then(() => {}); }, [completedCount, photoCount, clientId, bornAt]);
+  useEffect(() => {
+    if (!bornAt || !user) return;
+    supabase.from("cat_profiles").update({ completed_count: completedCount, photo_count: photoCount }).eq("user_id", user.id).then(() => {});
+  }, [completedCount, photoCount, user, bornAt]);
 
   const aliveDays = bornAt ? Math.max(differenceInCalendarDays(new Date(), bornAt), 1) : 1;
   const roundnessRate = aliveDays > 0 ? completedCount / aliveDays : 0;
@@ -176,7 +188,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
         </div>
       </div>
 
-      <RoundnessLeaderboard open={showLeaderboard} onOpenChange={setShowLeaderboard} myClientId={clientId} />
+      <RoundnessLeaderboard open={showLeaderboard} onOpenChange={setShowLeaderboard} myUserId={user?.id || ""} />
       <CatRadarDialog open={showRadar} onOpenChange={setShowRadar} tasks={tasks} />
     </>
   );

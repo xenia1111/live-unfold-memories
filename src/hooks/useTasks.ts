@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export interface Task {
@@ -48,13 +49,16 @@ const formatDate = (d?: Date): string | null =>
   d ? d.toISOString().split("T")[0] : null;
 
 export function useTasks() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchTasks = useCallback(async () => {
+    if (!user) { setTasks([]); setLoading(false); return; }
     const { data, error } = await supabase
       .from("tasks")
       .select("*")
+      .eq("user_id", user.id)
       .order("created_at", { ascending: true });
     if (error) {
       console.error("Failed to fetch tasks:", error);
@@ -63,7 +67,7 @@ export function useTasks() {
     }
     setTasks((data as DbTask[]).map(dbToTask));
     setLoading(false);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     fetchTasks();
@@ -73,6 +77,7 @@ export function useTasks() {
     title: string; time: string; icon: string; category: string;
     date?: Date; coverImage?: string; deadline?: Date;
   }) => {
+    if (!user) return;
     const row = {
       title: task.title,
       time: task.time,
@@ -81,6 +86,7 @@ export function useTasks() {
       date: formatDate(task.date),
       cover_image: task.coverImage || null,
       deadline: formatDate(task.deadline),
+      user_id: user.id,
     };
     const { data, error } = await supabase.from("tasks").insert(row).select().single();
     if (error) {
@@ -88,7 +94,7 @@ export function useTasks() {
       return;
     }
     setTasks(prev => [...prev, dbToTask(data as DbTask)]);
-  }, []);
+  }, [user]);
 
   const completeTask = useCallback(async (id: string, photo?: string, note?: string) => {
     const { error } = await supabase.from("tasks").update({
