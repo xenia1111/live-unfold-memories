@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import eggNest from "@/assets/egg-nest.png";
-import catWalkSprite from "@/assets/cat-walk-sprite.png";
+import catLv0 from "@/assets/cat-lv0.png";
 
 interface EggHatchEffectProps {
   onComplete: () => void;
@@ -79,16 +79,7 @@ const EggHatchEffect = ({ onComplete }: EggHatchEffectProps) => {
       {/* Kitten appearing */}
       {phase === "kitten" && (
         <div className="animate-kitten-appear">
-          <div
-            className="w-20 h-20"
-            style={{
-              backgroundImage: `url(${catWalkSprite})`,
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "auto 100%",
-              backgroundPosition: "0 0",
-              imageRendering: "pixelated",
-            }}
-          />
+          <img src={catLv0} alt="kitten" className="w-20 h-20 object-contain" style={{ imageRendering: "pixelated" }} />
           <p className="text-center text-xs font-medium text-white drop-shadow-lg mt-2 animate-fade-in">
             🎉 小猫咪诞生了！
           </p>
