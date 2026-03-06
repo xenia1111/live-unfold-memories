@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
-  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus
+  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus, Pencil
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
