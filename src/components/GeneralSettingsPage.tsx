@@ -177,7 +177,9 @@ const GeneralSettingsPage = ({ onBack }: Props) => {
             <Input type="password" placeholder={t("settings.oldPassword")} value={oldPassword} onChange={e => setOldPassword(e.target.value)} className="rounded-xl" />
             <Input type="password" placeholder={t("settings.newPassword")} value={newPassword} onChange={e => setNewPassword(e.target.value)} className="rounded-xl" />
             <Input type="password" placeholder={t("settings.confirmPassword")} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="rounded-xl" />
-            <Button onClick={handlePasswordChange} className="rounded-xl mt-1">{t("settings.confirmChange")}</Button>
+            <Button onClick={handlePasswordChange} disabled={loading} className="rounded-xl mt-1">
+              {loading ? "处理中..." : t("settings.confirmChange")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
