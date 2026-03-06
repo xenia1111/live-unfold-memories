@@ -115,6 +115,18 @@ const CatPet = ({ tasks }: CatPetProps) => {
     if (lastCompleted) { setIsEating(true); setShowBubble(true); const timer = setTimeout(() => setIsEating(false), 2000); return () => clearTimeout(timer); }
   }, [lastCompleted?.id, personality.label]);
 
+  // Detect level-up from egg (-1) to cracked (0) → trigger hatching
+  useEffect(() => {
+    if (prevStageLevel === null) {
+      setPrevStageLevel(stage.level);
+      return;
+    }
+    if (prevStageLevel === -1 && stage.level >= 0) {
+      setIsHatching(true);
+    }
+    setPrevStageLevel(stage.level);
+  }, [stage.level]);
+
   const isDarkBg = stage.level >= 5;
   const nextStageLabel = nextStage ? t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][nextStage.level + 1] || "cosmic"}`) : null;
 
