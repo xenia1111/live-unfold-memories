@@ -20,18 +20,21 @@ export type Database = {
           id: string
           period_key: string
           story_data: Json
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           period_key: string
           story_data: Json
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           period_key?: string
           story_data?: Json
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -44,6 +47,7 @@ export type Database = {
           created_at: string
           id: string
           photo_count: number
+          user_id: string | null
         }
         Insert: {
           born_at?: string
@@ -53,6 +57,7 @@ export type Database = {
           created_at?: string
           id?: string
           photo_count?: number
+          user_id?: string | null
         }
         Update: {
           born_at?: string
@@ -62,6 +67,40 @@ export type Database = {
           created_at?: string
           id?: string
           photo_count?: number
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          birthday: string | null
+          created_at: string
+          display_name: string
+          gender: string | null
+          id: string
+          region: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          birthday?: string | null
+          created_at?: string
+          display_name?: string
+          gender?: string | null
+          id: string
+          region?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          birthday?: string | null
+          created_at?: string
+          display_name?: string
+          gender?: string | null
+          id?: string
+          region?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -72,6 +111,7 @@ export type Database = {
           note: string
           period_key: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -79,6 +119,7 @@ export type Database = {
           note?: string
           period_key: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -86,6 +127,7 @@ export type Database = {
           note?: string
           period_key?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -104,6 +146,7 @@ export type Database = {
           time: string
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           category?: string
@@ -119,6 +162,7 @@ export type Database = {
           time?: string
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           category?: string
@@ -134,6 +178,7 @@ export type Database = {
           time?: string
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
