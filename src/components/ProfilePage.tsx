@@ -1,8 +1,16 @@
+import { useState, useRef, useEffect } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
-  LogOut, Heart, Award, TrendingUp
+  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
+
+const AVATAR_KEY = "user_avatar_url";
 
 const stats = [
   { label: "完成计划", value: "280", icon: TrendingUp },
@@ -18,16 +26,125 @@ const menuItems = [
 ];
 
 const ProfilePage = () => {
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(AVATAR_KEY);
+    if (saved) setAvatarUrl(saved);
+  }, []);
+
+  const uploadAvatar = async (file: File) => {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("图片不能超过 5MB");
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const fileName = `avatar_${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+      const url = urlData.publicUrl;
+      setAvatarUrl(url);
+      localStorage.setItem(AVATAR_KEY, url);
+      setShowDialog(false);
+      toast.success("头像已更新 🎉");
+    } catch (e: any) {
+      toast.error("上传失败: " + (e.message || "请重试"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) uploadAvatar(file);
+    e.target.value = "";
+  };
+
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
+      {/* Hidden file inputs */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Avatar & Name */}
       <div className="flex flex-col items-center mb-8 animate-fade-in">
-        <div className="w-20 h-20 rounded-full gradient-warm flex items-center justify-center mb-3 shadow-lg">
-          <User size={36} className="text-primary-foreground" />
-        </div>
+        <button
+          onClick={() => setShowDialog(true)}
+          className="relative group w-20 h-20 rounded-full mb-3 shadow-lg overflow-hidden"
+        >
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="头像"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full gradient-warm flex items-center justify-center">
+              <User size={36} className="text-primary-foreground" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-active:opacity-100 transition-opacity rounded-full">
+            <Camera size={20} className="text-white" />
+          </div>
+        </button>
         <h1 className="text-xl font-bold text-foreground font-serif">探索者</h1>
         <p className="text-sm text-muted-foreground mt-0.5">让每一天都鲜活</p>
       </div>
+
+      {/* Avatar upload dialog */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="max-w-[280px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-center">修改头像</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-2">
+            <button
+              disabled={uploading}
+              onClick={() => { cameraInputRef.current?.click(); }}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted hover:bg-muted/80 transition-colors active:scale-[0.98] disabled:opacity-50"
+            >
+              <Camera size={20} className="text-primary" />
+              <span className="text-sm font-medium text-foreground">拍照</span>
+            </button>
+            <button
+              disabled={uploading}
+              onClick={() => { fileInputRef.current?.click(); }}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-muted hover:bg-muted/80 transition-colors active:scale-[0.98] disabled:opacity-50"
+            >
+              <ImagePlus size={20} className="text-primary" />
+              <span className="text-sm font-medium text-foreground">从相册选择</span>
+            </button>
+          </div>
+          {uploading && (
+            <p className="text-xs text-center text-muted-foreground animate-pulse">上传中…</p>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3 mb-8 animate-fade-in" style={{ animationDelay: "0.1s" }}>
