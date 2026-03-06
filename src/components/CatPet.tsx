@@ -13,9 +13,11 @@ import eggNest from "@/assets/egg-nest.png";
 import bgGrassland from "@/assets/bg-grassland.png";
 import bgCottage from "@/assets/bg-cottage.png";
 import bgGarden from "@/assets/bg-garden.png";
+import bgCardboardBox from "@/assets/bg-cardboard-box.png";
+import EggHatchEffect from "@/components/EggHatchEffect";
 import { useI18n, interpolate } from "@/lib/i18n";
 
-const BG_IMAGES: Record<string, string> = { grassland: bgGrassland, cottage: bgCottage, garden: bgGarden };
+const BG_IMAGES: Record<string, string> = { grassland: bgGrassland, cottage: bgCottage, garden: bgGarden, cardboard: bgCardboardBox };
 
 const TASTE_COMMENTS: Record<string, string[]> = {
   "运动": ["miamiamia~汗水味的！咸咸的！但是很提神！","呼...这个有肌肉的味道，猫猫也想变壮💪","运动完的你...味道好像更浓了呢（捂鼻）"],
@@ -105,11 +107,25 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const [comment, setComment] = useState(() => getComment(lastCompleted, personality.idleLines));
   const [showBubble, setShowBubble] = useState(true);
   const [isEating, setIsEating] = useState(false);
+  const [isHatching, setIsHatching] = useState(false);
+  const [prevStageLevel, setPrevStageLevel] = useState<number | null>(null);
 
   useEffect(() => {
     setComment(getComment(lastCompleted, personality.idleLines));
     if (lastCompleted) { setIsEating(true); setShowBubble(true); const timer = setTimeout(() => setIsEating(false), 2000); return () => clearTimeout(timer); }
   }, [lastCompleted?.id, personality.label]);
+
+  // Detect level-up from egg (-1) to cracked (0) → trigger hatching
+  useEffect(() => {
+    if (prevStageLevel === null) {
+      setPrevStageLevel(stage.level);
+      return;
+    }
+    if (prevStageLevel === -1 && stage.level >= 0) {
+      setIsHatching(true);
+    }
+    setPrevStageLevel(stage.level);
+  }, [stage.level]);
 
   const isDarkBg = stage.level >= 5;
   const nextStageLabel = nextStage ? t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][nextStage.level + 1] || "cosmic"}`) : null;
@@ -117,13 +133,20 @@ const CatPet = ({ tasks }: CatPetProps) => {
   return (
     <>
       <div className="relative rounded-3xl border border-border/40 overflow-hidden">
-        {background.imageKey && BG_IMAGES[background.imageKey] ? (
+        {/* Background */}
+        {stage.level < 0 ? (
+          /* 蛋阶段：纸箱内部背景 */
+          <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${bgCardboardBox})` }} />
+        ) : background.imageKey && BG_IMAGES[background.imageKey] ? (
           <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${BG_IMAGES[background.imageKey!]})` }} />
         ) : (
-          <div className="absolute inset-0" style={{ background: stage.level >= 0 ? background.gradient : "linear-gradient(180deg, #E8E0D0 0%, #D4C8B0 100%)" }} />
+          <div className="absolute inset-0" style={{ background: background.gradient }} />
         )}
         {stage.level >= 5 && <div className="absolute inset-0 overflow-hidden">{[...Array(12)].map((_, i) => (<div key={i} className="absolute w-1 h-1 bg-white rounded-full animate-pulse" style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 70}%`, animationDelay: `${Math.random() * 3}s`, opacity: 0.3 + Math.random() * 0.5 }} />))}</div>}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+
+        {/* Hatching effect overlay */}
+        {isHatching && <EggHatchEffect onComplete={() => setIsHatching(false)} />}
 
         <div className="relative z-10 p-5">
           <div className="flex flex-wrap items-center gap-1.5 mb-3">

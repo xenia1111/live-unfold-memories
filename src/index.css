@@ -224,4 +224,87 @@
     animation: egg-wobble 2.5s ease-in-out infinite;
     transform-origin: center bottom;
   }
+
+  /* Hatching animations */
+  @keyframes egg-shake {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    10% { transform: rotate(-12deg) scale(1.02); }
+    20% { transform: rotate(10deg) scale(1.04); }
+    30% { transform: rotate(-14deg) scale(1.06); }
+    40% { transform: rotate(12deg) scale(1.05); }
+    50% { transform: rotate(-10deg) scale(1.08); }
+    60% { transform: rotate(14deg) scale(1.06); }
+    70% { transform: rotate(-8deg) scale(1.1); }
+    80% { transform: rotate(10deg) scale(1.08); }
+    90% { transform: rotate(-6deg) scale(1.12); }
+  }
+  .animate-egg-shake {
+    animation: egg-shake 0.8s ease-in-out;
+    transform-origin: center bottom;
+  }
+
+  @keyframes egg-crack {
+    0% { transform: scale(1.12); opacity: 1; }
+    30% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+  .animate-egg-crack {
+    animation: egg-crack 1s ease-out forwards;
+  }
+
+  @keyframes hatch-burst {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .animate-hatch-burst {
+    animation: hatch-burst 1.5s ease-out forwards;
+  }
+
+  @keyframes hatch-ray {
+    0% { height: 0; opacity: 0; }
+    30% { height: 120px; opacity: 0.8; }
+    100% { height: 160px; opacity: 0; }
+  }
+  .animate-hatch-ray {
+    animation: hatch-ray 1s ease-out forwards;
+  }
+
+  @keyframes shell-fly {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--fly-x, 40px)), calc(-50% + var(--fly-y, -60px))) scale(0.3) rotate(360deg); opacity: 0; }
+  }
+  .animate-shell-fly {
+    animation: shell-fly 0.8s ease-out forwards;
+  }
+  .animate-shell-fly:nth-child(1) { --fly-x: -50px; --fly-y: -70px; }
+  .animate-shell-fly:nth-child(2) { --fly-x: 60px; --fly-y: -50px; }
+  .animate-shell-fly:nth-child(3) { --fly-x: -40px; --fly-y: 30px; }
+  .animate-shell-fly:nth-child(4) { --fly-x: 50px; --fly-y: 40px; }
+  .animate-shell-fly:nth-child(5) { --fly-x: -70px; --fly-y: -20px; }
+  .animate-shell-fly:nth-child(6) { --fly-x: 70px; --fly-y: -30px; }
+
+  @keyframes kitten-appear {
+    0% { transform: scale(0) translateY(20px); opacity: 0; }
+    50% { transform: scale(1.2) translateY(-10px); opacity: 1; }
+    70% { transform: scale(0.9) translateY(0); }
+    85% { transform: scale(1.05) translateY(-3px); }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .animate-kitten-appear {
+    animation: kitten-appear 1.2s ease-out forwards;
+  }
+
+  @keyframes sparkle-fly {
+    0% { transform: scale(0) translateY(0); opacity: 0; }
+    30% { transform: scale(1.2) translateY(-20px); opacity: 1; }
+    100% { transform: scale(0.5) translateY(-60px); opacity: 0; }
+  }
+  .animate-sparkle-fly {
+    animation: sparkle-fly 1s ease-out forwards;
+  }
+
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to));
+  }
 }
