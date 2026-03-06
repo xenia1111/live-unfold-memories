@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 
 const AVATAR_KEY = "user_avatar_url";
+const NAME_KEY = "user_display_name";
 
 const stats = [
   { label: "完成计划", value: "280", icon: TrendingUp },
