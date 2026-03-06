@@ -8,15 +8,14 @@ import ProfileEditPage from "@/components/ProfileEditPage";
 import GeneralSettingsPage from "@/components/GeneralSettingsPage";
 import ProductIntroPage from "@/components/ProductIntroPage";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
 
-const AVATAR_KEY = "user_avatar_url";
-const NAME_KEY = "user_display_name";
-
 const ProfilePage = () => {
   const { t } = useI18n();
+  const { user, signOut } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
@@ -27,16 +26,18 @@ const ProfilePage = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const loadName = () => {
-    const savedName = localStorage.getItem(NAME_KEY);
-    if (savedName) setDisplayName(savedName);
+  const loadProfile = async () => {
+    if (!user) return;
+    const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    if (data) {
+      setDisplayName(data.display_name || "探索者");
+      setAvatarUrl(data.avatar_url || null);
+    }
   };
 
   useEffect(() => {
-    const saved = localStorage.getItem(AVATAR_KEY);
-    if (saved) setAvatarUrl(saved);
-    loadName();
-  }, []);
+    loadProfile();
+  }, [user]);
 
   const stats = [
     { label: t("profile.plans"), value: "280", icon: TrendingUp },
@@ -53,18 +54,20 @@ const ProfilePage = () => {
   ];
 
   const uploadAvatar = async (file: File) => {
-    if (!file) return;
+    if (!file || !user) return;
     if (file.size > 5 * 1024 * 1024) { toast.error(t("profile.imageTooLarge")); return; }
     setUploading(true);
     try {
       const ext = file.name.split(".").pop() || "jpg";
-      const fileName = `avatar_${Date.now()}.${ext}`;
+      const fileName = `${user.id}/avatar_${Date.now()}.${ext}`;
       const { error } = await supabase.storage.from("avatars").upload(fileName, file, { upsert: true });
       if (error) throw error;
       const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(fileName);
       const url = urlData.publicUrl;
-      setAvatarUrl(url); localStorage.setItem(AVATAR_KEY, url);
-      setShowDialog(false); toast.success(t("profile.avatarUpdated"));
+      setAvatarUrl(url);
+      await supabase.from("profiles").update({ avatar_url: url }).eq("id", user.id);
+      setShowDialog(false);
+      toast.success(t("profile.avatarUpdated"));
     } catch (e: any) {
       toast.error(t("profile.uploadFailed") + (e.message || ""));
     } finally { setUploading(false); }
@@ -76,7 +79,12 @@ const ProfilePage = () => {
     e.target.value = "";
   };
 
-  if (showProfileEdit) return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadName(); }} />;
+  const handleLogout = async () => {
+    await signOut();
+    toast.success("已退出登录");
+  };
+
+  if (showProfileEdit) return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadProfile(); }} />;
   if (showGeneralSettings) return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} />;
   if (showProductIntro) return <ProductIntroPage onBack={() => setShowProductIntro(false)} />;
 
@@ -100,7 +108,7 @@ const ProfilePage = () => {
           <h1 className="text-xl font-bold text-foreground font-serif">{displayName}</h1>
           <ChevronRight size={14} className="text-muted-foreground" />
         </button>
-        <p className="text-sm text-muted-foreground mt-0.5">{t("profile.motto")}</p>
+        <p className="text-sm text-muted-foreground mt-0.5">{user?.email}</p>
       </div>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
@@ -148,7 +156,7 @@ const ProfilePage = () => {
         })}
       </div>
 
-      <button className="w-full flex items-center justify-center gap-2 mt-8 py-3 rounded-xl bg-muted text-muted-foreground hover:text-destructive transition-colors text-sm animate-fade-in" style={{ animationDelay: "0.3s" }}>
+      <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 mt-8 py-3 rounded-xl bg-muted text-muted-foreground hover:text-destructive transition-colors text-sm animate-fade-in" style={{ animationDelay: "0.3s" }}>
         <LogOut size={16} /><span>{t("profile.logout")}</span>
       </button>
     </div>
