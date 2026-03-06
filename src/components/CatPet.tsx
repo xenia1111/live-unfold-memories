@@ -107,6 +107,8 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const [comment, setComment] = useState(() => getComment(lastCompleted, personality.idleLines));
   const [showBubble, setShowBubble] = useState(true);
   const [isEating, setIsEating] = useState(false);
+  const [isHatching, setIsHatching] = useState(false);
+  const [prevStageLevel, setPrevStageLevel] = useState<number | null>(null);
 
   useEffect(() => {
     setComment(getComment(lastCompleted, personality.idleLines));
