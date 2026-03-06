@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
-  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus
+  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus, BookOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileEditPage from "@/components/ProfileEditPage";
+import GeneralSettingsPage from "@/components/GeneralSettingsPage";
+import ProductIntroPage from "@/components/ProductIntroPage";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -21,16 +23,19 @@ const stats = [
 ];
 
 const menuItems = [
-  { icon: Bell, label: "通知设置", desc: "管理提醒和推送" },
-  { icon: Shield, label: "隐私设置", desc: "数据安全与隐私" },
-  { icon: Moon, label: "外观设置", desc: "主题与显示" },
-  { icon: Settings, label: "通用设置", desc: "语言、存储等" },
+  { icon: Bell, label: "通知设置", desc: "管理提醒和推送", key: "notifications" },
+  { icon: Shield, label: "隐私设置", desc: "数据安全与隐私", key: "privacy" },
+  { icon: Moon, label: "外观设置", desc: "主题与显示", key: "appearance" },
+  { icon: Settings, label: "通用设置", desc: "语言、密码、版本", key: "general" },
+  { icon: BookOpen, label: "产品介绍", desc: "了解如何使用", key: "intro" },
 ];
 
 const ProfilePage = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [showGeneralSettings, setShowGeneralSettings] = useState(false);
+  const [showProductIntro, setShowProductIntro] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [displayName, setDisplayName] = useState("探索者");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,6 +89,12 @@ const ProfilePage = () => {
 
   if (showProfileEdit) {
     return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadName(); }} />;
+  }
+  if (showGeneralSettings) {
+    return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} />;
+  }
+  if (showProductIntro) {
+    return <ProductIntroPage onBack={() => setShowProductIntro(false)} />;
   }
 
   return (
@@ -187,7 +198,11 @@ const ProfilePage = () => {
           const Icon = item.icon;
           return (
             <button
-              key={item.label}
+              key={item.key}
+              onClick={() => {
+                if (item.key === "general") setShowGeneralSettings(true);
+                if (item.key === "intro") setShowProductIntro(true);
+              }}
               className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]"
             >
               <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
