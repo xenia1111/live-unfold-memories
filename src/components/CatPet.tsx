@@ -10,6 +10,17 @@ import { getCatPersonality } from "@/lib/catPersonality";
 import { calcCatFood, calcStreak, getCatStage, getCurrentBackground, STREAK_REWARDS } from "@/lib/catGrowth";
 import catWalkSprite from "@/assets/cat-walk-sprite.png";
 import eggNest from "@/assets/egg-nest.png";
+import catLv0 from "@/assets/cat-lv0.png";
+import catLv1 from "@/assets/cat-lv1.png";
+import catLv2 from "@/assets/cat-lv2.png";
+import catLv3 from "@/assets/cat-lv3.png";
+import catLv4 from "@/assets/cat-lv4.png";
+import catLv5 from "@/assets/cat-lv5.png";
+import catLv6 from "@/assets/cat-lv6.png";
+
+const CAT_LEVEL_IMAGES: Record<number, string> = {
+  0: catLv0, 1: catLv1, 2: catLv2, 3: catLv3, 4: catLv4, 5: catLv5, 6: catLv6,
+};
 import bgGrassland from "@/assets/bg-grassland.png";
 import bgCottage from "@/assets/bg-cottage.png";
 import bgGarden from "@/assets/bg-garden.png";
@@ -175,7 +186,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
             ) : (
               /* 猫阶段：走来走去 */
               <button onClick={() => setShowRadar(true)} className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-                <div className="w-16 h-16 animate-sprite-walk" style={{ backgroundImage: `url(${catWalkSprite})`, backgroundRepeat: "no-repeat", backgroundSize: "auto 100%", imageRendering: "pixelated" }} />
+                <img src={CAT_LEVEL_IMAGES[stage.level] || catLv0} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
               </button>
             )}
           </div>
