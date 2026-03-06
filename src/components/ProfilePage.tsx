@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
-  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus, ChevronRight
+  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileEditPage from "@/components/ProfileEditPage";
