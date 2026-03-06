@@ -1,20 +1,22 @@
-import { useState } from "react";
 import { Home, CalendarDays, BookOpen, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n";
 
 interface BottomNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-const tabs = [
-  { id: "home", label: "首页", icon: Home },
-  { id: "calendar", label: "日历", icon: CalendarDays },
-  { id: "story", label: "故事", icon: BookOpen },
-  { id: "profile", label: "我的", icon: User },
-];
-
 const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
+  const { t } = useI18n();
+
+  const tabs = [
+    { id: "home", label: t("nav.home"), icon: Home },
+    { id: "calendar", label: t("nav.calendar"), icon: CalendarDays },
+    { id: "story", label: t("nav.story"), icon: BookOpen },
+    { id: "profile", label: t("nav.profile"), icon: User },
+  ];
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-xl border-t border-border">
       <div className="flex items-center justify-around max-w-lg mx-auto h-16 px-2">
