@@ -199,7 +199,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
             ) : (
               /* 猫阶段：走来走去 */
               <button onClick={() => setShowRadar(true)} className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-                <img src={CAT_LEVEL_IMAGES[stage.level] || catLv0} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
+                <img src={getCatImage(stage.level, personality.category)} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
               </button>
             )}
           </div>
