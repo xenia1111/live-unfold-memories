@@ -46,16 +46,14 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   const realStats = useMemo(() => {
     const completedCount = tasks.filter(t => t.completed).length;
     const streak = calcStreak(tasks);
-    // 生活指数 = 完成率 * 100, 至少看总数
-    const total = tasks.length;
-    const lifeIndex = total > 0 ? Math.round((completedCount / total) * 100) : 0;
-    return { completedCount, streak, lifeIndex };
+    const totalRecords = tasks.length;
+    return { completedCount, streak, totalRecords };
   }, [tasks]);
 
   const stats = [
     { label: t("profile.plans"), value: String(realStats.completedCount), icon: TrendingUp },
     { label: t("profile.streak"), value: String(realStats.streak), icon: Award },
-    { label: t("profile.lifeIndex"), value: String(realStats.lifeIndex), icon: Heart },
+    { label: t("profile.lifeIndex"), value: String(realStats.totalRecords), icon: Heart },
   ];
 
   const menuItems = [
