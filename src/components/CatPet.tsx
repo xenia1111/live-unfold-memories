@@ -156,9 +156,11 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const { current: stage, next: nextStage, progress } = useMemo(() => getCatStage(catFood, tasks), [catFood, tasks]);
   const background = useMemo(() => getCurrentBackground(stage.level), [stage.level]);
 
+  // Fixed cat category from DB (determined by first task, never changes)
+  const [fixedCategory, setFixedCategory] = useState<string | null>(null);
+
   const stageLabel = t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][stage.level + 1] || "egg"}`);
   const personalityLabel = personality.category ? t(`personality.${personality.category}`) : t("personality.default");
-
   const getRoundnessTitle = (rate: number) => {
     let title = ROUNDNESS_TITLES[0];
     for (const tt of ROUNDNESS_TITLES) { if (rate >= tt.min) title = tt; }
