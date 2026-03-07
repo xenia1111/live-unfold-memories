@@ -13,6 +13,7 @@ import ConfettiCanvas from "@/components/ConfettiCanvas";
 import CatPet from "@/components/CatPet";
 import type { Task } from "@/hooks/useTasks";
 import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
+import eggNestImg from "@/assets/egg-nest.png";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
