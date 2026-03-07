@@ -110,7 +110,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       {/* Warm header */}
       <div className="text-center mb-6 animate-fade-in">
         <h1 className="text-2xl font-bold text-foreground mb-1">📖</h1>
-        <p className="text-xs text-muted-foreground italic">{t("story.headerSubtitle") || "生活的每一页，都值得被翻阅"}</p>
       </div>
 
       {/* View mode toggle — pill style */}
@@ -239,7 +238,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                         ) : hasAI ? (
                           <><RefreshCw size={14} /><span>{t("story.refreshStory")}</span></>
                         ) : (
-                          <><Sparkles size={14} /><span>✨ {t("story.generateAI")}</span></>
+                          <><Sparkles size={14} /><span>{t("story.generateAI")}</span></>
                         )}
                       </button>
 
