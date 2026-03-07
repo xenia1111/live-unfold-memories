@@ -73,11 +73,11 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   };
 
   const periodTabs = [
-    { id: "week" as Period, label: t("story.week"), emoji: "📅" },
-    { id: "month" as Period, label: t("story.month"), emoji: "🗓️" },
-    { id: "quarter" as Period, label: t("story.quarter"), emoji: "🍂" },
-    { id: "half" as Period, label: t("story.half"), emoji: "🌍" },
-    { id: "year" as Period, label: t("story.year"), emoji: "🎆" },
+    { id: "week" as Period, label: t("story.week") },
+    { id: "month" as Period, label: t("story.month") },
+    { id: "quarter" as Period, label: t("story.quarter") },
+    { id: "half" as Period, label: t("story.half") },
+    { id: "year" as Period, label: t("story.year") },
   ];
 
   const cards = useMemo(() => {
@@ -123,8 +123,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           {/* Period tabs — scrollable pills */}
           <div className="flex gap-1.5 mb-6 overflow-x-auto scrollbar-hide animate-fade-in pb-1" style={{ animationDelay: "0.1s" }}>
             {periodTabs.map(tab => (
-              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-1.5", activePeriod === tab.id ? "bg-card text-foreground shadow-sm border border-border/50" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
-                <span>{tab.emoji}</span><span>{tab.label}</span>
+              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300", activePeriod === tab.id ? "bg-card text-foreground shadow-sm border border-border/50" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
+                {tab.label}
               </button>
             ))}
           </div>
