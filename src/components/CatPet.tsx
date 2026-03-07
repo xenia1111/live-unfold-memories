@@ -269,9 +269,9 @@ const CatPet = ({ tasks }: CatPetProps) => {
             <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
               {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stageLabel}
             </span>
-            {personality.category && (
+            {(fixedCategory || personality.category) && (
               <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
-                {personality.emoji} {personalityLabel}
+                {personalityLabel}
               </span>
             )}
             <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/20 text-white")}>
