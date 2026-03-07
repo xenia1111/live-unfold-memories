@@ -76,6 +76,7 @@ const CAT_IMAGES: Record<string, Record<number, string>> = {
   "美景": { 0: catSceneryLv0, 1: catSceneryLv1, 2: catSceneryLv2, 3: catSceneryLv3, 4: catSceneryLv4, 5: catSceneryLv5, 6: catSceneryLv6 },
   "娱乐": { 0: catFunLv0, 1: catFunLv1, 2: catFunLv2, 3: catFunLv3, 4: catFunLv4, 5: catFunLv5, 6: catFunLv6 },
   "记录": { 0: catDiaryLv0, 1: catDiaryLv1, 2: catDiaryLv2, 3: catDiaryLv3, 4: catDiaryLv4, 5: catDiaryLv5, 6: catDiaryLv6 },
+  "健康": { 0: catHealthLv0, 1: catHealthLv1, 2: catHealthLv2, 3: catHealthLv3, 4: catHealthLv4, 5: catHealthLv5, 6: catHealthLv6 },
 };
 
 const getCatImage = (level: number, category: string): string => {
