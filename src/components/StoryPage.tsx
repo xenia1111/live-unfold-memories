@@ -15,12 +15,12 @@ type ViewMode = "period" | "category";
 
 const categoryEmoji: Record<string, string> = { "运动": "🏃", "学习": "📖", "社交": "☕", "工作": "💼", "健康": "🧘", "记录": "📝", "娱乐": "🎵" };
 
-const getMoodColor = (rate: number, total: number): string => {
-  if (total === 0) return "from-muted/20 to-muted/10";
-  if (rate >= 0.8) return "from-primary/20 to-accent/10";
-  if (rate >= 0.6) return "from-secondary/15 to-primary/10";
-  if (rate >= 0.4) return "from-accent/15 to-muted/15";
-  return "from-secondary/10 to-muted/20";
+const getMoodDecor = (rate: number, total: number): { bg: string; accent: string; leaf: string } => {
+  if (total === 0) return { bg: "bg-muted/20", accent: "text-muted-foreground", leaf: "🌙" };
+  if (rate >= 0.8) return { bg: "bg-primary/5", accent: "text-primary", leaf: "🌸" };
+  if (rate >= 0.6) return { bg: "bg-secondary/5", accent: "text-secondary", leaf: "🍃" };
+  if (rate >= 0.4) return { bg: "bg-accent/5", accent: "text-accent", leaf: "🌿" };
+  return { bg: "bg-muted/10", accent: "text-muted-foreground", leaf: "🌱" };
 };
 
 interface StoryPageProps { tasks: Task[]; }
@@ -89,7 +89,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       const total = allTasks.length; const completed = allTasks.filter(t => t.completed).length;
       const rate = total > 0 ? completed / total : 0;
       const key = `${activePeriod}-${range.label}`;
-      return { key, label: range.label, timeRange: formatRange(range.start, range.end, activePeriod), isCurrent: range.isCurrent, color: getMoodColor(rate, total), fallback: buildFallback(allTasks, total, completed, rate), tasks: allTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, deadline: t.deadline ? t.deadline.toISOString() : undefined })) };
+      return { key, label: range.label, timeRange: formatRange(range.start, range.end, activePeriod), isCurrent: range.isCurrent, decor: getMoodDecor(rate, total), fallback: buildFallback(allTasks, total, completed, rate), tasks: allTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, deadline: t.deadline ? t.deadline.toISOString() : undefined })), total, completed, rate };
     });
   }, [tasks, activePeriod, getPeriodRanges, buildFallback]);
 
@@ -107,78 +107,178 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
-      <div className="flex gap-2 mb-4 animate-fade-in" style={{ animationDelay: "0.05s" }}>
-        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "gradient-warm text-primary-foreground shadow-md" : "bg-muted text-muted-foreground hover:text-foreground")}>
-          <BookOpen size={14} /><span>{t("story.byTime")}</span>
+      {/* Warm header */}
+      <div className="text-center mb-6 animate-fade-in">
+        <h1 className="text-2xl font-bold text-foreground mb-1">📖</h1>
+        <p className="text-xs text-muted-foreground italic">{t("story.headerSubtitle") || "生活的每一页，都值得被翻阅"}</p>
+      </div>
+
+      {/* View mode toggle — pill style */}
+      <div className="flex gap-1 mb-5 p-1 rounded-2xl bg-muted/40 animate-fade-in" style={{ animationDelay: "0.05s" }}>
+        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+          <BookOpen size={13} /><span>{t("story.byTime")}</span>
         </button>
-        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "gradient-warm text-primary-foreground shadow-md" : "bg-muted text-muted-foreground hover:text-foreground")}>
-          <Layers size={14} /><span>{t("story.byCategory")}</span>
+        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+          <Layers size={13} /><span>{t("story.byCategory")}</span>
         </button>
       </div>
 
       {viewMode === "category" ? <CategoryStoryView tasks={tasks} /> : (
         <>
-          <div className="flex gap-2 mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+          {/* Period tabs — scrollable pills */}
+          <div className="flex gap-1.5 mb-6 overflow-x-auto scrollbar-hide animate-fade-in pb-1" style={{ animationDelay: "0.1s" }}>
             {periodTabs.map(tab => (
-              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("flex-1 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex flex-col items-center gap-0.5", activePeriod === tab.id ? "gradient-warm text-primary-foreground shadow-md" : "bg-muted text-muted-foreground hover:text-foreground")}>
-                <span className="text-base">{tab.emoji}</span><span className="text-xs">{tab.label}</span>
+              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-1.5", activePeriod === tab.id ? "bg-card text-foreground shadow-sm border border-border/50" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
+                <span>{tab.emoji}</span><span>{tab.label}</span>
               </button>
             ))}
           </div>
 
-          <div className="space-y-6" key={activePeriod}>
+          {/* Story cards */}
+          <div className="space-y-8" key={activePeriod}>
             {cards.map((card, storyIndex) => {
               const story = aiStories[card.key] || card.fallback;
               const isLoading = loadingKeys.has(card.key);
               const hasAI = !!aiStories[card.key];
               return (
-                <div key={card.key} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.1}s` }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-bold text-primary">{card.label}</span>
-                    <span className="text-[10px] text-muted-foreground">{card.timeRange}</span>
-                    <div className="flex-1 h-px bg-border/40" />
-                    {card.isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{t("story.current")}</span>}
-                  </div>
-                  <div className={cn("rounded-t-2xl px-6 pt-5 pb-4 bg-gradient-to-br", card.color)}>
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-3"><span className="text-3xl">{story.emoji}</span><h2 className="text-lg font-bold text-foreground font-serif">{story.title}</h2></div>
-                      <div className="px-2.5 py-1 rounded-full bg-card/80 backdrop-blur-sm text-[11px] font-medium text-foreground">{story.mood}</div>
+                <div key={card.key} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.12}s` }}>
+                  {/* Timeline header */}
+                  <div className="flex items-center gap-3 mb-3 px-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{card.decor.leaf}</span>
+                      <span className={cn("text-xs font-bold", card.decor.accent)}>{card.label}</span>
                     </div>
-                    <p className="text-sm text-primary font-medium italic font-serif mt-1">"{story.openingLine}"</p>
+                    <span className="text-[10px] text-muted-foreground/60">{card.timeRange}</span>
+                    <div className="flex-1 border-b border-dashed border-border/30" />
+                    {card.isCurrent && (
+                      <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-primary/8 text-primary font-medium animate-pulse-warm">
+                        {t("story.current")}
+                      </span>
+                    )}
                   </div>
-                  <div className="bg-card rounded-b-2xl px-6 py-4 border border-t-0 border-border/50">
-                    <p className="text-sm text-foreground leading-[1.8] mb-4">{story.summary}</p>
-                    <div>
-                      <div className="flex items-center gap-2 mb-2.5"><Sparkles size={14} className="text-primary" /><span className="text-xs font-semibold text-foreground">{t("story.highlights")}</span></div>
-                      <div className="space-y-2">{story.highlights.map((h, i) => (<div key={i} className="flex items-start gap-3 px-3 py-2 bg-muted/40 rounded-xl"><span className="text-sm text-foreground leading-relaxed">{h}</span></div>))}</div>
-                    </div>
-                    <button onClick={() => generateAIStory(card.key, card.tasks, card.label, card.timeRange)} disabled={isLoading}
-                      className={cn("mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-medium transition-all", hasAI ? "bg-muted/50 text-muted-foreground hover:text-foreground" : "bg-primary/10 text-primary hover:bg-primary/20")}>
-                      {isLoading ? (<><Loader2 size={14} className="animate-spin" /><span>{t("story.aiGenerating")}</span></>) : hasAI ? (<><RefreshCw size={14} /><span>{t("story.refreshStory")}</span></>) : (<><Sparkles size={14} /><span>{t("story.generateAI")}</span></>)}
-                    </button>
-                    <div className="mt-4 pt-4 border-t border-border/30">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2"><PenLine size={14} className="text-primary" /><span className="text-xs font-semibold text-foreground">{t("story.notes")}</span></div>
-                        {editingNote === card.key ? (
-                          <button onClick={() => { setEditingNote(null); saveNote(card.key, notes[card.key] || ""); }} className="flex items-center gap-1 text-[11px] text-primary"><Check size={12} /><span>{t("story.done")}</span></button>
-                        ) : (
-                          <button onClick={() => setEditingNote(card.key)} className="text-[11px] text-muted-foreground hover:text-primary transition-colors">{notes[card.key] ? t("story.edit") : t("story.writeSomething")}</button>
-                        )}
+
+                  {/* Main story card — journal page feel */}
+                  <div className={cn("rounded-3xl overflow-hidden card-glow", card.decor.bg)}>
+                    {/* Story header area */}
+                    <div className="px-6 pt-6 pb-4 relative">
+                      {/* Decorative corner elements */}
+                      <div className="absolute top-3 right-4 text-lg opacity-20 animate-float" style={{ animationDelay: `${storyIndex * 0.5}s` }}>
+                        {card.decor.leaf}
                       </div>
-                      {editingNote === card.key ? (
-                        <textarea autoFocus value={notes[card.key] || ""} onChange={e => saveNote(card.key, e.target.value)} placeholder={t("story.notePlaceholder")}
-                          className="w-full min-h-[80px] p-3 rounded-xl bg-muted/30 border border-border/40 text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30 leading-relaxed" />
-                      ) : notes[card.key] ? (
-                        <div onClick={() => setEditingNote(card.key)} className="px-3 py-2.5 rounded-xl bg-muted/20 text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap cursor-pointer hover:bg-muted/30 transition-colors">{notes[card.key]}</div>
-                      ) : null}
+
+                      {/* Emoji + Title cluster */}
+                      <div className="flex items-start gap-3 mb-3">
+                        <span className="text-4xl leading-none animate-float" style={{ animationDelay: "0.2s" }}>{story.emoji}</span>
+                        <div className="flex-1 min-w-0 pt-1">
+                          <h2 className="text-xl font-bold text-foreground leading-tight">{story.title}</h2>
+                          <div className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-card/60 backdrop-blur-sm text-[11px] font-medium text-muted-foreground">
+                            {story.mood}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Opening quote */}
+                      <div className="relative pl-4 mt-3">
+                        <div className="absolute left-0 top-0 bottom-0 w-0.5 rounded-full bg-primary/30" />
+                        <p className="text-sm text-primary/80 italic leading-relaxed font-serif">
+                          "{story.openingLine}"
+                        </p>
+                      </div>
+
+                      {/* Progress indicator — organic bar */}
+                      {card.total > 0 && (
+                        <div className="mt-4 flex items-center gap-3">
+                          <div className="flex-1 h-1.5 rounded-full bg-border/30 overflow-hidden">
+                            <div
+                              className="h-full rounded-full gradient-warm transition-all duration-700 ease-out"
+                              style={{ width: `${Math.round(card.rate * 100)}%` }}
+                            />
+                          </div>
+                          <span className="text-[10px] text-muted-foreground font-medium tabular-nums">
+                            {card.completed}/{card.total}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                    <button onClick={() => {
-                      const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}\n\n${story.highlights.join("\n")}${notes[card.key] ? `\n\n📝 ${notes[card.key]}` : ""}`;
-                      if (navigator.share) navigator.share({ title: story.title, text }).catch(() => {});
-                      else { navigator.clipboard.writeText(text); toast.success(t("story.copied")); }
-                    }} className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-muted/30 text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all text-xs font-medium">
-                      <Share2 size={14} /><span>{t("story.share")}</span>
-                    </button>
+
+                    {/* Separator — hand-drawn feel */}
+                    <div className="mx-6">
+                      <svg viewBox="0 0 300 6" className="w-full h-1.5 text-border/30">
+                        <path d="M0 3 Q 25 0, 50 3 T 100 3 T 150 3 T 200 3 T 250 3 T 300 3" fill="none" stroke="currentColor" strokeWidth="1" />
+                      </svg>
+                    </div>
+
+                    {/* Summary + highlights */}
+                    <div className="px-6 py-4">
+                      <p className="text-sm text-foreground/80 leading-[1.9] mb-4">{story.summary}</p>
+
+                      {/* Highlights — warm cards */}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Sparkles size={13} className="text-primary" />
+                          <span className="text-xs font-semibold text-foreground">{t("story.highlights")}</span>
+                        </div>
+                        {story.highlights.map((h, i) => (
+                          <div key={i} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-2xl bg-card/80 border border-border/20">
+                            <span className="text-primary/40 text-xs mt-0.5">✦</span>
+                            <span className="text-sm text-foreground/80 leading-relaxed">{h}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* AI Generate button */}
+                      <button onClick={() => generateAIStory(card.key, card.tasks, card.label, card.timeRange)} disabled={isLoading}
+                        className={cn(
+                          "w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-medium transition-all duration-300",
+                          hasAI
+                            ? "bg-card/60 text-muted-foreground hover:text-foreground border border-border/20"
+                            : "gradient-warm text-primary-foreground shadow-sm hover:shadow-md active:scale-[0.98]"
+                        )}>
+                        {isLoading ? (
+                          <><Loader2 size={14} className="animate-spin" /><span>{t("story.aiGenerating")}</span></>
+                        ) : hasAI ? (
+                          <><RefreshCw size={14} /><span>{t("story.refreshStory")}</span></>
+                        ) : (
+                          <><Sparkles size={14} /><span>✨ {t("story.generateAI")}</span></>
+                        )}
+                      </button>
+
+                      {/* Notes section — journal entry */}
+                      <div className="mt-5 pt-4 border-t border-dashed border-border/30">
+                        <div className="flex items-center justify-between mb-2.5">
+                          <div className="flex items-center gap-2">
+                            <PenLine size={13} className="text-primary/60" />
+                            <span className="text-xs font-semibold text-foreground/70">{t("story.notes")}</span>
+                          </div>
+                          {editingNote === card.key ? (
+                            <button onClick={() => { setEditingNote(null); saveNote(card.key, notes[card.key] || ""); }} className="flex items-center gap-1 text-[11px] text-primary font-medium">
+                              <Check size={12} /><span>{t("story.done")}</span>
+                            </button>
+                          ) : (
+                            <button onClick={() => setEditingNote(card.key)} className="text-[11px] text-muted-foreground/60 hover:text-primary transition-colors italic">
+                              {notes[card.key] ? t("story.edit") : t("story.writeSomething")}
+                            </button>
+                          )}
+                        </div>
+                        {editingNote === card.key ? (
+                          <textarea autoFocus value={notes[card.key] || ""} onChange={e => saveNote(card.key, e.target.value)} placeholder={t("story.notePlaceholder")}
+                            className="w-full min-h-[80px] p-4 rounded-2xl bg-card/60 border border-border/30 text-sm text-foreground placeholder:text-muted-foreground/40 resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 leading-relaxed font-serif" />
+                        ) : notes[card.key] ? (
+                          <div onClick={() => setEditingNote(card.key)} className="px-4 py-3 rounded-2xl bg-card/40 text-sm text-foreground/70 leading-relaxed whitespace-pre-wrap cursor-pointer hover:bg-card/60 transition-colors font-serif italic border border-border/10">
+                            {notes[card.key]}
+                          </div>
+                        ) : null}
+                      </div>
+
+                      {/* Share */}
+                      <button onClick={() => {
+                        const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}\n\n${story.highlights.join("\n")}${notes[card.key] ? `\n\n📝 ${notes[card.key]}` : ""}`;
+                        if (navigator.share) navigator.share({ title: story.title, text }).catch(() => {});
+                        else { navigator.clipboard.writeText(text); toast.success(t("story.copied")); }
+                      }} className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-muted-foreground/50 hover:text-primary hover:bg-card/40 transition-all text-xs font-medium">
+                        <Share2 size={13} /><span>{t("story.share")}</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
