@@ -139,14 +139,14 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     <div className="flex-1 h-px bg-border/40" />
                     {card.isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{t("story.current")}</span>}
                   </div>
-                  <div className={cn("rounded-t-2xl px-6 pt-5 pb-4 bg-gradient-to-br", card.color)}>
+                  <div className={cn("rounded-t-2xl px-6 pt-5 pb-4 bg-gradient-to-br glass border-0", card.color)}>
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-3"><span className="text-3xl">{story.emoji}</span><h2 className="text-lg font-bold text-foreground font-serif">{story.title}</h2></div>
                       <div className="px-2.5 py-1 rounded-full bg-card/80 backdrop-blur-sm text-[11px] font-medium text-foreground">{story.mood}</div>
                     </div>
                     <p className="text-sm text-primary font-medium italic font-serif mt-1">"{story.openingLine}"</p>
                   </div>
-                  <div className="bg-card rounded-b-2xl px-6 py-4 border border-t-0 border-border/50">
+                  <div className="glass-card rounded-t-none rounded-b-2xl px-6 py-4 border-t-0">
                     <p className="text-sm text-foreground leading-[1.8] mb-4">{story.summary}</p>
                     <div>
                       <div className="flex items-center gap-2 mb-2.5"><Sparkles size={14} className="text-primary" /><span className="text-xs font-semibold text-foreground">{t("story.highlights")}</span></div>

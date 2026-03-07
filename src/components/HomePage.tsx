@@ -74,7 +74,7 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
             {group.items.map(task => {
               const Icon = iconMap[task.icon] || Star;
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30 hover:border-primary/15 transition-all">
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 glass border-0 hover:bg-white/70 transition-all">
                   <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0">
                     <Icon size={14} className="text-primary/50" />
                   </div>
@@ -171,10 +171,10 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
           {greeting.emoji} {greeting.text}
         </h1>
         <div className="mt-4 flex items-center gap-3">
-          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+          <div className="flex-1 h-2 rounded-full overflow-hidden glass" style={{ padding: "2px" }}>
             <div className="h-full rounded-full gradient-progress transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
           </div>
-          <span className="text-xs font-semibold text-foreground whitespace-nowrap">{todayCompleted}/{todayTotal}</span>
+          <span className="text-xs font-semibold text-foreground whitespace-nowrap drop-shadow-sm">{todayCompleted}/{todayTotal}</span>
         </div>
         {todayTotal > 0 && todayCompleted === todayTotal && (
           <p className="text-xs text-secondary font-medium mt-2">{t("home.allDone")}</p>
@@ -203,7 +203,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
                   onClick={() => handleTaskClick(task)}
                   className={cn(
                     "w-full flex items-center gap-3.5 rounded-2xl p-4 text-left transition-all",
-                    task.completed ? "bg-card/60 border border-border/30" : "bg-card border border-border/50 card-glow active:scale-[0.98]",
+                    task.completed ? "glass opacity-70" : "glass-card active:scale-[0.98]",
                     isCelebrating && "animate-celebrate"
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
@@ -239,7 +239,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
               const diff = differenceInCalendarDays(task.date!, today);
               const dayLabel = diff === 1 ? t("home.tomorrow") : diff === 2 ? t("home.dayAfter") : format(task.date!, shortDateFormat, { locale });
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 glass border-0">
                   <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground/80 truncate">{task.title}</p>
@@ -268,7 +268,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
             {backlogTasks.slice(0, 2).map(task => {
               const Icon = iconMap[task.icon] || Star;
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 glass border-0">
                   <div className="w-8 h-8 rounded-xl bg-muted/30 flex items-center justify-center flex-shrink-0">
                     <Icon size={14} className="text-muted-foreground/40" />
                   </div>
@@ -287,7 +287,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
       )}
 
       <Sheet open={showUpcoming} onOpenChange={setShowUpcoming}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-0 pb-0">
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-0 pb-0 glass border-0">
           <SheetHeader className="px-5 pb-3 border-b border-border/50">
             <SheetTitle className="text-lg font-bold font-serif">{t("home.futurePlan")}</SheetTitle>
           </SheetHeader>
@@ -298,7 +298,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
       </Sheet>
 
       <Sheet open={showBacklog} onOpenChange={setShowBacklog}>
-        <SheetContent side="bottom" className="h-[70vh] rounded-t-3xl px-0 pb-0">
+        <SheetContent side="bottom" className="h-[70vh] rounded-t-3xl px-0 pb-0 glass border-0">
           <SheetHeader className="px-5 pb-3 border-b border-border/50">
             <SheetTitle className="text-lg font-bold font-serif">{t("home.backlogSheet")}</SheetTitle>
             <p className="text-xs text-muted-foreground">{t("home.backlogDesc")}</p>
