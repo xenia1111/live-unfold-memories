@@ -1,0 +1,1 @@
+ALTER TABLE public.cat_profiles ADD COLUMN cat_category text;
