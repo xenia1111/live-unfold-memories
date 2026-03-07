@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import TimePicker from "@/components/TimePicker";
 import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
+import { autoCategory } from "@/lib/autoCategory";
 
 const categoryOptions = ["美食", "学习", "运动", "社交", "工作", "美景", "娱乐", "记录", "健康", "美丽"];
 
@@ -40,6 +41,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
   const [isParsing, setIsParsing] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
   const [showVoiceTip, setShowVoiceTip] = useState(false);
+  const [categoryManuallySet, setCategoryManuallySet] = useState(false);
   const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -80,11 +82,18 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => setCoverImage(ev.target?.result as string); reader.readAsDataURL(file); } };
 
-  const reset = () => { setTitle(""); setSelectedIcon("star"); setSelectedCategory("记录"); setSelectedTime("09:00"); setSelectedDayOffset(0); setCoverImage(null); setDeadlineOffset(null); setVoiceText(""); setVoiceMode(false); };
+  const reset = () => { setTitle(""); setSelectedIcon("star"); setSelectedCategory("记录"); setSelectedTime("09:00"); setSelectedDayOffset(0); setCoverImage(null); setDeadlineOffset(null); setVoiceText(""); setVoiceMode(false); setCategoryManuallySet(false); };
 
   const handleSubmit = () => {
     if (!title.trim()) return;
-    onAdd({ title: title.trim(), time: selectedTime, icon: selectedIcon, category: selectedCategory, date: selectedDayOffset !== null ? addDays(today, selectedDayOffset) : undefined, coverImage: coverImage || undefined, deadline: deadlineOffset !== null ? addDays(today, deadlineOffset) : undefined });
+    let finalCategory = selectedCategory;
+    let finalIcon = selectedIcon;
+    if (!categoryManuallySet) {
+      const auto = autoCategory(title.trim());
+      finalCategory = auto.category;
+      finalIcon = auto.icon;
+    }
+    onAdd({ title: title.trim(), time: selectedTime, icon: finalIcon, category: finalCategory, date: selectedDayOffset !== null ? addDays(today, selectedDayOffset) : undefined, coverImage: coverImage || undefined, deadline: deadlineOffset !== null ? addDays(today, deadlineOffset) : undefined });
     reset(); setOpen(false);
   };
 
@@ -192,7 +201,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
             <p className="text-xs text-muted-foreground mb-2">{t("add.categoryLabel")}</p>
             <div className="flex gap-1.5 flex-wrap">
               {categoryOptions.map((cat) => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-3 py-1.5 rounded-lg text-xs transition-all", selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted")}>{catName(cat)}</button>
+                <button key={cat} onClick={() => { setSelectedCategory(cat); setCategoryManuallySet(true); }} className={cn("px-3 py-1.5 rounded-lg text-xs transition-all", selectedCategory === cat ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:bg-muted")}>{catName(cat)}</button>
               ))}
             </div>
           </div>

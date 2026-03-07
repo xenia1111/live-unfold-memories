@@ -115,9 +115,10 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
   const [showBacklog, setShowBacklog] = useState(false);
   const today = new Date();
 
-  const todayTasks = tasks.filter(t => t.date && isToday(t.date));
+  const undatedIncompleteTasks = tasks.filter(t => !t.date && !t.completed);
+  const todayTasks = [...tasks.filter(t => t.date && isToday(t.date)), ...undatedIncompleteTasks];
   const futureTasks = tasks.filter(t => t.date && isFuture(t.date) && !isToday(t.date)).sort((a, b) => a.date!.getTime() - b.date!.getTime());
-  const backlogTasks = tasks.filter(t => !t.date && !t.completed);
+  const backlogTasks = tasks.filter(t => !t.date && t.completed);
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   const todayTotal = todayTasks.length;
 
