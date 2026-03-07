@@ -139,7 +139,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const personality = useMemo(() => getCatPersonality(tasks), [tasks]);
   const catFood = useMemo(() => calcCatFood(tasks), [tasks]);
   const streak = useMemo(() => calcStreak(tasks), [tasks]);
-  const { current: stage, next: nextStage, progress } = useMemo(() => getCatStage(catFood), [catFood]);
+  const { current: stage, next: nextStage, progress } = useMemo(() => getCatStage(catFood, tasks), [catFood, tasks]);
   const background = useMemo(() => getCurrentBackground(stage.level), [stage.level]);
 
   const stageLabel = t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][stage.level + 1] || "egg"}`);
