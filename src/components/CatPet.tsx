@@ -156,9 +156,11 @@ const CatPet = ({ tasks }: CatPetProps) => {
   const { current: stage, next: nextStage, progress } = useMemo(() => getCatStage(catFood, tasks), [catFood, tasks]);
   const background = useMemo(() => getCurrentBackground(stage.level), [stage.level]);
 
+  // Fixed cat category from DB (determined by first task, never changes)
+  const [fixedCategory, setFixedCategory] = useState<string | null>(null);
+
   const stageLabel = t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][stage.level + 1] || "egg"}`);
   const personalityLabel = personality.category ? t(`personality.${personality.category}`) : t("personality.default");
-
   const getRoundnessTitle = (rate: number) => {
     let title = ROUNDNESS_TITLES[0];
     for (const tt of ROUNDNESS_TITLES) { if (rate >= tt.min) title = tt; }
@@ -177,6 +179,9 @@ const CatPet = ({ tasks }: CatPetProps) => {
       if (data) {
         setBornAt(new Date(data.born_at));
         setCatProfileId(data.id);
+        if ((data as any).cat_category) {
+          setFixedCategory((data as any).cat_category);
+        }
       } else {
         const { data: newCat } = await supabase.from("cat_profiles").insert({ user_id: user.id, cat_name: "小猫咪" }).select().single();
         if (newCat) {
@@ -187,6 +192,20 @@ const CatPet = ({ tasks }: CatPetProps) => {
     };
     init();
   }, [user]);
+
+  // When first task exists and cat_category not yet set, lock it in
+  useEffect(() => {
+    if (!user || fixedCategory || tasks.length === 0) return;
+    const firstTask = [...tasks].sort((a, b) => {
+      const aTime = a.date ? a.date.getTime() : new Date(a.id).getTime();
+      const bTime = b.date ? b.date.getTime() : new Date(b.id).getTime();
+      return aTime - bTime;
+    })[0];
+    if (!firstTask) return;
+    const category = firstTask.category;
+    setFixedCategory(category);
+    supabase.from("cat_profiles").update({ cat_category: category } as any).eq("user_id", user.id).then(() => {});
+  }, [user, fixedCategory, tasks]);
 
   useEffect(() => {
     if (!bornAt || !user) return;
@@ -270,7 +289,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
             ) : (
               /* 猫阶段：走来走去 */
               <button onClick={() => setShowRadar(true)} className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-                <TransparentImage src={getCatImage(stage.level, personality.category)} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
+                <TransparentImage src={getCatImage(stage.level, fixedCategory || "default")} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
               </button>
             )}
           </div>

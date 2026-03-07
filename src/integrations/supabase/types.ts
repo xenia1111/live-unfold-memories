@@ -41,6 +41,7 @@ export type Database = {
       cat_profiles: {
         Row: {
           born_at: string
+          cat_category: string | null
           cat_name: string
           client_id: string | null
           completed_count: number
@@ -51,6 +52,7 @@ export type Database = {
         }
         Insert: {
           born_at?: string
+          cat_category?: string | null
           cat_name?: string
           client_id?: string | null
           completed_count?: number
@@ -61,6 +63,7 @@ export type Database = {
         }
         Update: {
           born_at?: string
+          cat_category?: string | null
           cat_name?: string
           client_id?: string | null
           completed_count?: number
