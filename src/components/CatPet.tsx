@@ -179,6 +179,9 @@ const CatPet = ({ tasks }: CatPetProps) => {
       if (data) {
         setBornAt(new Date(data.born_at));
         setCatProfileId(data.id);
+        if ((data as any).cat_category) {
+          setFixedCategory((data as any).cat_category);
+        }
       } else {
         const { data: newCat } = await supabase.from("cat_profiles").insert({ user_id: user.id, cat_name: "小猫咪" }).select().single();
         if (newCat) {
@@ -189,6 +192,20 @@ const CatPet = ({ tasks }: CatPetProps) => {
     };
     init();
   }, [user]);
+
+  // When first task exists and cat_category not yet set, lock it in
+  useEffect(() => {
+    if (!user || fixedCategory || tasks.length === 0) return;
+    const firstTask = [...tasks].sort((a, b) => {
+      const aTime = a.date ? a.date.getTime() : new Date(a.id).getTime();
+      const bTime = b.date ? b.date.getTime() : new Date(b.id).getTime();
+      return aTime - bTime;
+    })[0];
+    if (!firstTask) return;
+    const category = firstTask.category;
+    setFixedCategory(category);
+    supabase.from("cat_profiles").update({ cat_category: category } as any).eq("user_id", user.id).then(() => {});
+  }, [user, fixedCategory, tasks]);
 
   useEffect(() => {
     if (!bornAt || !user) return;
