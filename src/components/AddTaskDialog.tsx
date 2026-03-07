@@ -103,7 +103,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
       <DialogTrigger asChild>
         <button className="fixed bottom-24 right-6 z-40 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-95 transition-all animate-breathe hover:shadow-xl"><Plus size={28} /></button>
       </DialogTrigger>
-      <DialogContent className="rounded-3xl border-border/50 bg-card max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden">
+      <DialogContent className="rounded-3xl glass border-0 max-w-[92vw] sm:max-w-md p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="p-5 pb-3 flex-shrink-0">
           <DialogTitle className="text-lg font-serif text-foreground">{t("add.title")}</DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">{t("add.desc")}</DialogDescription>
@@ -113,7 +113,7 @@ const AddTaskDialog = ({ onAdd }: AddTaskDialogProps) => {
           <div className="flex gap-2">
             <input value={voiceMode ? voiceText : title} onChange={(e) => voiceMode ? setVoiceText(e.target.value) : setTitle(e.target.value)}
               placeholder={voiceMode ? t("add.voicePlaceholder") : t("add.placeholder")}
-              className="flex-1 bg-muted/50 rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 border border-border/30 focus:outline-none focus:border-primary/40 transition-colors" autoFocus />
+              className="flex-1 glass-input rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/40 transition-colors" autoFocus />
             <button onClick={() => { if (isListening) stopListening(); else if (voiceMode && voiceText.trim()) parseVoiceInput(voiceText); else { const hasUsedVoice = localStorage.getItem("voice_tip_shown"); if (!hasUsedVoice) { setShowVoiceTip(true); localStorage.setItem("voice_tip_shown", "1"); } else { setVoiceMode(true); startListening(); } } }}
               disabled={isParsing} className={cn("w-12 h-12 rounded-xl flex items-center justify-center transition-all flex-shrink-0", isListening ? "bg-destructive text-destructive-foreground animate-pulse" : isParsing ? "bg-muted text-muted-foreground" : voiceMode && voiceText.trim() ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary hover:bg-primary/20")}>
               {isParsing ? <Loader2 size={20} className="animate-spin" /> : <Mic size={20} />}
