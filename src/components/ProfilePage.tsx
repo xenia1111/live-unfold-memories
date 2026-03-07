@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
-  LogOut, Heart, Award, TrendingUp, Camera, ImagePlus, BookOpen
+  LogOut, Cat, PawPrint, Fish, Camera, ImagePlus, BookOpen
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileEditPage from "@/components/ProfileEditPage";
@@ -51,9 +51,9 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   }, [tasks]);
 
   const stats = [
-    { label: t("profile.plans"), value: String(realStats.completedCount), icon: TrendingUp },
-    { label: t("profile.streak"), value: String(realStats.streak), icon: Award },
-    { label: t("profile.lifeIndex"), value: String(realStats.totalRecords), icon: Heart },
+    { label: t("profile.plans"), value: String(realStats.completedCount), icon: Fish },
+    { label: t("profile.streak"), value: String(realStats.streak), icon: PawPrint },
+    { label: t("profile.lifeIndex"), value: String(realStats.totalRecords), icon: Cat },
   ];
 
   const menuItems = [
