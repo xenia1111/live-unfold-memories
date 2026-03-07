@@ -159,8 +159,10 @@ const CatPet = ({ tasks }: CatPetProps) => {
   // Fixed cat category from DB (determined by first task, never changes)
   const [fixedCategory, setFixedCategory] = useState<string | null>(null);
 
+  // Use fixedCategory for display, fall back to personality for idle lines only
+  const fixedPersonalityLabel = fixedCategory ? t(`personality.${fixedCategory}`) : null;
   const stageLabel = t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][stage.level + 1] || "egg"}`);
-  const personalityLabel = personality.category ? t(`personality.${personality.category}`) : t("personality.default");
+  const personalityLabel = fixedPersonalityLabel || (personality.category ? t(`personality.${personality.category}`) : t("personality.default"));
   const getRoundnessTitle = (rate: number) => {
     let title = ROUNDNESS_TITLES[0];
     for (const tt of ROUNDNESS_TITLES) { if (rate >= tt.min) title = tt; }
