@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   User, Settings, Bell, Shield, Moon, ChevronRight,
   LogOut, Heart, Award, TrendingUp, Camera, ImagePlus, BookOpen
@@ -12,8 +12,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
+import type { Task } from "@/hooks/useTasks";
+import { calcStreak } from "@/lib/catGrowth";
 
-const ProfilePage = () => {
+interface ProfilePageProps { tasks?: Task[]; }
+
+const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   const { t } = useI18n();
   const { user, signOut } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -39,10 +43,19 @@ const ProfilePage = () => {
     loadProfile();
   }, [user]);
 
+  const realStats = useMemo(() => {
+    const completedCount = tasks.filter(t => t.completed).length;
+    const streak = calcStreak(tasks);
+    // 生活指数 = 完成率 * 100, 至少看总数
+    const total = tasks.length;
+    const lifeIndex = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+    return { completedCount, streak, lifeIndex };
+  }, [tasks]);
+
   const stats = [
-    { label: t("profile.plans"), value: "280", icon: TrendingUp },
-    { label: t("profile.streak"), value: "23", icon: Award },
-    { label: t("profile.lifeIndex"), value: "92", icon: Heart },
+    { label: t("profile.plans"), value: String(realStats.completedCount), icon: TrendingUp },
+    { label: t("profile.streak"), value: String(realStats.streak), icon: Award },
+    { label: t("profile.lifeIndex"), value: String(realStats.lifeIndex), icon: Heart },
   ];
 
   const menuItems = [
