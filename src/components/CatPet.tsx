@@ -66,6 +66,13 @@ import catHealthLv3 from "@/assets/cat-health-lv3.png";
 import catHealthLv4 from "@/assets/cat-health-lv4.png";
 import catHealthLv5 from "@/assets/cat-health-lv5.png";
 import catHealthLv6 from "@/assets/cat-health-lv6.png";
+import catBeautyLv0 from "@/assets/cat-beauty-lv0.png";
+import catBeautyLv1 from "@/assets/cat-beauty-lv1.png";
+import catBeautyLv2 from "@/assets/cat-beauty-lv2.png";
+import catBeautyLv3 from "@/assets/cat-beauty-lv3.png";
+import catBeautyLv4 from "@/assets/cat-beauty-lv4.png";
+import catBeautyLv5 from "@/assets/cat-beauty-lv5.png";
+import catBeautyLv6 from "@/assets/cat-beauty-lv6.png";
 
 const CAT_IMAGES: Record<string, Record<number, string>> = {
   default: { 0: catLv0, 1: catLv1, 2: catLv2, 3: catLv3, 4: catLv4, 5: catLv5, 6: catLv6 },
