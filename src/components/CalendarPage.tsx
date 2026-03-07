@@ -139,7 +139,7 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
 
   return (
     <div ref={el => { if (el) scrollRef.current = el; }}>
-      <div className="fixed top-0 left-0 right-0 z-40 glass-nav border-b-0">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-card/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-foreground font-serif">{t("cal.title")}</h1>
           <div className="flex items-center gap-2">
@@ -152,7 +152,7 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
       <div className="px-5 pt-16 pb-24 max-w-lg mx-auto">
         <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
           {allEvents.length === 0 ? (
-            <div className="glass-card p-8 text-center">
+            <div className="bg-card rounded-2xl p-8 card-glow border border-border/50 text-center">
               <div className="text-3xl mb-2">✨</div>
               <p className="text-sm text-muted-foreground">{t("cal.empty")}</p>
             </div>
@@ -180,7 +180,7 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
                           {isToday ? <span className="text-primary-foreground text-[10px]">●</span> : <span className="text-[11px]">{emoji}</span>}
                         </div>
                         <div onClick={(e) => { e.stopPropagation(); if (!item.id.startsWith('mock-')) { const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); } }}
-                          className={`rounded-2xl transition-all p-4 ${!item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''} ${isToday ? 'glass-card border-primary/25 shadow-md shadow-primary/10' : 'glass-card hover:bg-white/65'}`}>
+                          className={`rounded-2xl transition-all p-4 ${!item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''} ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-md' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
                           <div className="flex items-center justify-between mb-1.5">
                             <div className="flex items-center gap-2">
                               <span className="text-[11px] text-muted-foreground">{format(item.date, "M/d EEEE", { locale })}</span>

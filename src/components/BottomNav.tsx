@@ -18,7 +18,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass-nav">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-xl border-t border-border">
       <div className="flex items-center justify-around max-w-lg mx-auto h-16 px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -37,7 +37,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
               <Icon
                 size={22}
                 strokeWidth={isActive ? 2.5 : 1.8}
-                className={cn("transition-all duration-300", isActive && "drop-shadow-[0_0_6px_hsl(36,80%,50%,0.4)]")}
+                className="transition-all duration-300"
               />
               <span className={cn(
                 "text-[10px] font-medium transition-all duration-300",
@@ -46,7 +46,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
                 {tab.label}
               </span>
               {isActive && (
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5 shadow-[0_0_6px_2px_hsl(36,80%,50%,0.4)]" />
+                <div className="w-1 h-1 rounded-full bg-primary mt-0.5" />
               )}
             </button>
           );

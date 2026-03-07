@@ -130,7 +130,7 @@ const ProfilePage = () => {
         {stats.map(stat => {
           const Icon = stat.icon;
           return (
-            <div key={stat.label} className="glass-card p-4 text-center">
+            <div key={stat.label} className="bg-card rounded-2xl p-4 card-glow border border-border/50 text-center">
               <Icon size={18} className="text-primary mx-auto mb-1.5" />
               <p className="text-xl font-bold text-foreground">{stat.value}</p>
               <p className="text-[10px] text-muted-foreground mt-0.5">{stat.label}</p>
@@ -144,8 +144,8 @@ const ProfilePage = () => {
           const Icon = item.icon;
           return (
             <button key={item.key} onClick={() => { if (item.key === "general") setShowGeneralSettings(true); if (item.key === "intro") setShowProductIntro(true); }}
-              className="w-full flex items-center gap-4 glass-card p-4 text-left transition-all active:scale-[0.98]">
-              <div className="w-10 h-10 rounded-xl bg-white/30 dark:bg-white/10 flex items-center justify-center"><Icon size={18} className="text-foreground" /></div>
+              className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]">
+              <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Icon size={18} className="text-foreground" /></div>
               <div className="flex-1">
                 <p className="text-sm font-medium text-foreground">{item.label}</p>
                 <p className="text-xs text-muted-foreground">{item.desc}</p>

@@ -6,7 +6,6 @@ import StoryPage from "@/components/StoryPage";
 import ProfilePage from "@/components/ProfilePage";
 import AddTaskDialog from "@/components/AddTaskDialog";
 import AuthPage from "@/components/AuthPage";
-import TimeAwareBackground from "@/components/TimeAwareBackground";
 import { useTasks } from "@/hooks/useTasks";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -24,12 +23,7 @@ const Index = () => {
   }
 
   if (!user) {
-    return (
-      <>
-        <TimeAwareBackground />
-        <AuthPage />
-      </>
-    );
+    return <AuthPage />;
   }
 
   const renderPage = () => {
@@ -43,8 +37,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      <TimeAwareBackground />
+    <div className="min-h-screen bg-background">
       {renderPage()}
       <AddTaskDialog onAdd={addTask} />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
