@@ -105,9 +105,10 @@ interface HomePageProps {
   onCompleteTask: (id: string, photo?: string, note?: string) => Promise<void>;
   onUpdateTask: (id: string, updates: Partial<Omit<Task, 'id'>>) => Promise<void>;
   onDeleteTask: (id: string) => Promise<void>;
+  onNavigateProfile?: () => void;
 }
 
-const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }: HomePageProps) => {
+const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, onNavigateProfile }: HomePageProps) => {
   const { t, locale, shortDateFormat } = useI18n();
   const { user } = useAuth();
   const catName = useCategoryName();
@@ -185,7 +186,11 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
           {greeting.emoji} {greeting.text}
-          {lifeDays && <span className="text-sm font-normal text-muted-foreground ml-2">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>}
+          {lifeDays ? (
+            <span className="text-sm font-normal text-muted-foreground ml-2">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>
+          ) : (
+            <button onClick={onNavigateProfile} className="text-sm font-normal text-primary/60 ml-2 hover:text-primary transition-colors">({t("greeting.setBirthday")})</button>
+          )}
         </h1>
         <div className="mt-4 flex items-center gap-3">
           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
