@@ -54,8 +54,8 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center px-6 relative z-10">
+      <div className="w-full max-w-sm glass-card p-8">
         {/* Logo area */}
         <div className="text-center mb-10">
           <div className="w-20 h-20 rounded-3xl gradient-warm mx-auto mb-4 flex items-center justify-center shadow-lg animate-float">
