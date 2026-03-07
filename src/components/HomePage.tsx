@@ -13,6 +13,7 @@ import ConfettiCanvas from "@/components/ConfettiCanvas";
 import CatPet from "@/components/CatPet";
 import type { Task } from "@/hooks/useTasks";
 import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
+import eggNestImg from "@/assets/egg-nest.png";
 
 const iconMap: Record<string, any> = {
   coffee: Coffee, dumbbell: Dumbbell, book: BookOpen,
@@ -187,10 +188,12 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
 
       <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {todayTotal === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-3">🌿</p>
-            <p className="text-sm text-muted-foreground">{t("home.noTasks")}</p>
-            <p className="text-xs text-muted-foreground/60 mt-1">{t("home.addHint")}</p>
+          <div className="text-center py-10">
+            <div className="inline-block animate-egg-wobble mb-4">
+              <img src={eggNestImg} alt="" className="w-20 h-20 mx-auto object-contain" />
+            </div>
+            <p className="text-sm text-foreground/70 font-medium">{t("home.noTasks")}</p>
+            <p className="text-xs text-muted-foreground/50 mt-1.5">{t("home.addHint")}</p>
           </div>
         ) : (
           <div className="space-y-2.5">
