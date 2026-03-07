@@ -66,6 +66,13 @@ import catHealthLv3 from "@/assets/cat-health-lv3.png";
 import catHealthLv4 from "@/assets/cat-health-lv4.png";
 import catHealthLv5 from "@/assets/cat-health-lv5.png";
 import catHealthLv6 from "@/assets/cat-health-lv6.png";
+import catBeautyLv0 from "@/assets/cat-beauty-lv0.png";
+import catBeautyLv1 from "@/assets/cat-beauty-lv1.png";
+import catBeautyLv2 from "@/assets/cat-beauty-lv2.png";
+import catBeautyLv3 from "@/assets/cat-beauty-lv3.png";
+import catBeautyLv4 from "@/assets/cat-beauty-lv4.png";
+import catBeautyLv5 from "@/assets/cat-beauty-lv5.png";
+import catBeautyLv6 from "@/assets/cat-beauty-lv6.png";
 
 const CAT_IMAGES: Record<string, Record<number, string>> = {
   default: { 0: catLv0, 1: catLv1, 2: catLv2, 3: catLv3, 4: catLv4, 5: catLv5, 6: catLv6 },
@@ -77,6 +84,7 @@ const CAT_IMAGES: Record<string, Record<number, string>> = {
   "娱乐": { 0: catFunLv0, 1: catFunLv1, 2: catFunLv2, 3: catFunLv3, 4: catFunLv4, 5: catFunLv5, 6: catFunLv6 },
   "记录": { 0: catDiaryLv0, 1: catDiaryLv1, 2: catDiaryLv2, 3: catDiaryLv3, 4: catDiaryLv4, 5: catDiaryLv5, 6: catDiaryLv6 },
   "健康": { 0: catHealthLv0, 1: catHealthLv1, 2: catHealthLv2, 3: catHealthLv3, 4: catHealthLv4, 5: catHealthLv5, 6: catHealthLv6 },
+  "美丽": { 0: catBeautyLv0, 1: catBeautyLv1, 2: catBeautyLv2, 3: catBeautyLv3, 4: catBeautyLv4, 5: catBeautyLv5, 6: catBeautyLv6 },
 };
 
 const getCatImage = (level: number, category: string): string => {
