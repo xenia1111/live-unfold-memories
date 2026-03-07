@@ -28,7 +28,7 @@ const Index = () => {
 
   const renderPage = () => {
     switch (activeTab) {
-      case "home": return <HomePage tasks={tasks} loading={loading} onCompleteTask={completeTask} onUpdateTask={updateTask} onDeleteTask={deleteTask} />;
+      case "home": return <HomePage tasks={tasks} loading={loading} onCompleteTask={completeTask} onUpdateTask={updateTask} onDeleteTask={deleteTask} onNavigateProfile={() => setActiveTab("profile")} />;
       case "calendar": return <CalendarPage tasks={tasks} onUpdateTask={updateTask} onDeleteTask={deleteTask} />;
       case "story": return <StoryPage tasks={tasks} />;
       case "profile": return <ProfilePage tasks={tasks} />;
