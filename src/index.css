@@ -307,4 +307,28 @@
   .bg-gradient-radial {
     background: radial-gradient(circle, var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to));
   }
+
+  /* Scrapbook tilt for photo cards */
+  .scrapbook-tilt:nth-child(odd) {
+    transform: rotate(0.7deg);
+  }
+  .scrapbook-tilt:nth-child(even) {
+    transform: rotate(-0.5deg);
+  }
+  .scrapbook-tilt:nth-child(3n) {
+    transform: rotate(1deg);
+  }
+  .scrapbook-tilt:hover {
+    transform: rotate(0deg) scale(1.01);
+    transition: transform 0.3s ease;
+  }
+
+  /* Today card enhanced glow */
+  @keyframes today-glow {
+    0%, 100% { box-shadow: 0 0 8px 2px hsl(36 80% 50% / 0.15), 0 2px 16px -4px hsl(36 80% 50% / 0.1); }
+    50% { box-shadow: 0 0 20px 6px hsl(36 80% 50% / 0.2), 0 4px 24px -4px hsl(36 80% 50% / 0.15); }
+  }
+  .animate-today-glow {
+    animation: today-glow 3s ease-in-out infinite;
+  }
 }

@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { format } from "date-fns";
-import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, Dumbbell, BookOpen, Coffee, Heart, Music, CalendarDays, ChevronLeft, ChevronRight, PawPrint } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import PhotoGrid from "@/components/PhotoGrid";
 import EditTaskDialog from "@/components/EditTaskDialog";
@@ -10,6 +10,13 @@ import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
 const iconMap: Record<string, any> = { coffee: Coffee, dumbbell: Dumbbell, book: BookOpen, music: Music, heart: Heart, star: Star };
 const emojiMap: Record<string, string> = { dumbbell: "🏃", book: "📖", coffee: "☕", star: "🧘", heart: "📝", music: "🎵" };
 const categoryColorMap: Record<string, string> = { "运动": "bg-accent/15 text-accent", "学习": "bg-primary/15 text-primary", "社交": "bg-secondary/15 text-secondary", "健康": "bg-secondary/15 text-secondary", "记录": "bg-primary/15 text-primary" };
+
+const seasonEmoji = (month: number): string => {
+  if (month >= 3 && month <= 5) return "🌸";
+  if (month >= 6 && month <= 8) return "🌻";
+  if (month >= 9 && month <= 11) return "🍂";
+  return "❄️";
+};
 
 const mockPhotos = [
   "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
@@ -159,46 +166,66 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
           ) : (
             <div className="relative pl-8">
               <div className="absolute left-[11px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/50 via-primary/20 to-transparent rounded-full" />
-              {groupedByMonth.map((group) => (
-                <div key={group.key} ref={el => { if (el) monthRefs.current.set(group.key, el); }}>
-                  <div className="relative flex items-center gap-3 mb-4 mt-6 first:mt-0">
-                    <div className="absolute -left-8 w-6 h-6 rounded-full gradient-warm flex items-center justify-center shadow-sm">
-                      <span className="text-[10px] text-primary-foreground font-bold">{format(group.items[0].date, "M", { locale })}</span>
-                    </div>
-                    <span className="text-xs font-bold text-muted-foreground tracking-wider uppercase">{group.label}</span>
-                    <div className="flex-1 h-px bg-border/60" />
-                    <span className="text-[10px] text-muted-foreground/60">{interpolate(t("cal.records"), { n: group.items.length })}</span>
-                  </div>
-                  {group.items.map((item, i) => {
-                    const emoji = emojiMap[item.icon] || "⭐";
-                    const itemDateStr = format(item.date, "yyyy-MM-dd");
-                    const isToday = itemDateStr === todayStr;
-                    const catColor = categoryColorMap[item.category] || "bg-muted/60 text-muted-foreground";
-                    return (
-                      <div key={item.id} ref={isToday ? el => { if (el) todayRef.current = el; } : undefined} className="relative mb-3 animate-fade-in" style={{ animationDelay: `${Math.min(i * 0.03, 0.3)}s` }}>
-                        <div className={`absolute -left-8 top-4 w-6 h-6 rounded-full flex items-center justify-center text-xs ${isToday ? 'bg-primary shadow-md animate-breathe' : 'bg-card border-2 border-primary/30'}`}>
-                          {isToday ? <span className="text-primary-foreground text-[10px]">●</span> : <span className="text-[11px]">{emoji}</span>}
-                        </div>
-                        <div onClick={(e) => { e.stopPropagation(); if (!item.id.startsWith('mock-')) { const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); } }}
-                          className={`rounded-2xl transition-all p-4 ${!item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''} ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-md' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
-                          <div className="flex items-center justify-between mb-1.5">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[11px] text-muted-foreground">{format(item.date, "M/d EEEE", { locale })}</span>
-                              {isToday && <span className="text-[10px] font-bold text-primary-foreground bg-primary px-1.5 py-0.5 rounded-full">{t("cal.today")}</span>}
-                            </div>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${catColor}`}>{catName(item.category)}</span>
-                          </div>
-                          <p className="text-[15px] font-semibold text-foreground leading-snug">{item.title}</p>
-                          {item.photos.length > 0 && <PhotoGrid photos={item.photos} alt={item.title} />}
-                        </div>
+              {groupedByMonth.map((group) => {
+                const monthNum = Number(group.key.split("-")[1]) + 1;
+                const season = seasonEmoji(monthNum);
+                return (
+                  <div key={group.key} ref={el => { if (el) monthRefs.current.set(group.key, el); }}>
+                    <div className="relative flex items-center gap-3 mb-2 mt-6 first:mt-0">
+                      <div className="absolute -left-8 w-6 h-6 rounded-full gradient-warm flex items-center justify-center shadow-sm">
+                        <span className="text-[10px] text-primary-foreground font-bold">{format(group.items[0].date, "M", { locale })}</span>
                       </div>
-                    );
-                  })}
-                </div>
-              ))}
+                      <span className="text-xs font-bold text-muted-foreground tracking-wider uppercase">{season} {group.label}</span>
+                      <div className="flex-1 h-px bg-border/60" />
+                      <span className="text-[10px] text-muted-foreground/60">{interpolate(t("cal.records"), { n: group.items.length })}</span>
+                    </div>
+                    {/* Monthly summary */}
+                    <p className="text-[11px] text-muted-foreground/50 mb-4 pl-1 italic">
+                      {interpolate(t("cal.monthSummary"), { n: group.items.length })}
+                    </p>
+                    {group.items.map((item, i) => {
+                      const emoji = emojiMap[item.icon] || "⭐";
+                      const itemDateStr = format(item.date, "yyyy-MM-dd");
+                      const isToday = itemDateStr === todayStr;
+                      const hasPhotos = item.photos.length > 0;
+                      const catColor = categoryColorMap[item.category] || "bg-muted/60 text-muted-foreground";
+                      return (
+                        <div key={item.id} ref={isToday ? el => { if (el) todayRef.current = el; } : undefined} className={`relative mb-3 animate-slide-up ${hasPhotos ? 'scrapbook-tilt' : ''}`} style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}>
+                          {/* Timeline node */}
+                          <div className={`absolute -left-8 top-4 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${isToday ? 'bg-primary shadow-md animate-breathe' : hasPhotos ? 'bg-primary/20 border-2 border-primary/40' : 'bg-card border-2 border-primary/30'}`}>
+                            {isToday ? (
+                              <span className="text-primary-foreground text-[10px]">●</span>
+                            ) : hasPhotos ? (
+                              <PawPrint size={11} className="text-primary" />
+                            ) : (
+                              <span className="text-[11px]">{emoji}</span>
+                            )}
+                          </div>
+                          {/* Card */}
+                          <div onClick={(e) => { e.stopPropagation(); if (!item.id.startsWith('mock-')) { const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); } }}
+                            className={`rounded-2xl transition-all p-4 ${!item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''} ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-lg animate-today-glow' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
+                            <div className="flex items-center justify-between mb-1.5">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-muted-foreground">{format(item.date, "M/d EEEE", { locale })}</span>
+                                {isToday && <span className="text-[10px] font-bold text-primary-foreground bg-primary px-1.5 py-0.5 rounded-full">{t("cal.today")}</span>}
+                              </div>
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${catColor}`}>{catName(item.category)}</span>
+                            </div>
+                            <p className="text-[15px] font-semibold text-foreground leading-snug">{item.title}</p>
+                            {hasPhotos && <PhotoGrid photos={item.photos} alt={item.title} />}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+              {/* Warm ending */}
               <div className="relative flex items-center gap-3 mt-6 pb-4">
-                <div className="absolute -left-8 w-6 h-6 rounded-full bg-muted flex items-center justify-center"><span className="text-[10px] text-muted-foreground">∞</span></div>
-                <span className="text-xs text-muted-foreground/50 italic">{t("home.earlierRecords")}</span>
+                <div className="absolute -left-8 w-6 h-6 rounded-full bg-muted flex items-center justify-center">
+                  <span className="text-[12px]">🐾</span>
+                </div>
+                <span className="text-xs text-muted-foreground/50 italic">{t("cal.ending")}</span>
               </div>
             </div>
           )}
