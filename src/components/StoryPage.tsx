@@ -106,11 +106,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   }, [saveAiStory, t]);
 
   return (
-    <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
-      {/* Warm header */}
-      <div className="text-center mb-6 animate-fade-in">
-        <h1 className="text-2xl font-bold text-foreground mb-1">📖</h1>
-      </div>
+    <div className="px-5 pt-8 pb-24 max-w-lg mx-auto">
 
       {/* View mode toggle — pill style */}
       <div className="flex gap-1 mb-5 p-1 rounded-2xl bg-muted/40 animate-fade-in" style={{ animationDelay: "0.05s" }}>
