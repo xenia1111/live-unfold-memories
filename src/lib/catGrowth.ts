@@ -61,7 +61,38 @@ export const CAT_STAGES: CatStage[] = [
   { level: 6, label: "宇宙猫", emoji: "✨", desc: "超越一切的存在", foodRequired: 2830 },
 ];
 
-export function getCatStage(food: number): { current: CatStage; next: CatStage | null; progress: number } {
+export function getCatStage(food: number, tasks?: Task[]): { current: CatStage; next: CatStage | null; progress: number } {
+  // Special transitions based on task state
+  if (tasks) {
+    const hasAnyTask = tasks.length > 0;
+    const hasCompleted = tasks.some(t => t.completed);
+    
+    // No tasks at all → egg
+    if (!hasAnyTask) {
+      const next = CAT_STAGES[1]; // cracked egg
+      return { current: CAT_STAGES[0], next, progress: 0 };
+    }
+    
+    // Has tasks but none completed → cracked egg (level 0)
+    if (!hasCompleted) {
+      const next = CAT_STAGES[2]; // kitten
+      return { current: CAT_STAGES[1], next, progress: 0 };
+    }
+    
+    // Has completed tasks → at least level 1 (kitten), then food-based from there
+    let current = CAT_STAGES[2]; // start at level 1 minimum
+    for (let i = 2; i < CAT_STAGES.length; i++) {
+      if (food >= CAT_STAGES[i].foodRequired) current = CAT_STAGES[i];
+    }
+    const idx = CAT_STAGES.indexOf(current);
+    const next = idx < CAT_STAGES.length - 1 ? CAT_STAGES[idx + 1] : null;
+    const progress = next
+      ? Math.min(((food - current.foodRequired) / (next.foodRequired - current.foodRequired)) * 100, 100)
+      : 100;
+    return { current, next, progress };
+  }
+  
+  // Fallback: food-based only
   let current = CAT_STAGES[0];
   for (const s of CAT_STAGES) {
     if (food >= s.foodRequired) current = s;

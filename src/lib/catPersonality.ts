@@ -116,7 +116,7 @@ const DEFAULT_PERSONALITY: CatPersonality = {
 export function getCatPersonality(tasks: Task[]): CatPersonality {
   const completed = tasks.filter(t => t.completed);
   const total = completed.length;
-  if (total < 3) return DEFAULT_PERSONALITY;
+  if (total === 0) return DEFAULT_PERSONALITY;
 
   const counts: Record<string, number> = {};
   for (const t of completed) {
@@ -127,6 +127,13 @@ export function getCatPersonality(tasks: Task[]): CatPersonality {
   let topCount = 0;
   for (const [cat, count] of Object.entries(counts)) {
     if (count > topCount) { topCount = count; topCategory = cat; }
+  }
+
+  // First completed task immediately unlocks that category's cat
+  // After 3+ tasks, require 30% dominance
+  if (total < 3) {
+    if (CAT_PERSONALITIES[topCategory]) return CAT_PERSONALITIES[topCategory];
+    return DEFAULT_PERSONALITY;
   }
 
   if (topCount >= 3 && topCount / total >= 0.3 && CAT_PERSONALITIES[topCategory]) {
