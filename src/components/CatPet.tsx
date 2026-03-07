@@ -159,8 +159,10 @@ const CatPet = ({ tasks }: CatPetProps) => {
   // Fixed cat category from DB (determined by first task, never changes)
   const [fixedCategory, setFixedCategory] = useState<string | null>(null);
 
+  // Use fixedCategory for display, fall back to personality for idle lines only
+  const fixedPersonalityLabel = fixedCategory ? t(`personality.${fixedCategory}`) : null;
   const stageLabel = t(`stage.${["egg","cracked","kitten","playful","explorer","adventurer","philosopher","cosmic"][stage.level + 1] || "egg"}`);
-  const personalityLabel = personality.category ? t(`personality.${personality.category}`) : t("personality.default");
+  const personalityLabel = fixedPersonalityLabel || (personality.category ? t(`personality.${personality.category}`) : t("personality.default"));
   const getRoundnessTitle = (rate: number) => {
     let title = ROUNDNESS_TITLES[0];
     for (const tt of ROUNDNESS_TITLES) { if (rate >= tt.min) title = tt; }
@@ -267,9 +269,9 @@ const CatPet = ({ tasks }: CatPetProps) => {
             <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
               {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stageLabel}
             </span>
-            {personality.category && (
+            {(fixedCategory || personality.category) && (
               <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
-                {personality.emoji} {personalityLabel}
+                {personalityLabel}
               </span>
             )}
             <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/20 text-white")}>
