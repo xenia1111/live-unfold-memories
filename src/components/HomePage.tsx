@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { format, isToday, isFuture, differenceInCalendarDays } from "date-fns";
 import {
   CheckCircle2, Circle,
@@ -8,6 +8,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import CompletionPhotoDialog from "@/components/CompletionPhotoDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import EditTaskDialog from "@/components/EditTaskDialog";
 import ConfettiCanvas from "@/components/ConfettiCanvas";
 import CatPet from "@/components/CatPet";
@@ -107,7 +109,20 @@ interface HomePageProps {
 
 const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }: HomePageProps) => {
   const { t, locale, shortDateFormat } = useI18n();
+  const { user } = useAuth();
   const catName = useCategoryName();
+  const [lifeDays, setLifeDays] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("birthday").eq("id", user.id).single().then(({ data }) => {
+      if (data?.birthday) {
+        const born = new Date(data.birthday + "T00:00:00");
+        const days = differenceInCalendarDays(new Date(), born) + 1;
+        if (days > 0) setLifeDays(days);
+      }
+    });
+  }, [user]);
   const [justCompleted, setJustCompleted] = useState<string | null>(null);
   const [completingTask, setCompletingTask] = useState<Task | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -170,6 +185,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask }
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
           {greeting.emoji} {greeting.text}
+          {lifeDays && <span className="text-sm font-normal text-muted-foreground ml-2">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>}
         </h1>
         <div className="mt-4 flex items-center gap-3">
           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
