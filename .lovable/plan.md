@@ -1,23 +1,29 @@
 
 
-## 移除两个不符合 iOS 规范的标题元素
+## 实施方案 C：奶油焦糖 ☕
 
-### 要移除的内容
+修改 `src/index.css` 中的 CSS 变量，将当前高饱和琥珀金替换为复古焦糖色系。
 
-1. **故事页顶部标题区** (`src/components/StoryPage.tsx` 第 175-181 行)
-   - 📖 图标 + "回忆是最美的礼物" 副标题
-   - "你的故事" 大标题
-   - 整个 `animate-fade-in mb-4` 的 div 块移除
+### 配色方案
 
-2. **首页日期行** (`src/components/HomePage.tsx` 第 168-170 行)
-   - "3月5日 星期四" 的文字移除
+```text
+背景:  米色   hsl(38, 45%, 95%)
+主色:  焦糖棕 hsl(25, 45%, 48%)
+副色:  暖橘   hsl(18, 55%, 58%)
+强调:  深可可 hsl(15, 30%, 32%)
+卡片:  奶油色 hsl(40, 40%, 97%)
+文字:  深棕   hsl(20, 20%, 15%)
+边框:  浅驼   hsl(35, 20%, 84%)
+柔光:  焦糖光 hsl(25, 45%, 48% / 0.15)
+```
 
-### 改动范围
+### 改动文件
 
-| 文件 | 操作 |
-|------|------|
-| `src/components/StoryPage.tsx` | 删除第 175-181 行的标题区块 |
-| `src/components/HomePage.tsx` | 删除第 168-170 行的日期段落 |
+**`src/index.css`** — 唯一需要改的文件：
+- Light mode：所有 `--background`、`--primary`、`--secondary`、`--accent`、`--muted` 等变量换为焦糖色系 HSL 值
+- Dark mode：对应的深色变量调整为深可可/深棕底色
+- 自定义 token：`--warm-glow`、`--story-gradient`、`--progress-gradient`、`--card-shadow` 同步更新
+- 动画关键帧：`breathe`、`glow-pulse`、`today-glow` 中的发光色从金色改为焦糖棕色调
 
-两处都是纯删除，不影响其他功能。
+不涉及组件代码、数据库或其他文件改动。
 
