@@ -6,83 +6,83 @@
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
-    --foreground: 30 10% 15%;
+    --background: 30 15% 96%;
+    --foreground: 20 8% 22%;
 
-    --card: 40 30% 99%;
-    --card-foreground: 30 10% 15%;
+    --card: 30 12% 98%;
+    --card-foreground: 20 8% 22%;
 
-    --popover: 40 30% 99%;
-    --popover-foreground: 30 10% 15%;
+    --popover: 30 12% 98%;
+    --popover-foreground: 20 8% 22%;
 
-    --primary: 36 80% 50%;
-    --primary-foreground: 40 33% 99%;
+    --primary: 12 25% 58%;
+    --primary-foreground: 30 15% 98%;
 
-    --secondary: 150 25% 45%;
-    --secondary-foreground: 40 33% 99%;
+    --secondary: 160 12% 52%;
+    --secondary-foreground: 30 15% 98%;
 
-    --muted: 35 20% 92%;
-    --muted-foreground: 30 8% 50%;
+    --muted: 25 10% 91%;
+    --muted-foreground: 20 6% 48%;
 
-    --accent: 20 60% 55%;
-    --accent-foreground: 40 33% 99%;
+    --accent: 30 18% 62%;
+    --accent-foreground: 30 15% 98%;
 
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 40 33% 99%;
+    --destructive: 0 30% 55%;
+    --destructive-foreground: 30 15% 98%;
 
-    --border: 35 15% 88%;
-    --input: 35 15% 88%;
-    --ring: 36 80% 50%;
+    --border: 25 8% 87%;
+    --input: 25 8% 87%;
+    --ring: 12 25% 58%;
 
     --radius: 1rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 30 10% 97%;
+    --sidebar-foreground: 20 6% 30%;
+    --sidebar-primary: 20 8% 18%;
+    --sidebar-primary-foreground: 30 12% 97%;
+    --sidebar-accent: 25 8% 94%;
+    --sidebar-accent-foreground: 20 8% 18%;
+    --sidebar-border: 25 6% 90%;
+    --sidebar-ring: 12 25% 58%;
 
     /* Custom tokens */
-    --warm-glow: 36 90% 60%;
-    --forest: 150 30% 40%;
-    --forest-light: 150 25% 92%;
-    --story-gradient: linear-gradient(135deg, hsl(36, 80%, 50%), hsl(20, 60%, 55%));
-    --progress-gradient: linear-gradient(90deg, hsl(150, 25%, 45%), hsl(36, 80%, 50%));
-    --card-shadow: 0 2px 16px -4px hsl(36 80% 50% / 0.1);
-    --card-shadow-hover: 0 8px 30px -8px hsl(36 80% 50% / 0.18);
+    --warm-glow: 12 30% 65%;
+    --forest: 160 15% 45%;
+    --forest-light: 160 10% 92%;
+    --story-gradient: linear-gradient(135deg, hsl(12, 25%, 58%), hsl(30, 18%, 62%));
+    --progress-gradient: linear-gradient(90deg, hsl(160, 12%, 52%), hsl(12, 25%, 58%));
+    --card-shadow: 0 2px 16px -4px hsl(12 25% 58% / 0.08);
+    --card-shadow-hover: 0 8px 30px -8px hsl(12 25% 58% / 0.14);
   }
 
   .dark {
-    --background: 30 10% 8%;
-    --foreground: 40 20% 92%;
-    --card: 30 10% 12%;
-    --card-foreground: 40 20% 92%;
-    --popover: 30 10% 12%;
-    --popover-foreground: 40 20% 92%;
-    --primary: 36 80% 55%;
-    --primary-foreground: 30 10% 8%;
-    --secondary: 150 25% 40%;
-    --secondary-foreground: 40 20% 92%;
-    --muted: 30 8% 18%;
-    --muted-foreground: 35 12% 55%;
-    --accent: 20 60% 50%;
-    --accent-foreground: 40 20% 92%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 40 20% 92%;
-    --border: 30 8% 20%;
-    --input: 30 8% 20%;
-    --ring: 36 80% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 20 8% 10%;
+    --foreground: 25 10% 88%;
+    --card: 20 8% 14%;
+    --card-foreground: 25 10% 88%;
+    --popover: 20 8% 14%;
+    --popover-foreground: 25 10% 88%;
+    --primary: 12 22% 55%;
+    --primary-foreground: 20 8% 10%;
+    --secondary: 160 10% 38%;
+    --secondary-foreground: 25 10% 88%;
+    --muted: 20 6% 20%;
+    --muted-foreground: 25 8% 52%;
+    --accent: 30 15% 48%;
+    --accent-foreground: 25 10% 88%;
+    --destructive: 0 25% 38%;
+    --destructive-foreground: 25 10% 88%;
+    --border: 20 6% 22%;
+    --input: 20 6% 22%;
+    --ring: 12 22% 55%;
+    --sidebar-background: 20 6% 12%;
+    --sidebar-foreground: 25 8% 90%;
+    --sidebar-primary: 12 20% 48%;
+    --sidebar-primary-foreground: 25 10% 96%;
+    --sidebar-accent: 20 5% 18%;
+    --sidebar-accent-foreground: 25 8% 90%;
+    --sidebar-border: 20 5% 18%;
+    --sidebar-ring: 12 22% 55%;
   }
 }
 
@@ -155,16 +155,16 @@
     100% { background-position: 200% 0; }
   }
   @keyframes breathe {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(36 80% 50% / 0.3); }
-    50% { box-shadow: 0 0 20px 4px hsl(36 80% 50% / 0.15); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(12 25% 58% / 0.25); }
+    50% { box-shadow: 0 0 20px 4px hsl(12 25% 58% / 0.12); }
   }
   @keyframes confetti-fall {
     0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
   @keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(36 80% 50% / 0.2); }
-    50% { box-shadow: 0 0 24px 8px hsl(36 80% 50% / 0.15); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(12 25% 58% / 0.15); }
+    50% { box-shadow: 0 0 24px 8px hsl(12 25% 58% / 0.1); }
   }
   @keyframes bounce-in {
     0% { transform: scale(0.3); opacity: 0; }
@@ -190,7 +190,7 @@
     animation: celebrate 0.6s ease-out;
   }
   .animate-shimmer {
-    background: linear-gradient(90deg, transparent 0%, hsl(36 80% 50% / 0.08) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, hsl(12 25% 58% / 0.06) 50%, transparent 100%);
     background-size: 200% 100%;
     animation: shimmer 3s ease-in-out infinite;
   }
@@ -325,8 +325,8 @@
 
   /* Today card enhanced glow */
   @keyframes today-glow {
-    0%, 100% { box-shadow: 0 0 8px 2px hsl(36 80% 50% / 0.15), 0 2px 16px -4px hsl(36 80% 50% / 0.1); }
-    50% { box-shadow: 0 0 20px 6px hsl(36 80% 50% / 0.2), 0 4px 24px -4px hsl(36 80% 50% / 0.15); }
+    0%, 100% { box-shadow: 0 0 8px 2px hsl(12 25% 58% / 0.12), 0 2px 16px -4px hsl(12 25% 58% / 0.08); }
+    50% { box-shadow: 0 0 20px 6px hsl(12 25% 58% / 0.15), 0 4px 24px -4px hsl(12 25% 58% / 0.1); }
   }
   .animate-today-glow {
     animation: today-glow 3s ease-in-out infinite;
