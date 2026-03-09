@@ -163,8 +163,8 @@
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
   @keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(45 90% 50% / 0.2); }
-    50% { box-shadow: 0 0 24px 8px hsl(45 90% 50% / 0.15); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(25 45% 48% / 0.18); }
+    50% { box-shadow: 0 0 24px 8px hsl(25 45% 48% / 0.12); }
   }
   @keyframes bounce-in {
     0% { transform: scale(0.3); opacity: 0; }
