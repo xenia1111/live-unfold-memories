@@ -155,8 +155,8 @@
     100% { background-position: 200% 0; }
   }
   @keyframes breathe {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(36 80% 50% / 0.3); }
-    50% { box-shadow: 0 0 20px 4px hsl(36 80% 50% / 0.15); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(12 25% 58% / 0.25); }
+    50% { box-shadow: 0 0 20px 4px hsl(12 25% 58% / 0.12); }
   }
   @keyframes confetti-fall {
     0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
