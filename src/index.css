@@ -6,53 +6,53 @@
 
 @layer base {
   :root {
-    --background: 48 80% 96%;
-    --foreground: 30 15% 12%;
+    --background: 38 45% 95%;
+    --foreground: 20 20% 15%;
 
-    --card: 48 60% 98%;
-    --card-foreground: 30 15% 12%;
+    --card: 40 40% 97%;
+    --card-foreground: 20 20% 15%;
 
-    --popover: 48 60% 98%;
-    --popover-foreground: 30 15% 12%;
+    --popover: 40 40% 97%;
+    --popover-foreground: 20 20% 15%;
 
-    --primary: 45 90% 50%;
-    --primary-foreground: 30 20% 10%;
+    --primary: 25 45% 48%;
+    --primary-foreground: 40 40% 97%;
 
-    --secondary: 20 70% 55%;
-    --secondary-foreground: 48 80% 98%;
+    --secondary: 18 55% 58%;
+    --secondary-foreground: 40 40% 97%;
 
-    --muted: 45 30% 91%;
-    --muted-foreground: 30 12% 42%;
+    --muted: 35 25% 90%;
+    --muted-foreground: 20 12% 45%;
 
-    --accent: 35 75% 52%;
-    --accent-foreground: 48 80% 98%;
+    --accent: 15 30% 32%;
+    --accent-foreground: 40 40% 97%;
 
-    --destructive: 0 65% 52%;
-    --destructive-foreground: 48 80% 98%;
+    --destructive: 0 55% 48%;
+    --destructive-foreground: 40 40% 97%;
 
-    --border: 42 25% 86%;
-    --input: 42 25% 86%;
-    --ring: 45 90% 50%;
+    --border: 35 20% 84%;
+    --input: 35 20% 84%;
+    --ring: 25 45% 48%;
 
     --radius: 1rem;
 
-    --sidebar-background: 48 50% 97%;
-    --sidebar-foreground: 30 12% 25%;
-    --sidebar-primary: 30 15% 15%;
-    --sidebar-primary-foreground: 48 60% 97%;
-    --sidebar-accent: 45 25% 93%;
-    --sidebar-accent-foreground: 30 15% 15%;
-    --sidebar-border: 42 18% 89%;
-    --sidebar-ring: 45 90% 50%;
+    --sidebar-background: 38 35% 96%;
+    --sidebar-foreground: 20 15% 28%;
+    --sidebar-primary: 20 20% 18%;
+    --sidebar-primary-foreground: 38 40% 96%;
+    --sidebar-accent: 35 20% 92%;
+    --sidebar-accent-foreground: 20 20% 18%;
+    --sidebar-border: 35 15% 87%;
+    --sidebar-ring: 25 45% 48%;
 
     /* Custom tokens */
-    --warm-glow: 45 95% 58%;
+    --warm-glow: 25 50% 55%;
     --forest: 150 25% 42%;
     --forest-light: 150 18% 92%;
-    --story-gradient: linear-gradient(135deg, hsl(45, 90%, 50%), hsl(35, 75%, 52%));
-    --progress-gradient: linear-gradient(90deg, hsl(45, 90%, 50%), hsl(20, 70%, 55%));
-    --card-shadow: 0 2px 16px -4px hsl(45 90% 50% / 0.12);
-    --card-shadow-hover: 0 8px 30px -8px hsl(45 90% 50% / 0.2);
+    --story-gradient: linear-gradient(135deg, hsl(25, 45%, 48%), hsl(18, 55%, 58%));
+    --progress-gradient: linear-gradient(90deg, hsl(25, 45%, 48%), hsl(18, 55%, 58%));
+    --card-shadow: 0 2px 16px -4px hsl(25 45% 48% / 0.1);
+    --card-shadow-hover: 0 8px 30px -8px hsl(25 45% 48% / 0.18);
   }
 
   .dark {
