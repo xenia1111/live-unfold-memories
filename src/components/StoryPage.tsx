@@ -91,7 +91,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       const total = allTasks.length; const completed = allTasks.filter(t => t.completed).length;
       const rate = total > 0 ? completed / total : 0;
       const key = `${activePeriod}-${range.label}`;
-      return { key, label: range.label, timeRange: formatRange(range.start, range.end, activePeriod), isCurrent: range.isCurrent, decor: getMoodDecor(rate, total), fallback: buildFallback(allTasks, total, completed, rate), tasks: allTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, deadline: t.deadline ? t.deadline.toISOString() : undefined })), total, completed, rate };
+      const photos = allTasks.filter(t => t.completed && t.completionPhoto).map(t => t.completionPhoto!);
+      return { key, label: range.label, timeRange: formatRange(range.start, range.end, activePeriod), isCurrent: range.isCurrent, decor: getMoodDecor(rate, total), fallback: buildFallback(allTasks, total, completed, rate), tasks: allTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, deadline: t.deadline ? t.deadline.toISOString() : undefined })), total, completed, rate, photos };
     });
   }, [tasks, activePeriod, getPeriodRanges, buildFallback]);
 
