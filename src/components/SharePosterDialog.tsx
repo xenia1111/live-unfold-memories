@@ -335,7 +335,7 @@ const SharePosterDialog = ({ open, onClose, story, periodLabel, timeRange, photo
     setGenerating(true);
     setPosterUrl(null);
     try {
-      const url = await generatePoster(selectedTemplate, story, periodLabel, timeRange, photos, displayName);
+      const url = await generatePoster(selectedTemplate, story, periodLabel, timeRange, photos, displayName, lang);
       setPosterUrl(url);
     } catch (e) {
       console.error("Poster generation failed:", e);
