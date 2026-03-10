@@ -42,11 +42,11 @@ const POSTER_H = 1920;
 
 // Language-aware handwriting fonts
 const HANDWRITING_FONTS: Record<Language, string> = {
-  zh: "'Liu Jian Mao Cao', cursive",
-  en: "'Dancing Script', cursive",
-  fr: "'Dancing Script', cursive",
-  es: "'Dancing Script', cursive",
-  ja: "'Zen Kurenaido', sans-serif",
+  zh: "'Ma Shan Zheng', cursive",
+  en: "'Caveat', cursive",
+  fr: "'Caveat', cursive",
+  es: "'Caveat', cursive",
+  ja: "'Yuji Syuku', serif",
 };
 
 const BODY_FONTS: Record<Language, string> = {
@@ -54,7 +54,7 @@ const BODY_FONTS: Record<Language, string> = {
   en: "'Noto Sans SC', sans-serif",
   fr: "'Noto Sans SC', sans-serif",
   es: "'Noto Sans SC', sans-serif",
-  ja: "'Zen Kurenaido', 'Noto Sans SC', sans-serif",
+  ja: "'Yuji Syuku', 'Noto Sans SC', sans-serif",
 };
 
 // Load image helper
