@@ -225,7 +225,7 @@ async function generatePoster(
   curY += 10;
 
   // Opening line
-  ctx.font = "italic 36px 'Ma Shan Zheng', 'ZCOOL XiaoWei', 'Playfair Display', serif";
+  ctx.font = `italic 36px ${handFont}`;
   ctx.fillStyle = "rgba(140, 220, 60, 0.7)";
   const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW);
   for (const line of olLines) {
