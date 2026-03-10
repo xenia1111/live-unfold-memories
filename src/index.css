@@ -155,16 +155,16 @@
     100% { background-position: 200% 0; }
   }
   @keyframes breathe {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(25 45% 48% / 0.25); }
-    50% { box-shadow: 0 0 20px 4px hsl(25 45% 48% / 0.12); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(82 85% 50% / 0.25); }
+    50% { box-shadow: 0 0 20px 4px hsl(82 85% 50% / 0.12); }
   }
   @keyframes confetti-fall {
     0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
     100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
   }
   @keyframes glow-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(25 45% 48% / 0.18); }
-    50% { box-shadow: 0 0 24px 8px hsl(25 45% 48% / 0.12); }
+    0%, 100% { box-shadow: 0 0 0 0 hsl(82 85% 50% / 0.18); }
+    50% { box-shadow: 0 0 24px 8px hsl(82 85% 50% / 0.12); }
   }
   @keyframes bounce-in {
     0% { transform: scale(0.3); opacity: 0; }
