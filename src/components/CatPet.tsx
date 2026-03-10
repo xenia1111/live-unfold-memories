@@ -298,37 +298,37 @@ const CatPet = ({ tasks }: CatPetProps) => {
 
           {showBubble && (
             <div className="relative mb-2.5 animate-fade-in">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-white/50 shadow-sm">
-                <p className="text-xs text-foreground/90 leading-relaxed">{comment}</p>
+              <div className="bg-black/75 backdrop-blur-md rounded-2xl rounded-bl-md px-3.5 py-2.5 border border-white/15 shadow-lg">
+                <p className="text-xs text-white leading-relaxed">{comment}</p>
               </div>
             </div>
           )}
 
           <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
-              <span>🍖</span><span className="font-medium text-white">{interpolate(t("cat.food"), { n: catFood })}</span>
+            <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] shadow-lg">
+              <span>🍖</span><span className="font-bold text-white">{interpolate(t("cat.food"), { n: catFood })}</span>
             </div>
             {streak > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
-                <span>🔥</span><span className="font-medium text-white">{interpolate(t("cat.streak"), { n: streak })}</span>
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] shadow-lg">
+                <span>🔥</span><span className="font-bold text-white">{interpolate(t("cat.streak"), { n: streak })}</span>
               </div>
             )}
             {photoCount > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
-                <span>📸</span><span className="font-medium text-white">{interpolate(t("cat.photos"), { n: photoCount })}</span>
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] shadow-lg">
+                <span>📸</span><span className="font-bold text-white">{interpolate(t("cat.photos"), { n: photoCount })}</span>
               </div>
             )}
-            <button onClick={() => setShowLeaderboard(true)} className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] hover:bg-black/70 active:scale-95 transition-all shadow-sm">
-              <span>🏆</span><span className="font-medium text-white">{t("cat.leaderboard")}</span>
+            <button onClick={() => setShowLeaderboard(true)} className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/15 text-[10px] hover:bg-black/85 active:scale-95 transition-all shadow-lg">
+              <span>🏆</span><span className="font-bold text-white">{t("cat.leaderboard")}</span>
             </button>
           </div>
 
           {nextStage && (
             <div className="mt-2 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-white/40 rounded-full overflow-hidden">
-                <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-400 transition-all duration-700" style={{ width: `${progress}%` }} />
+              <div className="flex-1 h-1.5 bg-black/50 rounded-full overflow-hidden border border-white/10">
+                <div className="h-full rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-700" style={{ width: `${progress}%` }} />
               </div>
-              <span className={cn("text-[9px] whitespace-nowrap drop-shadow-sm", isDarkBg ? "text-white/80" : "text-white/80")}>
+              <span className="text-[9px] whitespace-nowrap text-white font-medium drop-shadow-md">
                 → {nextStage.emoji} {nextStageLabel}
               </span>
             </div>
