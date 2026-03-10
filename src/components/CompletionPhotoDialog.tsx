@@ -18,6 +18,7 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
   const [photo, setPhoto] = useState<string | null>(null);
   const [note, setNote] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const MOMENT_EMOJIS = ["🌿", "☀️", "🍃", "🌸", "✨", "🦋"];
   const message = useMemo(() => {
