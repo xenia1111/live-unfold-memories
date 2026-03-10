@@ -42,10 +42,10 @@ const POSTER_H = 1920;
 
 // Language-aware handwriting fonts
 const HANDWRITING_FONTS: Record<Language, string> = {
-  zh: "'Ma Shan Zheng', cursive",
-  en: "'Caveat', cursive",
-  fr: "'Caveat', cursive",
-  es: "'Caveat', cursive",
+  zh: "'Liu Jian Mao Cao', cursive",
+  en: "'Dancing Script', cursive",
+  fr: "'Dancing Script', cursive",
+  es: "'Dancing Script', cursive",
   ja: "'Zen Kurenaido', sans-serif",
 };
 
@@ -179,68 +179,99 @@ async function generatePoster(
   ctx.fillStyle = "#0B0B0D";
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
-  // Accent glow
-  const glow = ctx.createRadialGradient(POSTER_W / 2, 300, 50, POSTER_W / 2, 300, 600);
-  glow.addColorStop(0, "rgba(140, 220, 60, 0.08)");
+  // Subtle glow effects
+  const glow = ctx.createRadialGradient(200, 400, 50, 200, 400, 700);
+  glow.addColorStop(0, "rgba(140, 220, 60, 0.07)");
   glow.addColorStop(1, "rgba(140, 220, 60, 0)");
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
-  // Purple glow bottom
-  const glow2 = ctx.createRadialGradient(POSTER_W / 2, POSTER_H - 200, 50, POSTER_W / 2, POSTER_H - 200, 500);
+  const glow2 = ctx.createRadialGradient(POSTER_W - 200, POSTER_H - 400, 50, POSTER_W - 200, POSTER_H - 400, 600);
   glow2.addColorStop(0, "rgba(140, 80, 220, 0.06)");
   glow2.addColorStop(1, "rgba(140, 80, 220, 0)");
   ctx.fillStyle = glow2;
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
-  let curY = 100;
+  // --- Pre-calculate content blocks to distribute evenly ---
+  const usablePhotos = (template !== "text-only") ? photos.slice(0, 9) : [];
+  const hasPhotos = usablePhotos.length > 0;
 
-  // Period label + username
-  ctx.font = `600 32px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.4)";
-  ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
-  curY += 20;
+  // Measure all text blocks
+  const titleSize = hasPhotos ? 72 : 88;
+  const openingSize = hasPhotos ? 42 : 50;
+  const summarySize = hasPhotos ? 40 : 48;
+  const highlightSize = hasPhotos ? 36 : 42;
 
-  // Username
-  ctx.font = `400 28px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.3)";
-  ctx.textAlign = "right";
-  ctx.fillText(`@${displayName}`, POSTER_W - pad, 100);
-  ctx.textAlign = "left";
-  curY += 40;
-
-  // Emoji
-  ctx.font = "72px sans-serif";
-  ctx.fillText(story.emoji, pad, curY + 60);
-  curY += 90;
-
-  // Title - handwriting font
-  ctx.font = `700 64px ${handFont}`;
-  ctx.fillStyle = "#8CDC3C"; // primary neon green
+  ctx.font = `700 ${titleSize}px ${handFont}`;
   const titleLines = wrapText(ctx, story.title, contentW);
+  ctx.font = `italic ${openingSize}px ${handFont}`;
+  const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW);
+  ctx.font = `400 ${summarySize}px ${handFont}`;
+  const summaryLines = wrapText(ctx, story.summary, contentW);
+  ctx.font = `400 ${highlightSize}px ${handFont}`;
+  const highlightLines: string[] = [];
+  for (const h of story.highlights.slice(0, 4)) {
+    highlightLines.push(...wrapText(ctx, `✦ ${h}`, contentW));
+  }
+
+  // Calculate total content height
+  const headerH = 80; // period + username
+  const emojiH = 100;
+  const titleH = titleLines.length * (titleSize + 12);
+  const openingH = olLines.length * (openingSize + 10);
+  const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 420 : usablePhotos.length <= 4 ? 520 : 620) : 0;
+  const summaryH = summaryLines.length * (summarySize + 14);
+  const highlightH = highlightLines.length * (highlightSize + 10);
+  const moodH = 40;
+  const footerH = 100;
+
+  const totalContentH = headerH + emojiH + titleH + openingH + photoH + summaryH + highlightH + moodH + footerH;
+  const availableH = POSTER_H - pad * 2;
+  const extraSpace = Math.max(0, availableH - totalContentH);
+
+  // Distribute extra space as gaps between sections
+  const sectionCount = hasPhotos ? 7 : 6;
+  const gap = Math.min(extraSpace / sectionCount, 80); // cap gap
+
+  let curY = pad + 50;
+
+  // === HEADER: Period + Username ===
+  ctx.font = `500 34px ${bodyFont}`;
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
+  ctx.font = `400 30px ${bodyFont}`;
+  ctx.fillStyle = "rgba(255,255,255,0.25)";
+  ctx.textAlign = "right";
+  ctx.fillText(`@${displayName}`, POSTER_W - pad, curY);
+  ctx.textAlign = "left";
+  curY += headerH + gap;
+
+  // === EMOJI ===
+  ctx.font = `${hasPhotos ? 80 : 100}px sans-serif`;
+  ctx.fillText(story.emoji, pad, curY + 70);
+  curY += emojiH + gap * 0.3;
+
+  // === TITLE ===
+  ctx.font = `700 ${titleSize}px ${handFont}`;
+  ctx.fillStyle = "#8CDC3C";
   for (const line of titleLines) {
     ctx.fillText(line, pad, curY);
-    curY += 76;
+    curY += titleSize + 12;
   }
-  curY += 10;
+  curY += gap * 0.6;
 
-  // Opening line
-  ctx.font = `italic 36px ${handFont}`;
-  ctx.fillStyle = "rgba(140, 220, 60, 0.7)";
-  const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW);
+  // === OPENING LINE ===
+  ctx.font = `italic ${openingSize}px ${handFont}`;
+  ctx.fillStyle = "rgba(140, 220, 60, 0.65)";
   for (const line of olLines) {
     ctx.fillText(line, pad, curY);
-    curY += 48;
+    curY += openingSize + 10;
   }
-  curY += 30;
+  curY += gap;
 
-  // Photos section
-  const usablePhotos = photos.slice(0, 9);
-  if (template !== "text-only" && usablePhotos.length > 0) {
-    const photoH = usablePhotos.length <= 2 ? 400 : usablePhotos.length <= 4 ? 500 : 600;
-    
+  // === PHOTOS ===
+  if (hasPhotos) {
     if (template === "photo-blur") {
-      // Blurred background photo + overlay
       try {
         const bgImg = await loadImage(usablePhotos[0]);
         ctx.save();
@@ -250,62 +281,64 @@ async function generatePoster(
         ctx.drawImage(bgImg, pad - 40, curY - 40, contentW + 80, photoH + 80);
         ctx.filter = "none";
         ctx.restore();
-        // Overlay photos in center
         const innerPad = 30;
         await drawPhotoGrid(ctx, usablePhotos, pad + innerPad, curY + innerPad, contentW - innerPad * 2, photoH - innerPad * 2, 12);
       } catch {
         await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 12);
       }
     } else {
-      // photo-grid: straight grid
       await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 12);
     }
-    curY += photoH + 40;
+    curY += photoH + gap;
   }
 
-  // Summary text - handwriting
-  ctx.font = `400 36px ${handFont}`;
+  // === SUMMARY ===
+  ctx.font = `400 ${summarySize}px ${handFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.85)";
-  const summaryLines = wrapText(ctx, story.summary, contentW);
-  const maxSummaryLines = template === "text-only" ? 16 : 8;
-  for (const line of summaryLines.slice(0, maxSummaryLines)) {
+  const lineHeight = summarySize + 14;
+  for (const line of summaryLines) {
+    if (curY > POSTER_H - 300) break;
     ctx.fillText(line, pad, curY);
-    curY += 52;
+    curY += lineHeight;
   }
-  curY += 20;
+  curY += gap * 0.8;
 
-  // Highlights
-  if (curY < POSTER_H - 300) {
-    ctx.font = `400 30px ${handFont}`;
-    ctx.fillStyle = "rgba(140, 80, 220, 0.8)";
-    for (const h of story.highlights.slice(0, 3)) {
-      const hLines = wrapText(ctx, `✦ ${h}`, contentW);
-      for (const line of hLines) {
-        if (curY > POSTER_H - 200) break;
-        ctx.fillText(line, pad, curY);
-        curY += 42;
-      }
+  // === HIGHLIGHTS ===
+  if (highlightLines.length > 0 && curY < POSTER_H - 250) {
+    // Divider
+    ctx.strokeStyle = "rgba(140, 80, 220, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad, curY - gap * 0.3);
+    ctx.lineTo(pad + 200, curY - gap * 0.3);
+    ctx.stroke();
+
+    ctx.font = `400 ${highlightSize}px ${handFont}`;
+    ctx.fillStyle = "rgba(140, 80, 220, 0.75)";
+    for (const line of highlightLines) {
+      if (curY > POSTER_H - 180) break;
+      ctx.fillText(line, pad, curY);
+      curY += highlightSize + 10;
     }
   }
 
-  // Mood badge
-  ctx.font = `500 28px ${bodyFont}`;
+  // === MOOD (bottom area) ===
+  ctx.font = `500 32px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.2)";
-  ctx.fillText(`💭 ${story.mood}`, pad, POSTER_H - 120);
+  ctx.fillText(`💭 ${story.mood}`, pad, POSTER_H - 130);
 
-  // Footer line
-  ctx.strokeStyle = "rgba(140, 220, 60, 0.15)";
+  // === FOOTER ===
+  ctx.strokeStyle = "rgba(140, 220, 60, 0.12)";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(pad, POSTER_H - 90);
-  ctx.lineTo(POSTER_W - pad, POSTER_H - 90);
+  ctx.moveTo(pad, POSTER_H - 95);
+  ctx.lineTo(POSTER_W - pad, POSTER_H - 95);
   ctx.stroke();
 
-  // App branding
-  ctx.font = `400 24px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.15)";
+  ctx.font = `400 26px ${bodyFont}`;
+  ctx.fillStyle = "rgba(255,255,255,0.12)";
   ctx.textAlign = "right";
-  ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 50);
+  ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 55);
   ctx.textAlign = "left";
 
   return canvas.toDataURL("image/png");
