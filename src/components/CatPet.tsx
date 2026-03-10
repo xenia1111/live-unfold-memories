@@ -305,21 +305,21 @@ const CatPet = ({ tasks }: CatPetProps) => {
           )}
 
           <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
-              <span>🍖</span><span className="font-medium text-foreground">{interpolate(t("cat.food"), { n: catFood })}</span>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
+              <span>🍖</span><span className="font-medium text-white">{interpolate(t("cat.food"), { n: catFood })}</span>
             </div>
             {streak > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
-                <span>🔥</span><span className="font-medium text-foreground">{interpolate(t("cat.streak"), { n: streak })}</span>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
+                <span>🔥</span><span className="font-medium text-white">{interpolate(t("cat.streak"), { n: streak })}</span>
               </div>
             )}
             {photoCount > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
-                <span>📸</span><span className="font-medium text-foreground">{interpolate(t("cat.photos"), { n: photoCount })}</span>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
+                <span>📸</span><span className="font-medium text-white">{interpolate(t("cat.photos"), { n: photoCount })}</span>
               </div>
             )}
-            <button onClick={() => setShowLeaderboard(true)} className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px] hover:bg-white/90 active:scale-95 transition-all">
-              <span>🏆</span><span className="font-medium text-foreground">{t("cat.leaderboard")}</span>
+            <button onClick={() => setShowLeaderboard(true)} className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] hover:bg-black/70 active:scale-95 transition-all shadow-sm">
+              <span>🏆</span><span className="font-medium text-white">{t("cat.leaderboard")}</span>
             </button>
           </div>
 
