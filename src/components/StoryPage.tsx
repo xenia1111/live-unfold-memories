@@ -283,6 +283,17 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           </div>
         </>
       )}
+
+      {shareDialog && (
+        <SharePosterDialog
+          open={!!shareDialog}
+          onClose={() => setShareDialog(null)}
+          story={shareDialog.story}
+          periodLabel={shareDialog.periodLabel}
+          timeRange={shareDialog.timeRange}
+          photos={shareDialog.photos}
+        />
+      )}
     </div>
   );
 };
