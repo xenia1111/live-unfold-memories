@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { X, Download, Share2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, type Language } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
