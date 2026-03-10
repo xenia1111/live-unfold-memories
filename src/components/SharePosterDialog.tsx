@@ -40,6 +40,23 @@ const TEMPLATES: Template[] = [
 const POSTER_W = 1080;
 const POSTER_H = 1920;
 
+// Language-aware handwriting fonts
+const HANDWRITING_FONTS: Record<Language, string> = {
+  zh: "'Ma Shan Zheng', cursive",
+  en: "'Caveat', cursive",
+  fr: "'Caveat', cursive",
+  es: "'Caveat', cursive",
+  ja: "'Zen Kurenaido', sans-serif",
+};
+
+const BODY_FONTS: Record<Language, string> = {
+  zh: "'Noto Sans SC', sans-serif",
+  en: "'Noto Sans SC', sans-serif",
+  fr: "'Noto Sans SC', sans-serif",
+  es: "'Noto Sans SC', sans-serif",
+  ja: "'Zen Kurenaido', 'Noto Sans SC', sans-serif",
+};
+
 // Load image helper
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
