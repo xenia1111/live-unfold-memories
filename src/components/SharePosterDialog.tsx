@@ -42,10 +42,10 @@ const POSTER_H = 1920;
 
 // Language-aware handwriting fonts
 const HANDWRITING_FONTS: Record<Language, string> = {
-  zh: "'Ma Shan Zheng', cursive",
-  en: "'Caveat', cursive",
-  fr: "'Caveat', cursive",
-  es: "'Caveat', cursive",
+  zh: "'Liu Jian Mao Cao', cursive",
+  en: "'Dancing Script', cursive",
+  fr: "'Dancing Script', cursive",
+  es: "'Dancing Script', cursive",
   ja: "'Zen Kurenaido', sans-serif",
 };
 
