@@ -264,7 +264,7 @@ async function generatePoster(
   }
 
   // Summary text - handwriting
-  ctx.font = "400 36px 'Ma Shan Zheng', 'ZCOOL XiaoWei', cursive";
+  ctx.font = `400 36px ${handFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.85)";
   const summaryLines = wrapText(ctx, story.summary, contentW);
   const maxSummaryLines = template === "text-only" ? 16 : 8;
