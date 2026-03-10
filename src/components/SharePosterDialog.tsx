@@ -314,7 +314,7 @@ async function generatePoster(
     ctx.stroke();
 
     ctx.font = `400 ${highlightSize}px ${handFont}`;
-    ctx.fillStyle = "rgba(140, 80, 220, 0.75)";
+    ctx.fillStyle = "rgba(140, 220, 60, 0.65)";
     for (const line of highlightLines) {
       if (curY > POSTER_H - 180) break;
       ctx.fillText(line, pad, curY);
