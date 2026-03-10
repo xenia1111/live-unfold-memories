@@ -57,7 +57,8 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
           <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("complete.notePlaceholder")}
             className="w-full h-28 rounded-xl border border-border/40 bg-muted/20 px-3.5 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-primary/20 focus:bg-muted/30 transition-all leading-relaxed" />
 
-          <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageSelect} />
+          <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageSelect} />
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
 
           {photo ? (
             <div className="relative rounded-xl overflow-hidden animate-fade-in">
@@ -67,10 +68,16 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
               </button>
             </div>
           ) : (
-            <button onClick={() => fileInputRef.current?.click()} className="w-full py-3 rounded-xl border border-dashed border-border/40 flex items-center justify-center gap-2 text-muted-foreground/60 hover:text-muted-foreground hover:border-border/60 transition-all active:scale-[0.98]">
-              <Camera size={16} />
-              <span className="text-xs">{t("complete.addPhoto")}</span>
-            </button>
+            <div className="flex gap-2">
+              <button onClick={() => cameraInputRef.current?.click()} className="flex-1 py-3 rounded-xl border border-dashed border-border/40 flex items-center justify-center gap-2 text-muted-foreground/60 hover:text-muted-foreground hover:border-border/60 transition-all active:scale-[0.98]">
+                <Camera size={16} />
+                <span className="text-xs">{t("complete.takePhoto")}</span>
+              </button>
+              <button onClick={() => fileInputRef.current?.click()} className="flex-1 py-3 rounded-xl border border-dashed border-border/40 flex items-center justify-center gap-2 text-muted-foreground/60 hover:text-muted-foreground hover:border-border/60 transition-all active:scale-[0.98]">
+                <ImagePlus size={16} />
+                <span className="text-xs">{t("complete.fromAlbum")}</span>
+              </button>
+            </div>
           )}
 
           <div className="flex gap-3 pt-1">

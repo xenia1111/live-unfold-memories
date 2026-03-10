@@ -82,6 +82,7 @@ const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTask
         <div className="px-5 pb-4 space-y-4 overflow-y-auto flex-1 min-h-0">
           <div>
             <p className="text-xs text-muted-foreground mb-2">{t("edit.photoLabel")}</p>
+            <input ref={cameraPhotoInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhotoSelect} />
             <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} />
             {completionPhoto ? (
               <div className="relative rounded-xl overflow-hidden">
@@ -90,9 +91,14 @@ const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTask
                 <button onClick={() => photoInputRef.current?.click()} className="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-background/80 text-[10px] text-foreground">{t("edit.replace")}</button>
               </div>
             ) : (
-              <button onClick={() => photoInputRef.current?.click()} className="w-full h-24 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/60 hover:border-primary/30 hover:text-primary/60 transition-all">
-                <ImagePlus size={22} /><span className="text-xs">{t("edit.addPhoto")}</span>
-              </button>
+              <div className="flex gap-2">
+                <button onClick={() => cameraPhotoInputRef.current?.click()} className="flex-1 h-24 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/60 hover:border-primary/30 hover:text-primary/60 transition-all">
+                  <Camera size={22} /><span className="text-xs">{t("complete.takePhoto")}</span>
+                </button>
+                <button onClick={() => photoInputRef.current?.click()} className="flex-1 h-24 rounded-xl border-2 border-dashed border-border/50 flex flex-col items-center justify-center gap-1.5 text-muted-foreground/60 hover:border-primary/30 hover:text-primary/60 transition-all">
+                  <ImagePlus size={22} /><span className="text-xs">{t("complete.fromAlbum")}</span>
+                </button>
+              </div>
             )}
           </div>
 
