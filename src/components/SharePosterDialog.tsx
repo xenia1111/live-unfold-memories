@@ -196,7 +196,7 @@ async function generatePoster(
   let curY = 100;
 
   // Period label + username
-  ctx.font = "600 32px 'Noto Sans SC', sans-serif";
+  ctx.font = `600 32px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
   curY += 20;
