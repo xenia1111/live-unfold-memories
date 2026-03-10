@@ -57,6 +57,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
   }
 
   return (
+    <>
     <div className="space-y-4">
       {categories.map((card, i) => {
         const key = `cat-${card.category}`;
