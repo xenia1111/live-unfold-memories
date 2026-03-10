@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, Trash2 } from "lucide-react";
+import { X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, Trash2, Camera } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
