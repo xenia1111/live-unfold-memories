@@ -270,9 +270,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
                       {/* Share */}
                       <button onClick={() => {
-                        const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}\n\n${story.highlights.join("\n")}${notes[card.key] ? `\n\n📝 ${notes[card.key]}` : ""}`;
-                        if (navigator.share) navigator.share({ title: story.title, text }).catch(() => {});
-                        else { navigator.clipboard.writeText(text); toast.success(t("story.copied")); }
+                        const story2 = aiStories[card.key] || card.fallback;
+                        setShareDialog({ story: story2, periodLabel: card.label, timeRange: card.timeRange, photos: card.photos });
                       }} className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-muted-foreground/50 hover:text-primary hover:bg-card/40 transition-all text-xs font-medium">
                         <Share2 size={13} /><span>{t("story.share")}</span>
                       </button>
