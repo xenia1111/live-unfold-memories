@@ -35,6 +35,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const { aiStories, saveAiStory } = useAiStories();
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
   const [editingNote, setEditingNote] = useState<string | null>(null);
+  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
 
   const buildFallback = useCallback((allTasks: Task[], total: number, completed: number, rate: number): StoryData => {
     const catCount: Record<string, number> = {};
