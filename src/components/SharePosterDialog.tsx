@@ -306,7 +306,7 @@ async function generatePoster(
   // === HIGHLIGHTS ===
   if (highlightLines.length > 0 && curY < POSTER_H - 250) {
     // Divider
-    ctx.strokeStyle = "rgba(140, 80, 220, 0.2)";
+    ctx.strokeStyle = "rgba(140, 220, 60, 0.2)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(pad, curY - gap * 0.3);
