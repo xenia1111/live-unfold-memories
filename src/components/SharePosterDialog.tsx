@@ -302,7 +302,7 @@ async function generatePoster(
   ctx.stroke();
 
   // App branding
-  ctx.font = "400 24px 'Noto Sans SC', sans-serif";
+  ctx.font = `400 24px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.15)";
   ctx.textAlign = "right";
   ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 50);
