@@ -276,7 +276,7 @@ async function generatePoster(
 
   // Highlights
   if (curY < POSTER_H - 300) {
-    ctx.font = "400 30px 'Ma Shan Zheng', 'ZCOOL XiaoWei', cursive";
+    ctx.font = `400 30px ${handFont}`;
     ctx.fillStyle = "rgba(140, 80, 220, 0.8)";
     for (const h of story.highlights.slice(0, 3)) {
       const hLines = wrapText(ctx, `✦ ${h}`, contentW);
