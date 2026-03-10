@@ -598,7 +598,7 @@ const en: Dict = {
   "edit.confirmDelete": "Confirm Delete", "edit.delete": "Delete",
   "edit.saving": "Saving...", "edit.save": "Save 💫",
   "complete.notePlaceholder": "What are you thinking? How do you feel?",
-  "complete.addPhoto": "Add a photo", "complete.skip": "Just complete",
+  "complete.addPhoto": "Add a photo", "complete.takePhoto": "Camera", "complete.fromAlbum": "Album",
   "complete.record": "Record it", "complete.done": "Done",
   "cat.alive": "Alive {n} days", "cat.food": "{n} cat food", "cat.streak": "{n} day streak",
   "cat.photos": "{n} photos", "cat.leaderboard": "Leaderboard",
