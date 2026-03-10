@@ -298,6 +298,8 @@ const zh: Dict = {
   // CompletionPhotoDialog
   "complete.notePlaceholder": "此刻你在想什么？感受到了什么？",
   "complete.addPhoto": "配一张照片",
+  "complete.takePhoto": "拍照",
+  "complete.fromAlbum": "相册选择",
   "complete.skip": "直接完成",
   "complete.record": "记录下来",
   "complete.done": "完成",
