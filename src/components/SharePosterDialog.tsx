@@ -164,7 +164,10 @@ async function generatePoster(
   timeRange: string,
   photos: string[],
   displayName: string,
+  lang: Language,
 ): Promise<string> {
+  const handFont = HANDWRITING_FONTS[lang];
+  const bodyFont = BODY_FONTS[lang];
   const canvas = document.createElement("canvas");
   canvas.width = POSTER_W;
   canvas.height = POSTER_H;
