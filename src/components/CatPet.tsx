@@ -266,19 +266,19 @@ const CatPet = ({ tasks }: CatPetProps) => {
 
         <div className="relative z-10 p-5">
           <div className="flex flex-wrap items-center gap-1.5 mb-3">
-            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md whitespace-nowrap bg-black/60 text-white shadow-sm">
               {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stageLabel}
             </span>
             {(fixedCategory || personality.category) && (
-              <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-md whitespace-nowrap bg-black/50 text-white shadow-sm">
                 {personalityLabel}
               </span>
             )}
-            <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/20 text-white")}>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-md whitespace-nowrap bg-black/50 text-white shadow-sm">
               {interpolate(t("cat.alive"), { n: aliveDays })}
             </span>
-            <button onClick={() => setShowLeaderboard(true)} className={cn("ml-auto flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm hover:bg-black/30 active:scale-95 transition-all whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
-              <span>{roundness.emoji}</span><span className="font-medium">{roundness.label}</span><span className="text-white/50 ml-0.5">›</span>
+            <button onClick={() => setShowLeaderboard(true)} className="ml-auto flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md hover:bg-black/70 active:scale-95 transition-all whitespace-nowrap bg-black/50 text-white shadow-sm">
+              <span>{roundness.emoji}</span><span className="font-medium">{roundness.label}</span><span className="text-white/60 ml-0.5">›</span>
             </button>
           </div>
 
