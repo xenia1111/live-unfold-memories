@@ -21,6 +21,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
   const { aiStories, saveAiStory } = useAiStories();
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
+  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
 
   const categories = useMemo(() => {
     const catMap: Record<string, Task[]> = {};
