@@ -994,7 +994,7 @@ const esDict: Dict = {
   "edit.saving": "Guardando...", "edit.save": "Guardar 💫",
   "complete.notePlaceholder": "¿En qué piensas? ¿Qué sientes?",
   "complete.addPhoto": "Añadir foto", "complete.takePhoto": "Cámara", "complete.fromAlbum": "Álbum",
-  "complete.record": "Registrar", "complete.done": "Hecho",
+  "complete.skip": "Solo completar", "complete.record": "Registrar", "complete.done": "Hecho",
   "cat.alive": "{n} días", "cat.food": "{n} comida", "cat.streak": "{n} días",
   "cat.photos": "{n} fotos", "cat.leaderboard": "Ranking",
   "game.nextLevel": "Faltan {n} para « {name} »", "game.maxLevel": "¡Nivel máximo!",
