@@ -41,6 +41,7 @@ const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTask
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [saving, setSaving] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const cameraPhotoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (task && open) {
