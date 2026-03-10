@@ -266,19 +266,19 @@ const CatPet = ({ tasks }: CatPetProps) => {
 
         <div className="relative z-10 p-5">
           <div className="flex flex-wrap items-center gap-1.5 mb-3">
-            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/30 text-white")}>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-md whitespace-nowrap bg-black/60 text-white shadow-sm">
               {stage.level >= 0 ? `Lv.${stage.level}` : ""} {stage.emoji} {stageLabel}
             </span>
             {(fixedCategory || personality.category) && (
-              <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-md whitespace-nowrap bg-black/50 text-white shadow-sm">
                 {personalityLabel}
               </span>
             )}
-            <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-sm whitespace-nowrap", isDarkBg ? "bg-white/20 text-white" : "bg-black/20 text-white")}>
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full backdrop-blur-md whitespace-nowrap bg-black/50 text-white shadow-sm">
               {interpolate(t("cat.alive"), { n: aliveDays })}
             </span>
-            <button onClick={() => setShowLeaderboard(true)} className={cn("ml-auto flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm hover:bg-black/30 active:scale-95 transition-all whitespace-nowrap", isDarkBg ? "bg-white/15 text-white" : "bg-black/20 text-white")}>
-              <span>{roundness.emoji}</span><span className="font-medium">{roundness.label}</span><span className="text-white/50 ml-0.5">›</span>
+            <button onClick={() => setShowLeaderboard(true)} className="ml-auto flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-md hover:bg-black/70 active:scale-95 transition-all whitespace-nowrap bg-black/50 text-white shadow-sm">
+              <span>{roundness.emoji}</span><span className="font-medium">{roundness.label}</span><span className="text-white/60 ml-0.5">›</span>
             </button>
           </div>
 
@@ -305,21 +305,21 @@ const CatPet = ({ tasks }: CatPetProps) => {
           )}
 
           <div className="flex items-center gap-1.5 flex-wrap">
-            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
-              <span>🍖</span><span className="font-medium text-foreground">{interpolate(t("cat.food"), { n: catFood })}</span>
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
+              <span>🍖</span><span className="font-medium text-white">{interpolate(t("cat.food"), { n: catFood })}</span>
             </div>
             {streak > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
-                <span>🔥</span><span className="font-medium text-foreground">{interpolate(t("cat.streak"), { n: streak })}</span>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
+                <span>🔥</span><span className="font-medium text-white">{interpolate(t("cat.streak"), { n: streak })}</span>
               </div>
             )}
             {photoCount > 0 && (
-              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px]">
-                <span>📸</span><span className="font-medium text-foreground">{interpolate(t("cat.photos"), { n: photoCount })}</span>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] shadow-sm">
+                <span>📸</span><span className="font-medium text-white">{interpolate(t("cat.photos"), { n: photoCount })}</span>
               </div>
             )}
-            <button onClick={() => setShowLeaderboard(true)} className="flex items-center gap-1 px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm border border-white/50 text-[10px] hover:bg-white/90 active:scale-95 transition-all">
-              <span>🏆</span><span className="font-medium text-foreground">{t("cat.leaderboard")}</span>
+            <button onClick={() => setShowLeaderboard(true)} className="flex items-center gap-1 px-2 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/10 text-[10px] hover:bg-black/70 active:scale-95 transition-all shadow-sm">
+              <span>🏆</span><span className="font-medium text-white">{t("cat.leaderboard")}</span>
             </button>
           </div>
 
