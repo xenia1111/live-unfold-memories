@@ -202,7 +202,7 @@ async function generatePoster(
   curY += 20;
 
   // Username
-  ctx.font = "400 28px 'Noto Sans SC', sans-serif";
+  ctx.font = `400 28px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.3)";
   ctx.textAlign = "right";
   ctx.fillText(`@${displayName}`, POSTER_W - pad, 100);
