@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo } from "react";
-import { Camera, X, Sparkles } from "lucide-react";
+import { Camera, X, Sparkles, ImagePlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
