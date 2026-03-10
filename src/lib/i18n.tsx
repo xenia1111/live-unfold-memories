@@ -599,7 +599,7 @@ const en: Dict = {
   "edit.saving": "Saving...", "edit.save": "Save 💫",
   "complete.notePlaceholder": "What are you thinking? How do you feel?",
   "complete.addPhoto": "Add a photo", "complete.takePhoto": "Camera", "complete.fromAlbum": "Album",
-  "complete.record": "Record it", "complete.done": "Done",
+  "complete.skip": "Just complete", "complete.record": "Record it", "complete.done": "Done",
   "cat.alive": "Alive {n} days", "cat.food": "{n} cat food", "cat.streak": "{n} day streak",
   "cat.photos": "{n} photos", "cat.leaderboard": "Leaderboard",
   "game.nextLevel": "Need {n} more food for \"{name}\"",
