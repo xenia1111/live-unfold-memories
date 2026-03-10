@@ -289,7 +289,7 @@ async function generatePoster(
   }
 
   // Mood badge
-  ctx.font = "500 28px 'Noto Sans SC', sans-serif";
+  ctx.font = `500 28px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.2)";
   ctx.fillText(`💭 ${story.mood}`, pad, POSTER_H - 120);
 
