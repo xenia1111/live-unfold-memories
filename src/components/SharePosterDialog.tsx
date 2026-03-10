@@ -187,8 +187,8 @@ async function generatePoster(
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
   const glow2 = ctx.createRadialGradient(POSTER_W - 200, POSTER_H - 400, 50, POSTER_W - 200, POSTER_H - 400, 600);
-  glow2.addColorStop(0, "rgba(140, 80, 220, 0.06)");
-  glow2.addColorStop(1, "rgba(140, 80, 220, 0)");
+  glow2.addColorStop(0, "rgba(140, 220, 60, 0.04)");
+  glow2.addColorStop(1, "rgba(140, 220, 60, 0)");
   ctx.fillStyle = glow2;
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
