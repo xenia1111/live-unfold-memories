@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { Sparkles, Share2, RefreshCw, Loader2, Camera, ChevronRight } from "lucide-react";
+import SharePosterDialog from "./SharePosterDialog";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +21,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
   const { aiStories, saveAiStory } = useAiStories();
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
+  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
 
   const categories = useMemo(() => {
     const catMap: Record<string, Task[]> = {};
@@ -55,6 +57,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
   }
 
   return (
+    <>
     <div className="space-y-4">
       {categories.map((card, i) => {
         const key = `cat-${card.category}`;
@@ -114,7 +117,9 @@ const CategoryStoryView = ({ tasks }: Props) => {
                   {isLoading ? (<><Loader2 size={14} className="animate-spin" /><span>{t("catStory.aiGenerating")}</span></>) : story ? (<><RefreshCw size={14} /><span>{t("catStory.refresh")}</span></>) : (<><Sparkles size={14} /><span>{t("catStory.generate")}</span></>)}
                 </button>
                 {story && (
-                  <button onClick={() => { const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}`; if (navigator.share) navigator.share({ title: story.title, text }).catch(() => {}); else { navigator.clipboard.writeText(text); toast.success(t("story.copied")); } }}
+                  <button onClick={() => {
+                    setShareDialog({ story, periodLabel: catName(card.category), timeRange: interpolate(t("catStory.times"), { n: card.completed.length }), photos: card.photos });
+                  }}
                     className="mt-2 w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-muted/30 text-muted-foreground hover:text-primary text-xs font-medium transition-all">
                     <Share2 size={14} /><span>{t("catStory.shareMem")}</span>
                   </button>
@@ -125,6 +130,18 @@ const CategoryStoryView = ({ tasks }: Props) => {
         );
       })}
     </div>
+
+    {shareDialog && (
+      <SharePosterDialog
+        open={!!shareDialog}
+        onClose={() => setShareDialog(null)}
+        story={shareDialog.story}
+        periodLabel={shareDialog.periodLabel}
+        timeRange={shareDialog.timeRange}
+        photos={shareDialog.photos}
+      />
+    )}
+    </>
   );
 };
 

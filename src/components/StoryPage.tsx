@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from "react";
 import { BookOpen, Sparkles, Share2, RefreshCw, Loader2, PenLine, Check, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CategoryStoryView from "./CategoryStoryView";
+import SharePosterDialog from "./SharePosterDialog";
 import { startOfWeek, endOfWeek, subWeeks, startOfMonth, endOfMonth, subMonths, startOfQuarter, endOfQuarter, subQuarters, isWithinInterval, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -34,6 +35,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const { aiStories, saveAiStory } = useAiStories();
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
   const [editingNote, setEditingNote] = useState<string | null>(null);
+  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
 
   const buildFallback = useCallback((allTasks: Task[], total: number, completed: number, rate: number): StoryData => {
     const catCount: Record<string, number> = {};
@@ -89,7 +91,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       const total = allTasks.length; const completed = allTasks.filter(t => t.completed).length;
       const rate = total > 0 ? completed / total : 0;
       const key = `${activePeriod}-${range.label}`;
-      return { key, label: range.label, timeRange: formatRange(range.start, range.end, activePeriod), isCurrent: range.isCurrent, decor: getMoodDecor(rate, total), fallback: buildFallback(allTasks, total, completed, rate), tasks: allTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, deadline: t.deadline ? t.deadline.toISOString() : undefined })), total, completed, rate };
+      const photos = allTasks.filter(t => t.completed && t.completionPhoto).map(t => t.completionPhoto!);
+      return { key, label: range.label, timeRange: formatRange(range.start, range.end, activePeriod), isCurrent: range.isCurrent, decor: getMoodDecor(rate, total), fallback: buildFallback(allTasks, total, completed, rate), tasks: allTasks.map(t => ({ title: t.title, category: t.category, completed: t.completed, deadline: t.deadline ? t.deadline.toISOString() : undefined })), total, completed, rate, photos };
     });
   }, [tasks, activePeriod, getPeriodRanges, buildFallback]);
 
@@ -267,9 +270,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
                       {/* Share */}
                       <button onClick={() => {
-                        const text = `${story.emoji} ${story.title}\n"${story.openingLine}"\n\n${story.summary}\n\n${story.highlights.join("\n")}${notes[card.key] ? `\n\n📝 ${notes[card.key]}` : ""}`;
-                        if (navigator.share) navigator.share({ title: story.title, text }).catch(() => {});
-                        else { navigator.clipboard.writeText(text); toast.success(t("story.copied")); }
+                        const story2 = aiStories[card.key] || card.fallback;
+                        setShareDialog({ story: story2, periodLabel: card.label, timeRange: card.timeRange, photos: card.photos });
                       }} className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-muted-foreground/50 hover:text-primary hover:bg-card/40 transition-all text-xs font-medium">
                         <Share2 size={13} /><span>{t("story.share")}</span>
                       </button>
@@ -280,6 +282,17 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             })}
           </div>
         </>
+      )}
+
+      {shareDialog && (
+        <SharePosterDialog
+          open={!!shareDialog}
+          onClose={() => setShareDialog(null)}
+          story={shareDialog.story}
+          periodLabel={shareDialog.periodLabel}
+          timeRange={shareDialog.timeRange}
+          photos={shareDialog.photos}
+        />
       )}
     </div>
   );
