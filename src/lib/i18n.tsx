@@ -1188,7 +1188,7 @@ const jaDict: Dict = {
   "edit.saving": "保存中...", "edit.save": "保存 💫",
   "complete.notePlaceholder": "今何を考えていますか？",
   "complete.addPhoto": "写真を追加", "complete.takePhoto": "カメラ", "complete.fromAlbum": "アルバム",
-  "complete.record": "記録する", "complete.done": "完了",
+  "complete.skip": "そのまま完了", "complete.record": "記録する", "complete.done": "完了",
   "cat.alive": "{n}日目", "cat.food": "{n}キャットフード", "cat.streak": "{n}日連続",
   "cat.photos": "{n}枚", "cat.leaderboard": "ランキング",
   "game.nextLevel": "「{name}」まであと{n}", "game.maxLevel": "最高レベル！",
