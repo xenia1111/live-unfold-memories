@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { Sparkles, Share2, RefreshCw, Loader2, Camera, ChevronRight } from "lucide-react";
+import SharePosterDialog from "./SharePosterDialog";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
