@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { X, Download, Share2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useI18n } from "@/lib/i18n";
+import { useI18n, type Language } from "@/lib/i18n";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -39,6 +39,23 @@ const TEMPLATES: Template[] = [
 
 const POSTER_W = 1080;
 const POSTER_H = 1920;
+
+// Language-aware handwriting fonts
+const HANDWRITING_FONTS: Record<Language, string> = {
+  zh: "'Ma Shan Zheng', cursive",
+  en: "'Caveat', cursive",
+  fr: "'Caveat', cursive",
+  es: "'Caveat', cursive",
+  ja: "'Zen Kurenaido', sans-serif",
+};
+
+const BODY_FONTS: Record<Language, string> = {
+  zh: "'Noto Sans SC', sans-serif",
+  en: "'Noto Sans SC', sans-serif",
+  fr: "'Noto Sans SC', sans-serif",
+  es: "'Noto Sans SC', sans-serif",
+  ja: "'Zen Kurenaido', 'Noto Sans SC', sans-serif",
+};
 
 // Load image helper
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -147,7 +164,10 @@ async function generatePoster(
   timeRange: string,
   photos: string[],
   displayName: string,
+  lang: Language,
 ): Promise<string> {
+  const handFont = HANDWRITING_FONTS[lang];
+  const bodyFont = BODY_FONTS[lang];
   const canvas = document.createElement("canvas");
   canvas.width = POSTER_W;
   canvas.height = POSTER_H;
@@ -176,13 +196,13 @@ async function generatePoster(
   let curY = 100;
 
   // Period label + username
-  ctx.font = "600 32px 'Noto Sans SC', sans-serif";
+  ctx.font = `600 32px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
   curY += 20;
 
   // Username
-  ctx.font = "400 28px 'Noto Sans SC', sans-serif";
+  ctx.font = `400 28px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.3)";
   ctx.textAlign = "right";
   ctx.fillText(`@${displayName}`, POSTER_W - pad, 100);
@@ -195,7 +215,7 @@ async function generatePoster(
   curY += 90;
 
   // Title - handwriting font
-  ctx.font = "700 64px 'Ma Shan Zheng', 'ZCOOL XiaoWei', cursive";
+  ctx.font = `700 64px ${handFont}`;
   ctx.fillStyle = "#8CDC3C"; // primary neon green
   const titleLines = wrapText(ctx, story.title, contentW);
   for (const line of titleLines) {
@@ -205,7 +225,7 @@ async function generatePoster(
   curY += 10;
 
   // Opening line
-  ctx.font = "italic 36px 'Ma Shan Zheng', 'ZCOOL XiaoWei', 'Playfair Display', serif";
+  ctx.font = `italic 36px ${handFont}`;
   ctx.fillStyle = "rgba(140, 220, 60, 0.7)";
   const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW);
   for (const line of olLines) {
@@ -244,7 +264,7 @@ async function generatePoster(
   }
 
   // Summary text - handwriting
-  ctx.font = "400 36px 'Ma Shan Zheng', 'ZCOOL XiaoWei', cursive";
+  ctx.font = `400 36px ${handFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.85)";
   const summaryLines = wrapText(ctx, story.summary, contentW);
   const maxSummaryLines = template === "text-only" ? 16 : 8;
@@ -256,7 +276,7 @@ async function generatePoster(
 
   // Highlights
   if (curY < POSTER_H - 300) {
-    ctx.font = "400 30px 'Ma Shan Zheng', 'ZCOOL XiaoWei', cursive";
+    ctx.font = `400 30px ${handFont}`;
     ctx.fillStyle = "rgba(140, 80, 220, 0.8)";
     for (const h of story.highlights.slice(0, 3)) {
       const hLines = wrapText(ctx, `✦ ${h}`, contentW);
@@ -269,7 +289,7 @@ async function generatePoster(
   }
 
   // Mood badge
-  ctx.font = "500 28px 'Noto Sans SC', sans-serif";
+  ctx.font = `500 28px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.2)";
   ctx.fillText(`💭 ${story.mood}`, pad, POSTER_H - 120);
 
@@ -282,7 +302,7 @@ async function generatePoster(
   ctx.stroke();
 
   // App branding
-  ctx.font = "400 24px 'Noto Sans SC', sans-serif";
+  ctx.font = `400 24px ${bodyFont}`;
   ctx.fillStyle = "rgba(255,255,255,0.15)";
   ctx.textAlign = "right";
   ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 50);
@@ -292,7 +312,7 @@ async function generatePoster(
 }
 
 const SharePosterDialog = ({ open, onClose, story, periodLabel, timeRange, photos }: SharePosterDialogProps) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user } = useAuth();
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>(photos.length > 0 ? "photo-grid" : "text-only");
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
@@ -315,7 +335,7 @@ const SharePosterDialog = ({ open, onClose, story, periodLabel, timeRange, photo
     setGenerating(true);
     setPosterUrl(null);
     try {
-      const url = await generatePoster(selectedTemplate, story, periodLabel, timeRange, photos, displayName);
+      const url = await generatePoster(selectedTemplate, story, periodLabel, timeRange, photos, displayName, lang);
       setPosterUrl(url);
     } catch (e) {
       console.error("Poster generation failed:", e);
