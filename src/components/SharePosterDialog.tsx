@@ -187,8 +187,8 @@ async function generatePoster(
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
   const glow2 = ctx.createRadialGradient(POSTER_W - 200, POSTER_H - 400, 50, POSTER_W - 200, POSTER_H - 400, 600);
-  glow2.addColorStop(0, "rgba(140, 80, 220, 0.06)");
-  glow2.addColorStop(1, "rgba(140, 80, 220, 0)");
+  glow2.addColorStop(0, "rgba(140, 220, 60, 0.04)");
+  glow2.addColorStop(1, "rgba(140, 220, 60, 0)");
   ctx.fillStyle = glow2;
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
@@ -306,7 +306,7 @@ async function generatePoster(
   // === HIGHLIGHTS ===
   if (highlightLines.length > 0 && curY < POSTER_H - 250) {
     // Divider
-    ctx.strokeStyle = "rgba(140, 80, 220, 0.2)";
+    ctx.strokeStyle = "rgba(140, 220, 60, 0.2)";
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(pad, curY - gap * 0.3);
@@ -314,7 +314,7 @@ async function generatePoster(
     ctx.stroke();
 
     ctx.font = `400 ${highlightSize}px ${handFont}`;
-    ctx.fillStyle = "rgba(140, 80, 220, 0.75)";
+    ctx.fillStyle = "rgba(140, 220, 60, 0.65)";
     for (const line of highlightLines) {
       if (curY > POSTER_H - 180) break;
       ctx.fillText(line, pad, curY);
