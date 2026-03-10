@@ -800,7 +800,7 @@ const frDict: Dict = {
   "edit.confirmDelete": "Confirmer", "edit.delete": "Supprimer",
   "edit.saving": "Enregistrement...", "edit.save": "Enregistrer 💫",
   "complete.notePlaceholder": "À quoi pensez-vous ?",
-  "complete.addPhoto": "Ajouter une photo", "complete.skip": "Terminer directement",
+  "complete.addPhoto": "Ajouter une photo", "complete.takePhoto": "Appareil photo", "complete.fromAlbum": "Album",
   "complete.record": "Enregistrer", "complete.done": "Terminé",
   "cat.alive": "{n} jours", "cat.food": "{n} croquettes", "cat.streak": "{n} jours",
   "cat.photos": "{n} photos", "cat.leaderboard": "Classement",
