@@ -215,7 +215,7 @@ async function generatePoster(
   curY += 90;
 
   // Title - handwriting font
-  ctx.font = "700 64px 'Ma Shan Zheng', 'ZCOOL XiaoWei', cursive";
+  ctx.font = `700 64px ${handFont}`;
   ctx.fillStyle = "#8CDC3C"; // primary neon green
   const titleLines = wrapText(ctx, story.title, contentW);
   for (const line of titleLines) {
