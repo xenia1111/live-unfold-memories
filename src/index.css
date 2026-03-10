@@ -47,10 +47,10 @@
 
     /* Custom tokens */
     --warm-glow: 82 85% 50%;
-    --forest: 270 50% 55%;
-    --forest-light: 270 30% 15%;
-    --story-gradient: linear-gradient(135deg, hsl(82, 85%, 50%), hsl(270, 50%, 55%));
-    --progress-gradient: linear-gradient(90deg, hsl(82, 85%, 50%), hsl(270, 50%, 55%));
+    --forest: 82 70% 40%;
+    --forest-light: 82 40% 15%;
+    --story-gradient: linear-gradient(135deg, hsl(82, 85%, 50%), hsl(82, 60%, 35%));
+    --progress-gradient: linear-gradient(90deg, hsl(82, 85%, 55%), hsl(82, 70%, 40%));
     --card-shadow: 0 2px 16px -4px hsl(82 85% 50% / 0.08);
     --card-shadow-hover: 0 8px 30px -8px hsl(82 85% 50% / 0.15);
   }
