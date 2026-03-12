@@ -32,9 +32,9 @@ interface Template {
 }
 
 const TEMPLATES: Template[] = [
-  { id: "photo-grid", name: "拼图", icon: "🖼️", hasPhotos: true },
-  { id: "photo-blur", name: "光影", icon: "✨", hasPhotos: true },
-  { id: "text-only", name: "纯文字", icon: "📝", hasPhotos: false },
+  { id: "photo-grid", name: "拼图", icon: "", hasPhotos: true },
+  { id: "photo-blur", name: "光影", icon: "", hasPhotos: true },
+  { id: "text-only", name: "纯文字", icon: "", hasPhotos: false },
 ];
 
 const POSTER_W = 1080;
