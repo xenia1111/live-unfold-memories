@@ -921,7 +921,7 @@ const esDict: Dict = {
   "story.thisYear": "Este año", "story.lastYear": "Año pasado",
   "story.current": "Actual", "story.highlights": "Destacados",
   "story.aiGenerating": "La IA escribe...", "story.refreshStory": "Otra versión",
-  "story.generateAI": "✨ Generar historia con IA",
+  "story.generateAI": "Generar historia con IA",
   "story.notes": "Notas", "story.done": "Hecho", "story.edit": "Editar",
   "story.writeSomething": "Escribir...",
   "story.notePlaceholder": "Registra tus sentimientos...",
