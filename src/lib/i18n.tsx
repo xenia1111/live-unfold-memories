@@ -785,7 +785,7 @@ const frDict: Dict = {
   "settings.newPassword": "Nouveau (min 6 car.)", "settings.confirmPassword": "Confirmer",
   "settings.confirmChange": "Confirmer", "settings.fillAll": "Veuillez tout remplir",
   "settings.minLength": "Min 6 caractères", "settings.mismatch": "Les mots de passe ne correspondent pas",
-  "settings.passwordUpdated": "Mot de passe mis à jour 🔒", "settings.langChanged": "Langue changée 🌍",
+  "settings.passwordUpdated": "Mot de passe mis à jour", "settings.langChanged": "Langue changée",
   "intro.title": "À propos", "intro.welcome": "Bienvenue",
   "intro.comingSoon": "Tutoriel BD bientôt disponible !",
   "intro.step1Title": "Enregistrer chaque jour", "intro.step1Desc": "Créez des tâches pour planifier votre quotidien.",
