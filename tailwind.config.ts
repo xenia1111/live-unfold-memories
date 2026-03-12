@@ -15,8 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Noto Sans SC"', 'sans-serif'],
-        serif: ['"Caveat"', 'cursive'],
-        sketch: ['"Caveat"', 'cursive'],
+        serif: ['"Caveat"', '"Ma Shan Zheng"', 'cursive'],
+        sketch: ['"Caveat"', '"Ma Shan Zheng"', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",
