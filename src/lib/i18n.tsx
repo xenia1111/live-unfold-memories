@@ -480,7 +480,7 @@ const en: Dict = {
   "greeting.lateNight": "Late night", "greeting.morning": "Good morning", "greeting.forenoon": "Good morning",
   "greeting.noon": "Good afternoon", "greeting.afternoon": "Good afternoon",
   "greeting.evening": "Good evening", "greeting.night": "Good night", "greeting.lifeDays": "Day {n} of your life", "greeting.setBirthday": "Set birthday to start counting",
-  "home.loading": "Loading...", "home.allDone": "🎉 All done today! Amazing!",
+  "home.loading": "Loading...", "home.allDone": "All done today! Amazing!",
   "home.noTasks": "Nothing planned for today", "home.addHint": "Tap + to add something you'd like to do",
   "home.upcoming": "Upcoming", "home.backlog": "Backlog", "home.futurePlan": "Future Plans",
   "home.backlogSheet": "Backlog", "home.backlogDesc": "Tasks without a specific date",
