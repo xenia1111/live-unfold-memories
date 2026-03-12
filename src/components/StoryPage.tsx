@@ -145,7 +145,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           </div>
 
           {/* Story cards */}
-          <div className="space-y-8" key={activePeriod}>
+          <div className="space-y-10" key={activePeriod}>
             {cards.map((card, storyIndex) => {
               const story = aiStories[card.key] || card.fallback;
               const isLoading = loadingKeys.has(card.key);
@@ -153,7 +153,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               return (
                 <div key={card.key} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.12}s` }}>
                   {/* Timeline header */}
-                  <div className="flex items-center gap-3 mb-3 px-1">
+                  <div className="flex items-center gap-3 mb-5 px-1">
                     <div className="flex items-center gap-2">
                       <span className={cn("text-xs font-bold", card.decor.accent)}>{card.label}</span>
                     </div>
