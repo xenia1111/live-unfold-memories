@@ -211,7 +211,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                         </div>
                         {story.highlights.map((h, i) => (
                           <div key={i} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-2xl bg-card/80 border border-border/20">
-                            <span className="text-primary/40 text-xs mt-0.5">✦</span>
+                            <span className="text-primary/40 text-xs mt-0.5">·</span>
                             <span className="text-sm text-foreground/80 leading-relaxed">{h}</span>
                           </div>
                         ))}

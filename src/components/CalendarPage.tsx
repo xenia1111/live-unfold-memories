@@ -34,11 +34,11 @@ const generateMockEvents = (): MockEvent[] => {
     const date = new Date(today); date.setDate(date.getDate() - i);
     if (Math.random() > 0.4) {
       const items = [
-        { title: "晨跑 30分钟", icon: "dumbbell", category: "运动", emoji: "🏃" },
-        { title: "阅读《人类简史》", icon: "book", category: "学习", emoji: "📖" },
-        { title: "咖啡时光", icon: "coffee", category: "社交", emoji: "☕" },
-        { title: "冥想 15分钟", icon: "star", category: "健康", emoji: "🧘" },
-        { title: "写日记", icon: "heart", category: "记录", emoji: "📝" },
+        { title: "晨跑 30分钟", icon: "dumbbell", category: "运动" },
+        { title: "阅读《人类简史》", icon: "book", category: "学习" },
+        { title: "咖啡时光", icon: "coffee", category: "社交" },
+        { title: "冥想 15分钟", icon: "star", category: "健康" },
+        { title: "写日记", icon: "heart", category: "记录" },
       ];
       const item = items[Math.floor(Math.random() * items.length)];
       const photoCount = Math.random() > 0.35 ? Math.floor(Math.random() * 6) + 1 : 0;
