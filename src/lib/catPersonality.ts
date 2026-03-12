@@ -29,7 +29,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "社交": {
-    emoji: "💬", label: "社牛猫", desc: "社交味吃多了，猫猫变得超级能聊",
+    emoji: "", label: "社牛猫", desc: "社交味吃多了，猫猫变得超级能聊",
     category: "社交",
     idleLines: [
       "好无聊啊好无聊啊好无聊啊有人聊天吗喵喵喵",
