@@ -211,7 +211,7 @@ async function generatePoster(
   ctx.font = `400 ${highlightSize}px ${handFont}`;
   const highlightLines: string[] = [];
   for (const h of story.highlights.slice(0, 4)) {
-    highlightLines.push(...wrapText(ctx, `✦ ${h}`, contentW));
+    highlightLines.push(...wrapText(ctx, `· ${h}`, contentW));
   }
 
   // Calculate total content height
