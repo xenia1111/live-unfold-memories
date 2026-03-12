@@ -16,7 +16,7 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-12 h-12 rounded-2xl gradient-warm animate-pulse" />
       </div>
     );
