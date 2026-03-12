@@ -38,7 +38,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "工作": {
-    emoji: "💼", label: "卷王猫", desc: "工作味太重了，猫猫都学会用Excel了",
+    emoji: "", label: "卷王猫", desc: "工作味太重了，猫猫都学会用Excel了",
     category: "工作",
     idleLines: [
       "KPI完成了吗？猫猫帮你催一下...",
