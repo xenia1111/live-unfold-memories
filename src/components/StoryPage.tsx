@@ -167,9 +167,9 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   </div>
 
                   {/* Main story card — journal page feel */}
-                  <div className={cn("rounded-3xl overflow-hidden card-glow", card.decor.bg)}>
+                  <div className={cn("rounded-3xl overflow-hidden shadow-sm border border-border/10", card.decor.bg)}>
                     {/* Story header area */}
-                    <div className="px-6 pt-6 pb-4 relative">
+                    <div className="px-7 pt-7 pb-5 relative">
                      
                       <div className="flex items-start gap-3 mb-3">
                         <div className="flex-1 min-w-0 pt-1">
