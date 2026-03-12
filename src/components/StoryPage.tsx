@@ -130,12 +130,18 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       {viewMode === "category" ? <CategoryStoryView tasks={tasks} /> : (
         <>
           {/* Period tabs — scrollable pills */}
-          <div className="flex gap-1.5 mb-6 overflow-x-auto scrollbar-hide animate-fade-in pb-1" style={{ animationDelay: "0.1s" }}>
+          <div className="flex gap-3 mb-8 overflow-x-auto scrollbar-hide animate-fade-in pb-2" style={{ animationDelay: "0.1s" }}>
             {periodTabs.map(tab => (
-              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300", activePeriod === tab.id ? "bg-card text-foreground shadow-sm border border-border/50" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
+              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-5 py-2.5 rounded-full text-xs font-medium transition-all duration-300", activePeriod === tab.id ? "bg-card text-foreground shadow-md border border-border/40 scale-105" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
                 {tab.label}
               </button>
             ))}
+          </div>
+          {/* Decorative dots separator */}
+          <div className="flex justify-center gap-1.5 mb-8">
+            <span className="w-1 h-1 rounded-full bg-border/40" />
+            <span className="w-1 h-1 rounded-full bg-border/30" />
+            <span className="w-1 h-1 rounded-full bg-border/40" />
           </div>
 
           {/* Story cards */}
