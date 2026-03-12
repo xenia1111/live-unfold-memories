@@ -183,23 +183,23 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
     <div className="theme-mono bg-background px-5 pt-14 pb-24 max-w-lg mx-auto min-h-screen">
       <ConfettiCanvas active={showConfetti} onDone={() => setShowConfetti(false)} />
 
-      <div className="mb-8 animate-fade-in">
-        <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
+      <div className="mb-6 animate-fade-in">
+        <h1 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
           {greeting.text}
           {lifeDays ? (
-            <span className="text-sm font-normal text-muted-foreground ml-2">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>
+            <span className="text-xs font-normal text-muted-foreground ml-1.5">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>
           ) : (
-            <button onClick={onNavigateProfile} className="text-sm font-normal text-primary/60 ml-2 hover:text-primary transition-colors">({t("greeting.setBirthday")})</button>
+            <button onClick={onNavigateProfile} className="text-xs font-normal text-muted-foreground/60 ml-1.5 hover:text-foreground transition-colors">({t("greeting.setBirthday")})</button>
           )}
         </h1>
-        <div className="mt-4 flex items-center gap-3">
-          <div className="flex-1 h-2 bg-foreground/15 rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-foreground transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
+        <div className="mt-3 flex items-center gap-2.5">
+          <div className="flex-1 h-1.5 bg-foreground/10 rounded-full overflow-hidden">
+            <div className="h-full rounded-full bg-foreground/70 transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
           </div>
-          <span className="text-xs font-semibold text-foreground whitespace-nowrap">{todayCompleted}/{todayTotal}</span>
+          <span className="text-[11px] font-medium text-muted-foreground tabular-nums">{todayCompleted}/{todayTotal}</span>
         </div>
         {todayTotal > 0 && todayCompleted === todayTotal && (
-          <p className="text-xs text-secondary font-medium mt-2">{t("home.allDone")}</p>
+          <p className="text-[11px] text-muted-foreground font-medium mt-1.5">✓ {t("home.allDone")}</p>
         )}
       </div>
 
