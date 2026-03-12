@@ -18,7 +18,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[hsl(0,0%,12%)] backdrop-blur-xl border-t border-[hsl(0,0%,20%)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border shadow-[0_-1px_3px_hsl(0_0%_0%/0.05)]">
       <div className="flex items-center justify-around max-w-lg mx-auto h-16 px-2">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -30,8 +30,8 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
               className={cn(
                 "flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all duration-300",
                 isActive
-                  ? "text-white scale-105"
-                  : "text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,80%)]"
+                  ? "text-foreground scale-105"
+                  : "text-muted-foreground hover:text-foreground/70"
               )}
             >
               <Icon
@@ -46,7 +46,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
                 {tab.label}
               </span>
               {isActive && (
-                <div className="w-1 h-1 rounded-full bg-white mt-0.5" />
+                <div className="w-1 h-1 rounded-full bg-foreground mt-0.5" />
               )}
             </button>
           );

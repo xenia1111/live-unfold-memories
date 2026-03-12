@@ -56,25 +56,27 @@
   }
 
   .theme-mono {
-    --background: 0 0% 78%;
-    --foreground: 0 0% 15%;
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 15%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 0 0% 15%;
-    --primary-foreground: 0 0% 95%;
-    --secondary: 80 60% 48%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 68%;
-    --muted-foreground: 0 0% 35%;
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 95%;
+    --background: 0 0% 92%;
+    --foreground: 0 0% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
+    --primary: 0 0% 12%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 12%;
+    --muted: 0 0% 88%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 12%;
     --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 65%;
-    --input: 0 0% 70%;
+    --border: 0 0% 82%;
+    --input: 0 0% 88%;
     --ring: 0 0% 40%;
+    --card-shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.06), 0 1px 2px -1px hsl(0 0% 0% / 0.06);
+    --card-shadow-hover: 0 4px 12px -2px hsl(0 0% 0% / 0.1);
   }
 
   .dark {
