@@ -46,7 +46,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
                 {tab.label}
               </span>
               {isActive && (
-                <div className="w-1 h-1 rounded-full bg-white mt-0.5" />
+                <div className="w-1 h-1 rounded-full bg-foreground mt-0.5" />
               )}
             </button>
           );
