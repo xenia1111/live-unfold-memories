@@ -232,16 +232,16 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  {task.completed ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" /> : <Circle size={22} className="text-muted-foreground/30 flex-shrink-0" />}
+                  {task.completed ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" /> : <Circle size={22} className="text-card-foreground/30 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-muted-foreground/60" : "text-foreground")}>{task.title}</p>
+                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-card-foreground/40" : "text-card-foreground")}>{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[11px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", task.completed ? "bg-secondary/10" : "bg-muted/40")}>
-                    <Icon size={14} className={task.completed ? "text-secondary" : "text-primary/40"} />
+                  <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", task.completed ? "bg-secondary/10" : "bg-card-foreground/10")}>
+                    <Icon size={14} className={task.completed ? "text-secondary" : "text-card-foreground/40"} />
                   </div>
                 </button>
               );
