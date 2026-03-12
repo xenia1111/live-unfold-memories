@@ -71,11 +71,11 @@ const zh: Dict = {
   "home.earlierRecords": "更早的记录...",
 
   // AddTaskDialog
-  "add.title": "接下来想做什么？🐾",
+  "add.title": "接下来想做什么？",
   "add.desc": "哪怕是一件小事，也值得被记住",
-  "add.placeholder": "比如：和朋友去看日落 🌅",
+  "add.placeholder": "比如：和朋友去看日落",
   "add.voicePlaceholder": "说一句话，AI 帮你填写...",
-  "add.coverLabel": "📷 配一张图（可选）",
+  "add.coverLabel": "配一张图（可选）",
   "add.addCover": "添加封面图片",
   "add.dayLabel": "📅 哪一天？",
   "add.noDate": "不定",
