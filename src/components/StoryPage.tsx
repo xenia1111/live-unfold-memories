@@ -159,9 +159,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     {/* Story header area */}
                     <div className="px-6 pt-6 pb-4 relative">
                      
-                      {/* Emoji + Title cluster */}
                       <div className="flex items-start gap-3 mb-3">
-                        <span className="text-4xl leading-none animate-float" style={{ animationDelay: "0.2s" }}>{story.emoji}</span>
                         <div className="flex-1 min-w-0 pt-1">
                           <h2 className="text-xl font-bold text-foreground leading-tight">{story.title}</h2>
                           <div className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-card/60 backdrop-blur-sm text-[11px] font-medium text-muted-foreground">
