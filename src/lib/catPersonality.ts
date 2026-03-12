@@ -83,7 +83,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "美景": {
-    emoji: "🏔️", label: "旅行猫", desc: "看太多美景，猫猫想去流浪了",
+    emoji: "", label: "旅行猫", desc: "看太多美景，猫猫想去流浪了",
     category: "美景",
     idleLines: [
       "今天去哪里看风景呀？猫猫想跟着去～🌸",
