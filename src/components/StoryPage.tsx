@@ -16,12 +16,12 @@ type ViewMode = "period" | "category";
 
 const categoryEmoji: Record<string, string> = {};
 
-const getMoodDecor = (rate: number, total: number): { bg: string; accent: string; leaf: string } => {
-  if (total === 0) return { bg: "bg-muted/20", accent: "text-muted-foreground", leaf: "🌙" };
-  if (rate >= 0.8) return { bg: "bg-primary/5", accent: "text-primary", leaf: "🌸" };
-  if (rate >= 0.6) return { bg: "bg-secondary/5", accent: "text-secondary", leaf: "🍃" };
-  if (rate >= 0.4) return { bg: "bg-accent/5", accent: "text-accent", leaf: "🌿" };
-  return { bg: "bg-muted/10", accent: "text-muted-foreground", leaf: "🌱" };
+const getMoodDecor = (rate: number, total: number): { bg: string; accent: string } => {
+  if (total === 0) return { bg: "bg-muted/20", accent: "text-muted-foreground" };
+  if (rate >= 0.8) return { bg: "bg-primary/5", accent: "text-primary" };
+  if (rate >= 0.6) return { bg: "bg-secondary/5", accent: "text-secondary" };
+  if (rate >= 0.4) return { bg: "bg-accent/5", accent: "text-accent" };
+  return { bg: "bg-muted/10", accent: "text-muted-foreground" };
 };
 
 interface StoryPageProps { tasks: Task[]; }
