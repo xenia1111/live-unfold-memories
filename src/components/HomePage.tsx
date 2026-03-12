@@ -77,18 +77,18 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
             {group.items.map(task => {
               const Icon = iconMap[task.icon] || Star;
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30 hover:border-primary/15 transition-all">
-                  <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0">
-                    <Icon size={14} className="text-primary/50" />
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card border border-border/30 hover:border-card-foreground/15 transition-all">
+                  <div className="w-8 h-8 rounded-xl bg-card-foreground/8 flex items-center justify-center flex-shrink-0">
+                    <Icon size={14} className="text-card-foreground/50" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground/80">{task.title}</p>
+                    <p className="text-sm font-medium text-card-foreground/80">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[10px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <ChevronRight size={14} className="text-muted-foreground/20 flex-shrink-0" />
+                  <ChevronRight size={14} className="text-card-foreground/20 flex-shrink-0" />
                 </div>
               );
             })}
@@ -193,8 +193,8 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
           )}
         </h1>
         <div className="mt-4 flex items-center gap-3">
-          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-            <div className="h-full rounded-full gradient-progress transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
+          <div className="flex-1 h-2 bg-foreground/15 rounded-full overflow-hidden">
+            <div className="h-full rounded-full bg-foreground transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
           </div>
           <span className="text-xs font-semibold text-foreground whitespace-nowrap">{todayCompleted}/{todayTotal}</span>
         </div>
@@ -232,16 +232,16 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  {task.completed ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" /> : <Circle size={22} className="text-muted-foreground/30 flex-shrink-0" />}
+                  {task.completed ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" /> : <Circle size={22} className="text-card-foreground/30 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-muted-foreground/60" : "text-foreground")}>{task.title}</p>
+                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-card-foreground/40" : "text-card-foreground")}>{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[11px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", task.completed ? "bg-secondary/10" : "bg-muted/40")}>
-                    <Icon size={14} className={task.completed ? "text-secondary" : "text-primary/40"} />
+                  <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", task.completed ? "bg-secondary/10" : "bg-card-foreground/10")}>
+                    <Icon size={14} className={task.completed ? "text-secondary" : "text-card-foreground/40"} />
                   </div>
                 </button>
               );
@@ -263,16 +263,16 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
               const diff = differenceInCalendarDays(task.date!, today);
               const dayLabel = diff === 1 ? t("home.tomorrow") : diff === 2 ? t("home.dayAfter") : format(task.date!, shortDateFormat, { locale });
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
-                  <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card border border-border/30">
+                  <span className="text-[10px] font-medium text-card-foreground/70 w-12 text-center flex-shrink-0">{dayLabel}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground/80 truncate">{task.title}</p>
+                    <p className="text-sm text-card-foreground/80 truncate">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[10px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <Icon size={14} className="text-muted-foreground/30 flex-shrink-0" />
+                  <Icon size={14} className="text-card-foreground/30 flex-shrink-0" />
                 </div>
               );
             })}
