@@ -77,18 +77,18 @@ const FuturePlanSection = ({ tasks, today }: { tasks: Task[]; today: Date }) => 
             {group.items.map(task => {
               const Icon = iconMap[task.icon] || Star;
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30 hover:border-primary/15 transition-all">
-                  <div className="w-8 h-8 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0">
-                    <Icon size={14} className="text-primary/50" />
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card border border-border/30 hover:border-card-foreground/15 transition-all">
+                  <div className="w-8 h-8 rounded-xl bg-card-foreground/8 flex items-center justify-center flex-shrink-0">
+                    <Icon size={14} className="text-card-foreground/50" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground/80">{task.title}</p>
+                    <p className="text-sm font-medium text-card-foreground/80">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[10px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <ChevronRight size={14} className="text-muted-foreground/20 flex-shrink-0" />
+                  <ChevronRight size={14} className="text-card-foreground/20 flex-shrink-0" />
                 </div>
               );
             })}
