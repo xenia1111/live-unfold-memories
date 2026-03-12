@@ -39,7 +39,7 @@ const CatRadarDialog = ({ open, onOpenChange, tasks }: CatRadarDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[340px] rounded-3xl p-5">
         <DialogHeader className="pb-0">
-          <DialogTitle className="text-center text-base font-semibold">{personality.emoji} {personalityLabel}</DialogTitle>
+          <DialogTitle className="text-center text-base font-semibold">{personalityLabel}</DialogTitle>
           <p className="text-center text-xs text-muted-foreground mt-1">{personalityDesc}</p>
         </DialogHeader>
         <div className="w-full h-[220px] -mt-2">
