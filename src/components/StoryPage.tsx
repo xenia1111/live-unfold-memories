@@ -109,14 +109,20 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   }, [saveAiStory, t]);
 
   return (
-    <div className="px-5 pt-8 pb-24 max-w-lg mx-auto">
+    <div className="px-5 pt-10 pb-24 max-w-lg mx-auto animate-fade-in">
+
+      {/* Decorative header */}
+      <div className="text-center mb-8 animate-slide-up">
+        <span className="text-3xl block mb-2">📖</span>
+        <p className="text-xs text-muted-foreground/60 italic font-serif">{t("story.headerSubtitle") || "记录每一段值得回味的时光"}</p>
+      </div>
 
       {/* View mode toggle — pill style */}
-      <div className="flex gap-1 mb-5 p-1 rounded-2xl bg-muted/40 animate-fade-in" style={{ animationDelay: "0.05s" }}>
-        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+      <div className="flex gap-1.5 mb-7 p-1.5 rounded-3xl bg-muted/30 shadow-sm animate-fade-in" style={{ animationDelay: "0.05s" }}>
+        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "bg-card text-foreground shadow-md" : "text-muted-foreground hover:text-foreground")}>
           <BookOpen size={13} /><span>{t("story.byTime")}</span>
         </button>
-        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "bg-card text-foreground shadow-md" : "text-muted-foreground hover:text-foreground")}>
           <Layers size={13} /><span>{t("story.byCategory")}</span>
         </button>
       </div>
