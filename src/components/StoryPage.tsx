@@ -1,8 +1,9 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { BookOpen, Sparkles, Share2, RefreshCw, Loader2, PenLine, Check, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import CategoryStoryView from "./CategoryStoryView";
 import SharePosterDialog from "./SharePosterDialog";
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import { startOfWeek, endOfWeek, subWeeks, startOfMonth, endOfMonth, subMonths, startOfQuarter, endOfQuarter, subQuarters, isWithinInterval, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
