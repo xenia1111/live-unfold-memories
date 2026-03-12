@@ -47,7 +47,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "健康": {
-    emoji: "🧘", label: "佛系猫", desc: "养生味的吃太多，猫猫开始打坐了",
+    emoji: "", label: "佛系猫", desc: "养生味的吃太多，猫猫开始打坐了",
     category: "健康",
     idleLines: [
       "深呼吸...吸...呼...猫猫在冥想中...",
