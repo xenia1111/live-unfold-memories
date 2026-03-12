@@ -14,7 +14,7 @@ interface StoryData { title: string; openingLine: string; summary: string; highl
 type Period = "week" | "month" | "quarter" | "half" | "year";
 type ViewMode = "period" | "category";
 
-const categoryEmoji: Record<string, string> = { "运动": "🏃", "学习": "📖", "社交": "☕", "工作": "💼", "健康": "🧘", "记录": "📝", "娱乐": "🎵" };
+const categoryEmoji: Record<string, string> = {};
 
 const getMoodDecor = (rate: number, total: number): { bg: string; accent: string; leaf: string } => {
   if (total === 0) return { bg: "bg-muted/20", accent: "text-muted-foreground", leaf: "🌙" };
