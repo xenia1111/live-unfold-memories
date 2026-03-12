@@ -74,7 +74,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "美食": {
-    emoji: "🍜", label: "干饭猫", desc: "吃太多美食，猫猫变成真正的美食家了",
+    emoji: "", label: "干饭猫", desc: "吃太多美食，猫猫变成真正的美食家了",
     category: "美食",
     idleLines: [
       "今天吃什么好呢...猫猫已经在想晚饭了🤤",
