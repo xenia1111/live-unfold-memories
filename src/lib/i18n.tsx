@@ -978,7 +978,7 @@ const esDict: Dict = {
   "settings.newPassword": "Nueva (mín 6 car.)", "settings.confirmPassword": "Confirmar",
   "settings.confirmChange": "Confirmar", "settings.fillAll": "Completa todos los campos",
   "settings.minLength": "Mínimo 6 caracteres", "settings.mismatch": "Las contraseñas no coinciden",
-  "settings.passwordUpdated": "Contraseña actualizada 🔒", "settings.langChanged": "Idioma cambiado 🌍",
+  "settings.passwordUpdated": "Contraseña actualizada", "settings.langChanged": "Idioma cambiado",
   "intro.title": "Acerca de", "intro.welcome": "Bienvenido",
   "intro.comingSoon": "¡Tutorial en cómic pronto!",
   "intro.step1Title": "Registra cada día", "intro.step1Desc": "Crea tareas para planificar tu día.",
