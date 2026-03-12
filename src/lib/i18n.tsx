@@ -263,8 +263,8 @@ const zh: Dict = {
   "settings.fillAll": "请填写完整",
   "settings.minLength": "新密码至少 6 位",
   "settings.mismatch": "两次密码不一致",
-  "settings.passwordUpdated": "密码已更新 🔒",
-  "settings.langChanged": "语言已切换 🌍",
+  "settings.passwordUpdated": "密码已更新",
+  "settings.langChanged": "语言已切换",
 
   // ProductIntro
   "intro.title": "产品介绍",
