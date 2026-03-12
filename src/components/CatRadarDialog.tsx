@@ -26,7 +26,7 @@ const CatRadarDialog = ({ open, onOpenChange, tasks }: CatRadarDialogProps) => {
     const counts: Record<string, number> = {};
     for (const t of completed) counts[t.category] = (counts[t.category] || 0) + 1;
     const max = Math.max(...Object.values(counts), 1);
-    return ALL_CATEGORIES.map(cat => ({ category: `${CATEGORY_EMOJIS[cat]} ${catName(cat)}`, value: counts[cat] || 0, fullMark: max }));
+    return ALL_CATEGORIES.map(cat => ({ category: catName(cat), value: counts[cat] || 0, fullMark: max }));
   }, [completed, catName]);
 
   const topCategories = useMemo(() => {
