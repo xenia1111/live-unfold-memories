@@ -764,7 +764,7 @@ const frDict: Dict = {
   "profile.logout": "Déconnexion", "profile.motto": "Rendre chaque jour vivant",
   "profile.changeAvatar": "Changer l'avatar", "profile.takePhoto": "Prendre une photo",
   "profile.fromAlbum": "Depuis l'album", "profile.uploading": "Envoi…",
-  "profile.avatarUpdated": "Avatar mis à jour 🎉", "profile.imageTooLarge": "Image max 5 Mo",
+  "profile.avatarUpdated": "Avatar mis à jour", "profile.imageTooLarge": "Image max 5 Mo",
   "profile.uploadFailed": "Échec : ",
   "profileEdit.title": "Infos personnelles", "profileEdit.nickname": "Pseudo",
   "profileEdit.gender": "Genre", "profileEdit.birthday": "Anniversaire",
