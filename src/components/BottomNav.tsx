@@ -30,8 +30,8 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
               className={cn(
                 "flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all duration-300",
                 isActive
-                  ? "text-primary scale-105"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "text-white scale-105"
+                  : "text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,80%)]"
               )}
             >
               <Icon
