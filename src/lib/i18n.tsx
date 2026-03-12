@@ -525,7 +525,7 @@ const en: Dict = {
   "story.thisYear": "This Year", "story.lastYear": "Last Year",
   "story.current": "Current", "story.highlights": "Highlights",
   "story.aiGenerating": "AI is writing the story...", "story.refreshStory": "Try another version",
-  "story.generateAI": "✨ Generate a warm story with AI",
+  "story.generateAI": "Generate a warm story with AI",
   "story.notes": "Notes", "story.done": "Done", "story.edit": "Edit",
   "story.writeSomething": "Write something...",
   "story.notePlaceholder": "Record your feelings, thoughts, or any moment worth keeping...",
