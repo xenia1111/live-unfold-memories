@@ -58,7 +58,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
 
   return (
     <>
-    <div className="space-y-4">
+    <div className="space-y-5">
       {categories.map((card, i) => {
         const key = `cat-${card.category}`;
         const story = aiStories[key];
@@ -67,9 +67,9 @@ const CategoryStoryView = ({ tasks }: Props) => {
         return (
           <div key={card.category} className="animate-slide-up" style={{ animationDelay: `${i * 0.08}s` }}>
             <button onClick={() => setExpandedCat(isExpanded ? null : card.category)}
-              className={cn("w-full text-left rounded-2xl px-5 py-4 bg-gradient-to-br transition-all duration-300", card.color, isExpanded && "rounded-b-none")}>
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{card.emoji}</span>
+              className={cn("w-full text-left rounded-3xl px-6 py-5 bg-gradient-to-br transition-all duration-300 shadow-sm", card.color, isExpanded && "rounded-b-none shadow-none")}>
+              <div className="flex items-center gap-4">
+                <span className="text-3xl w-12 h-12 flex items-center justify-center rounded-2xl bg-card/50">{card.emoji}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-bold text-foreground">{catName(card.category)}</h3>
