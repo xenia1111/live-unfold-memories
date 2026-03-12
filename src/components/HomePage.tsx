@@ -209,15 +209,15 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
 
       <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         {todayTotal === 0 ? (
-          <div className="text-center py-10">
-            <div className="inline-block animate-egg-wobble mb-4">
-              <img src={eggNestImg} alt="" className="w-20 h-20 mx-auto object-contain" />
+          <div className="text-center py-12 px-6 rounded-2xl bg-card shadow-sm border border-border/50">
+            <div className="inline-block animate-egg-wobble mb-3">
+              <img src={eggNestImg} alt="" className="w-16 h-16 mx-auto object-contain" />
             </div>
-            <p className="text-sm text-foreground/70 font-medium">{t("home.noTasks")}</p>
-            <p className="text-xs text-muted-foreground/50 mt-1.5">{t("home.addHint")}</p>
+            <p className="text-sm text-card-foreground/70 font-medium">{t("home.noTasks")}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("home.addHint")}</p>
           </div>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {todayTasks.map((task, index) => {
               const Icon = iconMap[task.icon] || Star;
               const isCelebrating = justCompleted === task.id;
@@ -226,22 +226,22 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
                   key={task.id}
                   onClick={() => handleTaskClick(task)}
                   className={cn(
-                    "w-full flex items-center gap-3.5 rounded-2xl p-4 text-left transition-all",
-                    task.completed ? "bg-card/60 border border-border/30" : "bg-card border border-border/50 card-glow active:scale-[0.98]",
+                    "w-full flex items-center gap-3 rounded-2xl p-3.5 text-left transition-all shadow-sm",
+                    task.completed ? "bg-card/80 border border-border/40" : "bg-card border border-border/50 active:scale-[0.98]",
                     isCelebrating && "animate-celebrate"
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  {task.completed ? <CheckCircle2 size={22} className="text-secondary flex-shrink-0" /> : <Circle size={22} className="text-card-foreground/30 flex-shrink-0" />}
+                  {task.completed ? <CheckCircle2 size={20} className="text-muted-foreground flex-shrink-0" /> : <Circle size={20} className="text-card-foreground/25 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-card-foreground/40" : "text-card-foreground")}>{task.title}</p>
+                    <p className={cn("text-sm font-medium", task.completed ? "line-through text-muted-foreground" : "text-card-foreground")}>{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[11px] text-muted-foreground">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0", task.completed ? "bg-secondary/10" : "bg-card-foreground/10")}>
-                    <Icon size={14} className={task.completed ? "text-secondary" : "text-card-foreground/40"} />
+                  <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0", task.completed ? "bg-muted" : "bg-muted/60")}>
+                    <Icon size={13} className="text-muted-foreground" />
                   </div>
                 </button>
               );
