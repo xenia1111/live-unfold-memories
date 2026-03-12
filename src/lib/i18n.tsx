@@ -805,7 +805,7 @@ const frDict: Dict = {
   "cat.alive": "{n} jours", "cat.food": "{n} croquettes", "cat.streak": "{n} jours",
   "cat.photos": "{n} photos", "cat.leaderboard": "Classement",
   "game.nextLevel": "Encore {n} pour « {name} »", "game.maxLevel": "Niveau max !",
-  "game.recordHint": "📝 +10", "game.photoHint": "📸 +15",
+  "game.recordHint": "+10", "game.photoHint": "+15",
   "game.streakDays": "Séquence", "game.streakReward": "{n}j bonus +{bonus}",
   "game.completed": "Complétés", "game.achievements": "Succès",
   "game.first": "Premier pas", "game.firstDesc": "1er enregistrement",
