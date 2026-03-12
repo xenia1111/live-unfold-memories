@@ -263,16 +263,16 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
               const diff = differenceInCalendarDays(task.date!, today);
               const dayLabel = diff === 1 ? t("home.tomorrow") : diff === 2 ? t("home.dayAfter") : format(task.date!, shortDateFormat, { locale });
               return (
-                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card/50 border border-border/30">
-                  <span className="text-[10px] font-medium text-primary w-12 text-center flex-shrink-0">{dayLabel}</span>
+                <div key={task.id} className="flex items-center gap-3 rounded-2xl px-4 py-3 bg-card border border-border/30">
+                  <span className="text-[10px] font-medium text-card-foreground/70 w-12 text-center flex-shrink-0">{dayLabel}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-foreground/80 truncate">{task.title}</p>
+                    <p className="text-sm text-card-foreground/80 truncate">{task.title}</p>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] text-muted-foreground/50">{task.time} · {catName(task.category)}</span>
+                      <span className="text-[10px] text-card-foreground/40">{task.time} · {catName(task.category)}</span>
                       {task.deadline && <DeadlineTag deadline={task.deadline} />}
                     </div>
                   </div>
-                  <Icon size={14} className="text-muted-foreground/30 flex-shrink-0" />
+                  <Icon size={14} className="text-card-foreground/30 flex-shrink-0" />
                 </div>
               );
             })}
