@@ -101,8 +101,8 @@ const zh: Dict = {
   "add.aiCategory": "分类：",
   "add.aiTime": "时间：",
   "add.aiDate": "日期：",
-  "add.aiConfirmHint": "🤖 AI 已填写，请确认：",
-  "add.voiceTipTitle": "🎙️ 语音智能填写",
+  "add.aiConfirmHint": "AI 已填写，请确认：",
+  "add.voiceTipTitle": "语音智能填写",
   "add.voiceTipDesc": "试试用一句话快速创建任务",
   "add.voiceTip1": "点击麦克风，",
   "add.voiceTip1b": "说出你想做的事",
@@ -110,8 +110,8 @@ const zh: Dict = {
   "add.voiceTip2b": "标题、时间、分类",
   "add.voiceTip3": "确认无误后点击",
   "add.voiceTip3b": "提交即可",
-  "add.voiceTipExample": "💡 试试说：「明天下午三点和朋友去咖啡馆看书」",
-  "add.voiceTipStart": "知道了，开始说话 🎙️",
+  "add.voiceTipExample": "试试说：「明天下午三点和朋友去咖啡馆看书」",
+  "add.voiceTipStart": "知道了，开始说话",
 
   // TimePicker
   "time.label": "⏰ 什么时候？",
