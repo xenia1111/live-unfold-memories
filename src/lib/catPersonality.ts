@@ -20,7 +20,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "运动": {
-    emoji: "💪", label: "健身猫", desc: "吃太多运动味的，猫猫感觉自己有腹肌了",
+    emoji: "", label: "健身猫", desc: "吃太多运动味的，猫猫感觉自己有腹肌了",
     category: "运动",
     idleLines: [
       "来！跟猫做俯卧撑！一二三四！",
