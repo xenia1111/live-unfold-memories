@@ -92,7 +92,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "美丽": {
-    emoji: "💄", label: "精致猫", desc: "爱美的猫猫，每天都要打扮得漂漂亮亮",
+    emoji: "", label: "精致猫", desc: "爱美的猫猫，每天都要打扮得漂漂亮亮",
     category: "美丽",
     idleLines: [
       "猫猫在照镜子...觉得自己今天特别好看🪞",
