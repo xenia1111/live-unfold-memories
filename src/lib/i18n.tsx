@@ -1151,7 +1151,7 @@ const jaDict: Dict = {
   "profile.logout": "ログアウト", "profile.motto": "毎日を鮮やかに",
   "profile.changeAvatar": "アバター変更", "profile.takePhoto": "写真を撮る",
   "profile.fromAlbum": "アルバムから選択", "profile.uploading": "アップロード中…",
-  "profile.avatarUpdated": "アバター更新 🎉", "profile.imageTooLarge": "画像は5MB以下",
+  "profile.avatarUpdated": "アバター更新", "profile.imageTooLarge": "画像は5MB以下",
   "profile.uploadFailed": "アップロード失敗: ",
   "profileEdit.title": "個人情報", "profileEdit.nickname": "ニックネーム",
   "profileEdit.gender": "性別", "profileEdit.birthday": "誕生日",
