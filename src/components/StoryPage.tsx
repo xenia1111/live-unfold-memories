@@ -109,14 +109,20 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   }, [saveAiStory, t]);
 
   return (
-    <div className="px-5 pt-8 pb-24 max-w-lg mx-auto">
+    <div className="px-5 pt-10 pb-24 max-w-lg mx-auto animate-fade-in">
+
+      {/* Decorative header */}
+      <div className="text-center mb-8 animate-slide-up">
+        <span className="text-3xl block mb-2">📖</span>
+        <p className="text-xs text-muted-foreground/60 italic font-serif">{t("story.headerSubtitle") || "记录每一段值得回味的时光"}</p>
+      </div>
 
       {/* View mode toggle — pill style */}
-      <div className="flex gap-1 mb-5 p-1 rounded-2xl bg-muted/40 animate-fade-in" style={{ animationDelay: "0.05s" }}>
-        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+      <div className="flex gap-1.5 mb-7 p-1.5 rounded-3xl bg-muted/30 shadow-sm animate-fade-in" style={{ animationDelay: "0.05s" }}>
+        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "bg-card text-foreground shadow-md" : "text-muted-foreground hover:text-foreground")}>
           <BookOpen size={13} /><span>{t("story.byTime")}</span>
         </button>
-        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2 rounded-xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "bg-card text-foreground shadow-md" : "text-muted-foreground hover:text-foreground")}>
           <Layers size={13} /><span>{t("story.byCategory")}</span>
         </button>
       </div>
@@ -124,16 +130,22 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       {viewMode === "category" ? <CategoryStoryView tasks={tasks} /> : (
         <>
           {/* Period tabs — scrollable pills */}
-          <div className="flex gap-1.5 mb-6 overflow-x-auto scrollbar-hide animate-fade-in pb-1" style={{ animationDelay: "0.1s" }}>
+          <div className="flex gap-3 mb-8 overflow-x-auto scrollbar-hide animate-fade-in pb-2" style={{ animationDelay: "0.1s" }}>
             {periodTabs.map(tab => (
-              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-4 py-2 rounded-full text-xs font-medium transition-all duration-300", activePeriod === tab.id ? "bg-card text-foreground shadow-sm border border-border/50" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
+              <button key={tab.id} onClick={() => setActivePeriod(tab.id)} className={cn("shrink-0 px-5 py-2.5 rounded-full text-xs font-medium transition-all duration-300", activePeriod === tab.id ? "bg-card text-foreground shadow-md border border-border/40 scale-105" : "text-muted-foreground hover:text-foreground hover:bg-muted/30")}>
                 {tab.label}
               </button>
             ))}
           </div>
+          {/* Decorative dots separator */}
+          <div className="flex justify-center gap-1.5 mb-8">
+            <span className="w-1 h-1 rounded-full bg-border/40" />
+            <span className="w-1 h-1 rounded-full bg-border/30" />
+            <span className="w-1 h-1 rounded-full bg-border/40" />
+          </div>
 
           {/* Story cards */}
-          <div className="space-y-8" key={activePeriod}>
+          <div className="space-y-10" key={activePeriod}>
             {cards.map((card, storyIndex) => {
               const story = aiStories[card.key] || card.fallback;
               const isLoading = loadingKeys.has(card.key);
@@ -141,7 +153,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               return (
                 <div key={card.key} className="animate-slide-up" style={{ animationDelay: `${storyIndex * 0.12}s` }}>
                   {/* Timeline header */}
-                  <div className="flex items-center gap-3 mb-3 px-1">
+                  <div className="flex items-center gap-3 mb-5 px-1">
                     <div className="flex items-center gap-2">
                       <span className={cn("text-xs font-bold", card.decor.accent)}>{card.label}</span>
                     </div>
@@ -155,9 +167,9 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   </div>
 
                   {/* Main story card — journal page feel */}
-                  <div className={cn("rounded-3xl overflow-hidden card-glow", card.decor.bg)}>
+                  <div className={cn("rounded-3xl overflow-hidden shadow-sm border border-border/10", card.decor.bg)}>
                     {/* Story header area */}
-                    <div className="px-6 pt-6 pb-4 relative">
+                    <div className="px-7 pt-7 pb-5 relative">
                      
                       <div className="flex items-start gap-3 mb-3">
                         <div className="flex-1 min-w-0 pt-1">
@@ -200,8 +212,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     </div>
 
                     {/* Summary + highlights */}
-                    <div className="px-6 py-4">
-                      <p className="text-sm text-foreground/80 leading-[1.9] mb-4">{story.summary}</p>
+                    <div className="px-7 py-5">
+                      <p className="text-sm text-foreground/80 leading-[1.9] mb-5">{story.summary}</p>
 
                       {/* Highlights — warm cards */}
                       <div className="space-y-2 mb-4">
