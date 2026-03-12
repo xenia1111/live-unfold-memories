@@ -180,7 +180,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
   }
 
   return (
-    <div className="theme-mono bg-[hsl(0,0%,85%)] px-5 pt-14 pb-24 max-w-lg mx-auto min-h-screen">
+    <div className="theme-mono bg-[hsl(0,0%,78%)] px-5 pt-14 pb-24 max-w-lg mx-auto min-h-screen">
       <ConfettiCanvas active={showConfetti} onDone={() => setShowConfetti(false)} />
 
       <div className="mb-8 animate-fade-in">
