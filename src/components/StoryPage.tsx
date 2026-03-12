@@ -158,11 +158,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   <div className={cn("rounded-3xl overflow-hidden card-glow", card.decor.bg)}>
                     {/* Story header area */}
                     <div className="px-6 pt-6 pb-4 relative">
-                      {/* Decorative corner elements */}
-                      <div className="absolute top-3 right-4 text-lg opacity-20 animate-float" style={{ animationDelay: `${storyIndex * 0.5}s` }}>
-                        {card.decor.leaf}
-                      </div>
-
+                     
                       {/* Emoji + Title cluster */}
                       <div className="flex items-start gap-3 mb-3">
                         <span className="text-4xl leading-none animate-float" style={{ animationDelay: "0.2s" }}>{story.emoji}</span>
