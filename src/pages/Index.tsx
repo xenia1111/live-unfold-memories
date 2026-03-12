@@ -37,7 +37,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {renderPage()}
       <AddTaskDialog onAdd={addTask} />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
