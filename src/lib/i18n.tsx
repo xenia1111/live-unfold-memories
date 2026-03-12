@@ -187,7 +187,7 @@ const zh: Dict = {
 
   // CategoryStoryView
   "catStory.empty": "还没做完什么事呢，去安排一件试试？",
-  "catStory.photos": "📸 拍过的照片",
+  "catStory.photos": "拍过的照片",
   "catStory.morePhotos": "还有 {n} 张",
   "catStory.timeline": "做过的事",
   "catStory.moreRecords": "还有 {n} 条",
