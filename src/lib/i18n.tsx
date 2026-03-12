@@ -957,7 +957,7 @@ const esDict: Dict = {
   "profile.logout": "Cerrar sesión", "profile.motto": "Haz cada día vibrante",
   "profile.changeAvatar": "Cambiar avatar", "profile.takePhoto": "Tomar foto",
   "profile.fromAlbum": "Desde álbum", "profile.uploading": "Subiendo…",
-  "profile.avatarUpdated": "Avatar actualizado 🎉", "profile.imageTooLarge": "Imagen max 5MB",
+  "profile.avatarUpdated": "Avatar actualizado", "profile.imageTooLarge": "Imagen max 5MB",
   "profile.uploadFailed": "Error: ",
   "profileEdit.title": "Info personal", "profileEdit.nickname": "Apodo",
   "profileEdit.gender": "Género", "profileEdit.birthday": "Cumpleaños",
