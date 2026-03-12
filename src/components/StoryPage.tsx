@@ -143,7 +143,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   {/* Timeline header */}
                   <div className="flex items-center gap-3 mb-3 px-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{card.decor.leaf}</span>
                       <span className={cn("text-xs font-bold", card.decor.accent)}>{card.label}</span>
                     </div>
                     <span className="text-[10px] text-muted-foreground/60">{card.timeRange}</span>
