@@ -561,7 +561,7 @@ const en: Dict = {
   "profile.logout": "Log Out", "profile.motto": "Make every day vivid",
   "profile.changeAvatar": "Change Avatar", "profile.takePhoto": "Take Photo",
   "profile.fromAlbum": "Choose from Album", "profile.uploading": "Uploading…",
-  "profile.avatarUpdated": "Avatar updated 🎉", "profile.imageTooLarge": "Image must be under 5MB",
+  "profile.avatarUpdated": "Avatar updated", "profile.imageTooLarge": "Image must be under 5MB",
   "profile.uploadFailed": "Upload failed: ",
   "profileEdit.title": "Personal Info", "profileEdit.nickname": "Nickname",
   "profileEdit.gender": "Gender", "profileEdit.birthday": "Birthday",
