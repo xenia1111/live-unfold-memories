@@ -220,7 +220,7 @@ const zh: Dict = {
   "profile.takePhoto": "拍照",
   "profile.fromAlbum": "从相册选择",
   "profile.uploading": "上传中…",
-  "profile.avatarUpdated": "头像已更新 🎉",
+  "profile.avatarUpdated": "头像已更新",
   "profile.imageTooLarge": "图片不能超过 5MB",
   "profile.uploadFailed": "上传失败: ",
 
