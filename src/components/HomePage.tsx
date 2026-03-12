@@ -156,13 +156,13 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
 
   const getGreeting = () => {
     const h = new Date().getHours();
-    if (h < 6) return { text: t("greeting.lateNight"), emoji: "🌙" };
-    if (h < 9) return { text: t("greeting.morning"), emoji: "🌅" };
-    if (h < 12) return { text: t("greeting.forenoon"), emoji: "☀️" };
-    if (h < 14) return { text: t("greeting.noon"), emoji: "🍵" };
-    if (h < 18) return { text: t("greeting.afternoon"), emoji: "🌤️" };
-    if (h < 21) return { text: t("greeting.evening"), emoji: "🌇" };
-    return { text: t("greeting.night"), emoji: "🌛" };
+    if (h < 6) return { text: t("greeting.lateNight") };
+    if (h < 9) return { text: t("greeting.morning") };
+    if (h < 12) return { text: t("greeting.forenoon") };
+    if (h < 14) return { text: t("greeting.noon") };
+    if (h < 18) return { text: t("greeting.afternoon") };
+    if (h < 21) return { text: t("greeting.evening") };
+    return { text: t("greeting.night") };
   };
 
   const greeting = getGreeting();
@@ -185,7 +185,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
 
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
-          {greeting.emoji} {greeting.text}
+          {greeting.text}
           {lifeDays ? (
             <span className="text-sm font-normal text-muted-foreground ml-2">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>
           ) : (

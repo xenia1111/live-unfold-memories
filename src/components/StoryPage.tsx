@@ -14,14 +14,14 @@ interface StoryData { title: string; openingLine: string; summary: string; highl
 type Period = "week" | "month" | "quarter" | "half" | "year";
 type ViewMode = "period" | "category";
 
-const categoryEmoji: Record<string, string> = { "运动": "🏃", "学习": "📖", "社交": "☕", "工作": "💼", "健康": "🧘", "记录": "📝", "娱乐": "🎵" };
+const categoryEmoji: Record<string, string> = {};
 
-const getMoodDecor = (rate: number, total: number): { bg: string; accent: string; leaf: string } => {
-  if (total === 0) return { bg: "bg-muted/20", accent: "text-muted-foreground", leaf: "🌙" };
-  if (rate >= 0.8) return { bg: "bg-primary/5", accent: "text-primary", leaf: "🌸" };
-  if (rate >= 0.6) return { bg: "bg-secondary/5", accent: "text-secondary", leaf: "🍃" };
-  if (rate >= 0.4) return { bg: "bg-accent/5", accent: "text-accent", leaf: "🌿" };
-  return { bg: "bg-muted/10", accent: "text-muted-foreground", leaf: "🌱" };
+const getMoodDecor = (rate: number, total: number): { bg: string; accent: string } => {
+  if (total === 0) return { bg: "bg-muted/20", accent: "text-muted-foreground" };
+  if (rate >= 0.8) return { bg: "bg-primary/5", accent: "text-primary" };
+  if (rate >= 0.6) return { bg: "bg-secondary/5", accent: "text-secondary" };
+  if (rate >= 0.4) return { bg: "bg-accent/5", accent: "text-accent" };
+  return { bg: "bg-muted/10", accent: "text-muted-foreground" };
 };
 
 interface StoryPageProps { tasks: Task[]; }
@@ -43,7 +43,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     const topCats = Object.entries(catCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
     const highlights: string[] = [];
     if (completed > 0) highlights.push(interpolate(t("story.fallback.completed"), { n: completed }));
-    topCats.forEach(([cat, count]) => highlights.push(interpolate(t("story.fallback.catCompleted"), { emoji: categoryEmoji[cat] || "📌", cat: catName(cat), n: count })));
+    topCats.forEach(([cat, count]) => highlights.push(interpolate(t("story.fallback.catCompleted"), { cat: catName(cat), n: count })));
     if (total === 0) highlights.push(t("story.fallback.noPlans"));
 
     const summaryBase = total === 0 ? t("story.fallback.noTaskLine") : interpolate(t("story.fallback.completedOf"), { done: completed, total, rate: Math.round(rate * 100) }) + (topCats.length > 0 ? interpolate(t("story.fallback.mostActive"), { cat: catName(topCats[0][0]) }) : "");
@@ -54,7 +54,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       summary: summaryBase,
       highlights,
       mood: total === 0 ? t("story.fallback.waitMood") : rate >= 0.8 ? t("story.fallback.fullMood") : rate >= 0.5 ? t("story.fallback.steadyMood") : t("story.fallback.buildMood"),
-      emoji: total === 0 ? "🌙" : rate >= 0.8 ? "🌟" : rate >= 0.5 ? "🚀" : "🌱",
+      emoji: "",
     };
   }, [t, catName]);
 
@@ -143,7 +143,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   {/* Timeline header */}
                   <div className="flex items-center gap-3 mb-3 px-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">{card.decor.leaf}</span>
                       <span className={cn("text-xs font-bold", card.decor.accent)}>{card.label}</span>
                     </div>
                     <span className="text-[10px] text-muted-foreground/60">{card.timeRange}</span>
@@ -159,14 +158,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                   <div className={cn("rounded-3xl overflow-hidden card-glow", card.decor.bg)}>
                     {/* Story header area */}
                     <div className="px-6 pt-6 pb-4 relative">
-                      {/* Decorative corner elements */}
-                      <div className="absolute top-3 right-4 text-lg opacity-20 animate-float" style={{ animationDelay: `${storyIndex * 0.5}s` }}>
-                        {card.decor.leaf}
-                      </div>
-
-                      {/* Emoji + Title cluster */}
+                     
                       <div className="flex items-start gap-3 mb-3">
-                        <span className="text-4xl leading-none animate-float" style={{ animationDelay: "0.2s" }}>{story.emoji}</span>
                         <div className="flex-1 min-w-0 pt-1">
                           <h2 className="text-xl font-bold text-foreground leading-tight">{story.title}</h2>
                           <div className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full bg-card/60 backdrop-blur-sm text-[11px] font-medium text-muted-foreground">
@@ -218,7 +211,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                         </div>
                         {story.highlights.map((h, i) => (
                           <div key={i} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-2xl bg-card/80 border border-border/20">
-                            <span className="text-primary/40 text-xs mt-0.5">✦</span>
+                            <span className="text-primary/40 text-xs mt-0.5">·</span>
                             <span className="text-sm text-foreground/80 leading-relaxed">{h}</span>
                           </div>
                         ))}

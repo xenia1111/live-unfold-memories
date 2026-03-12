@@ -11,7 +11,7 @@ export interface CatPersonality {
 
 const CAT_PERSONALITIES: Record<string, CatPersonality> = {
   "学习": {
-    emoji: "📚", label: "书虫猫", desc: "最近吃学习味的比较多，感觉自己变聪明了喵",
+    emoji: "", label: "书虫猫", desc: "最近吃学习味的比较多，感觉自己变聪明了喵",
     category: "学习",
     idleLines: [
       "今天不学习吗？猫猫的脑子要生锈了...",
@@ -20,7 +20,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "运动": {
-    emoji: "💪", label: "健身猫", desc: "吃太多运动味的，猫猫感觉自己有腹肌了",
+    emoji: "", label: "健身猫", desc: "吃太多运动味的，猫猫感觉自己有腹肌了",
     category: "运动",
     idleLines: [
       "来！跟猫做俯卧撑！一二三四！",
@@ -29,7 +29,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "社交": {
-    emoji: "💬", label: "社牛猫", desc: "社交味吃多了，猫猫变得超级能聊",
+    emoji: "", label: "社牛猫", desc: "社交味吃多了，猫猫变得超级能聊",
     category: "社交",
     idleLines: [
       "好无聊啊好无聊啊好无聊啊有人聊天吗喵喵喵",
@@ -38,7 +38,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "工作": {
-    emoji: "💼", label: "卷王猫", desc: "工作味太重了，猫猫都学会用Excel了",
+    emoji: "", label: "卷王猫", desc: "工作味太重了，猫猫都学会用Excel了",
     category: "工作",
     idleLines: [
       "KPI完成了吗？猫猫帮你催一下...",
@@ -47,7 +47,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "健康": {
-    emoji: "🧘", label: "佛系猫", desc: "养生味的吃太多，猫猫开始打坐了",
+    emoji: "", label: "佛系猫", desc: "养生味的吃太多，猫猫开始打坐了",
     category: "健康",
     idleLines: [
       "深呼吸...吸...呼...猫猫在冥想中...",
@@ -56,7 +56,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "记录": {
-    emoji: "✍️", label: "日记猫", desc: "文字味的最好吃，猫猫都开始写诗了",
+    emoji: "", label: "日记猫", desc: "文字味的最好吃，猫猫都开始写诗了",
     category: "记录",
     idleLines: [
       "今天发生了什么？猫猫想听你讲故事～",
@@ -65,7 +65,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "娱乐": {
-    emoji: "🎮", label: "玩咖猫", desc: "快乐味吃太多，猫猫变成派对动物了",
+    emoji: "", label: "玩咖猫", desc: "快乐味吃太多，猫猫变成派对动物了",
     category: "娱乐",
     idleLines: [
       "今天玩什么？猫猫已经热好身了！🕹️",
@@ -74,7 +74,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "美食": {
-    emoji: "🍜", label: "干饭猫", desc: "吃太多美食，猫猫变成真正的美食家了",
+    emoji: "", label: "干饭猫", desc: "吃太多美食，猫猫变成真正的美食家了",
     category: "美食",
     idleLines: [
       "今天吃什么好呢...猫猫已经在想晚饭了🤤",
@@ -83,7 +83,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "美景": {
-    emoji: "🏔️", label: "旅行猫", desc: "看太多美景，猫猫想去流浪了",
+    emoji: "", label: "旅行猫", desc: "看太多美景，猫猫想去流浪了",
     category: "美景",
     idleLines: [
       "今天去哪里看风景呀？猫猫想跟着去～🌸",
@@ -92,7 +92,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "美丽": {
-    emoji: "💄", label: "精致猫", desc: "爱美的猫猫，每天都要打扮得漂漂亮亮",
+    emoji: "", label: "精致猫", desc: "爱美的猫猫，每天都要打扮得漂漂亮亮",
     category: "美丽",
     idleLines: [
       "猫猫在照镜子...觉得自己今天特别好看🪞",
@@ -103,7 +103,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
 };
 
 const DEFAULT_PERSONALITY: CatPersonality = {
-  emoji: "🐱", label: "杂食猫", desc: "什么都吃，来者不拒",
+  emoji: "", label: "杂食猫", desc: "什么都吃，来者不拒",
   category: "",
   idleLines: [
     "喵...猫猫饿了...快去做点什么喂猫猫吧～",

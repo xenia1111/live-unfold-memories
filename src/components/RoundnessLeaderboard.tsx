@@ -9,13 +9,13 @@ import { useI18n, interpolate } from "@/lib/i18n";
 interface CatEntry { id: string; cat_name: string; born_at: string; completed_count: number; photo_count: number; user_id: string | null; }
 
 const ROUNDNESS_KEYS = [
-  { min: 0, key: "roundness.0", emoji: "🦴" }, { min: 0.3, key: "roundness.1", emoji: "🫧" },
-  { min: 0.6, key: "roundness.2", emoji: "🍡" }, { min: 1.0, key: "roundness.3", emoji: "🟠" },
-  { min: 1.5, key: "roundness.4", emoji: "⚽" }, { min: 2.5, key: "roundness.5", emoji: "🎈" },
-  { min: 4.0, key: "roundness.6", emoji: "🪐" },
+  { min: 0, key: "roundness.0", emoji: "" }, { min: 0.3, key: "roundness.1", emoji: "" },
+  { min: 0.6, key: "roundness.2", emoji: "" }, { min: 1.0, key: "roundness.3", emoji: "" },
+  { min: 1.5, key: "roundness.4", emoji: "" }, { min: 2.5, key: "roundness.5", emoji: "" },
+  { min: 4.0, key: "roundness.6", emoji: "" },
 ];
 
-const CAT_STAGES = [{ min: 0, emoji: "🥚" }, { min: 1, emoji: "🐣" }, { min: 3, emoji: "🐱" }, { min: 8, emoji: "😺" }, { min: 15, emoji: "😸" }, { min: 30, emoji: "😻" }, { min: 50, emoji: "👑" }];
+const CAT_STAGES = [{ min: 0, emoji: "" }, { min: 1, emoji: "" }, { min: 3, emoji: "" }, { min: 8, emoji: "" }, { min: 15, emoji: "" }, { min: 30, emoji: "" }, { min: 50, emoji: "" }];
 const getCatEmoji = (count: number) => { let emoji = CAT_STAGES[0].emoji; for (const s of CAT_STAGES) { if (count >= s.min) emoji = s.emoji; } return emoji; };
 
 const RANK_MEDAL = [

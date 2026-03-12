@@ -32,9 +32,9 @@ interface Template {
 }
 
 const TEMPLATES: Template[] = [
-  { id: "photo-grid", name: "拼图", icon: "🖼️", hasPhotos: true },
-  { id: "photo-blur", name: "光影", icon: "✨", hasPhotos: true },
-  { id: "text-only", name: "纯文字", icon: "📝", hasPhotos: false },
+  { id: "photo-grid", name: "拼图", icon: "", hasPhotos: true },
+  { id: "photo-blur", name: "光影", icon: "", hasPhotos: true },
+  { id: "text-only", name: "纯文字", icon: "", hasPhotos: false },
 ];
 
 const POSTER_W = 1080;
@@ -211,12 +211,12 @@ async function generatePoster(
   ctx.font = `400 ${highlightSize}px ${handFont}`;
   const highlightLines: string[] = [];
   for (const h of story.highlights.slice(0, 4)) {
-    highlightLines.push(...wrapText(ctx, `✦ ${h}`, contentW));
+    highlightLines.push(...wrapText(ctx, `· ${h}`, contentW));
   }
 
   // Calculate total content height
   const headerH = 80; // period + username
-  const emojiH = 100;
+  const emojiH = 0;
   const titleH = titleLines.length * (titleSize + 12);
   const openingH = olLines.length * (openingSize + 10);
   const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 420 : usablePhotos.length <= 4 ? 520 : 620) : 0;
@@ -246,10 +246,8 @@ async function generatePoster(
   ctx.textAlign = "left";
   curY += headerH + gap;
 
-  // === EMOJI ===
-  ctx.font = `${hasPhotos ? 80 : 100}px sans-serif`;
-  ctx.fillText(story.emoji, pad, curY + 70);
-  curY += emojiH + gap * 0.3;
+   // === Skip emoji section ===
+  curY += gap * 0.3;
 
   // === TITLE ===
   ctx.font = `700 ${titleSize}px ${handFont}`;

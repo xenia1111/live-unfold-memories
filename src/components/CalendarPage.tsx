@@ -8,15 +8,10 @@ import type { Task } from "@/hooks/useTasks";
 import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
 
 const iconMap: Record<string, any> = { coffee: Coffee, dumbbell: Dumbbell, book: BookOpen, music: Music, heart: Heart, star: Star };
-const emojiMap: Record<string, string> = { dumbbell: "🏃", book: "📖", coffee: "☕", star: "🧘", heart: "📝", music: "🎵" };
+const emojiMap: Record<string, string> = {};
 const categoryColorMap: Record<string, string> = { "运动": "bg-accent/15 text-accent", "学习": "bg-primary/15 text-primary", "社交": "bg-secondary/15 text-secondary", "健康": "bg-secondary/15 text-secondary", "记录": "bg-primary/15 text-primary" };
 
-const seasonEmoji = (month: number): string => {
-  if (month >= 3 && month <= 5) return "🌸";
-  if (month >= 6 && month <= 8) return "🌻";
-  if (month >= 9 && month <= 11) return "🍂";
-  return "❄️";
-};
+const seasonEmoji = (_month: number): string => "";
 
 const mockPhotos = [
   "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
@@ -29,7 +24,7 @@ const mockPhotos = [
   "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=400&h=300&fit=crop",
 ];
 
-interface MockEvent { date: Date; title: string; icon: string; category: string; emoji: string; photos: string[]; }
+interface MockEvent { date: Date; title: string; icon: string; category: string; photos: string[]; }
 
 const generateMockEvents = (): MockEvent[] => {
   const today = new Date();
@@ -39,11 +34,11 @@ const generateMockEvents = (): MockEvent[] => {
     const date = new Date(today); date.setDate(date.getDate() - i);
     if (Math.random() > 0.4) {
       const items = [
-        { title: "晨跑 30分钟", icon: "dumbbell", category: "运动", emoji: "🏃" },
-        { title: "阅读《人类简史》", icon: "book", category: "学习", emoji: "📖" },
-        { title: "咖啡时光", icon: "coffee", category: "社交", emoji: "☕" },
-        { title: "冥想 15分钟", icon: "star", category: "健康", emoji: "🧘" },
-        { title: "写日记", icon: "heart", category: "记录", emoji: "📝" },
+        { title: "晨跑 30分钟", icon: "dumbbell", category: "运动" },
+        { title: "阅读《人类简史》", icon: "book", category: "学习" },
+        { title: "咖啡时光", icon: "coffee", category: "社交" },
+        { title: "冥想 15分钟", icon: "star", category: "健康" },
+        { title: "写日记", icon: "heart", category: "记录" },
       ];
       const item = items[Math.floor(Math.random() * items.length)];
       const photoCount = Math.random() > 0.35 ? Math.floor(Math.random() * 6) + 1 : 0;
