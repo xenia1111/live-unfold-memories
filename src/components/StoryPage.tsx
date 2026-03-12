@@ -212,8 +212,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     </div>
 
                     {/* Summary + highlights */}
-                    <div className="px-6 py-4">
-                      <p className="text-sm text-foreground/80 leading-[1.9] mb-4">{story.summary}</p>
+                    <div className="px-7 py-5">
+                      <p className="text-sm text-foreground/80 leading-[1.9] mb-5">{story.summary}</p>
 
                       {/* Highlights — warm cards */}
                       <div className="space-y-2 mb-4">

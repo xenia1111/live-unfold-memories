@@ -82,7 +82,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
               </div>
             </button>
             {isExpanded && (
-              <div className="bg-card rounded-b-2xl border border-t-0 border-border/50 px-5 py-4 animate-fade-in">
+              <div className="bg-card rounded-b-3xl border border-t-0 border-border/30 px-6 py-5 animate-fade-in space-y-5">
                 {card.photos.length > 0 && (
                   <div className="mb-4">
                     <span className="text-xs font-semibold text-foreground mb-2 block">{t("catStory.photos")}</span>
