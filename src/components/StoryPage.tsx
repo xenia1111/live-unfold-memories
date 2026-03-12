@@ -43,7 +43,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     const topCats = Object.entries(catCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
     const highlights: string[] = [];
     if (completed > 0) highlights.push(interpolate(t("story.fallback.completed"), { n: completed }));
-    topCats.forEach(([cat, count]) => highlights.push(interpolate(t("story.fallback.catCompleted"), { emoji: categoryEmoji[cat] || "📌", cat: catName(cat), n: count })));
+    topCats.forEach(([cat, count]) => highlights.push(interpolate(t("story.fallback.catCompleted"), { cat: catName(cat), n: count })));
     if (total === 0) highlights.push(t("story.fallback.noPlans"));
 
     const summaryBase = total === 0 ? t("story.fallback.noTaskLine") : interpolate(t("story.fallback.completedOf"), { done: completed, total, rate: Math.round(rate * 100) }) + (topCats.length > 0 ? interpolate(t("story.fallback.mostActive"), { cat: catName(topCats[0][0]) }) : "");
