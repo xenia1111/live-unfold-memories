@@ -11,7 +11,7 @@ export interface CatPersonality {
 
 const CAT_PERSONALITIES: Record<string, CatPersonality> = {
   "学习": {
-    emoji: "📚", label: "书虫猫", desc: "最近吃学习味的比较多，感觉自己变聪明了喵",
+    emoji: "", label: "书虫猫", desc: "最近吃学习味的比较多，感觉自己变聪明了喵",
     category: "学习",
     idleLines: [
       "今天不学习吗？猫猫的脑子要生锈了...",
