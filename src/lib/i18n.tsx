@@ -280,20 +280,20 @@ const zh: Dict = {
   "intro.step4Desc": "用照片记录完成瞬间，未来回顾时会更加珍贵。",
 
   // EditTaskDialog
-  "edit.title": "编辑记录 ✏️",
+  "edit.title": "编辑记录",
   "edit.noDate": "未指定日期",
-  "edit.photoLabel": "📷 完成照片",
+  "edit.photoLabel": "完成照片",
   "edit.addPhoto": "添加完成照片",
   "edit.replace": "更换",
-  "edit.noteLabel": "📝 随笔",
+  "edit.noteLabel": "随笔",
   "edit.notePlaceholder": "记录当时的感受...",
-  "edit.titleLabel": "✨ 标题",
-  "edit.iconLabel": "🎨 图标",
-  "edit.categoryLabel": "📂 分类",
+  "edit.titleLabel": "标题",
+  "edit.iconLabel": "图标",
+  "edit.categoryLabel": "分类",
   "edit.confirmDelete": "确认删除",
   "edit.delete": "删除",
   "edit.saving": "保存中...",
-  "edit.save": "保存修改 💫",
+  "edit.save": "保存修改",
 
   // CompletionPhotoDialog
   "complete.notePlaceholder": "此刻你在想什么？感受到了什么？",
