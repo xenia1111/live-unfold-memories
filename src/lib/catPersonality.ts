@@ -103,7 +103,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
 };
 
 const DEFAULT_PERSONALITY: CatPersonality = {
-  emoji: "🐱", label: "杂食猫", desc: "什么都吃，来者不拒",
+  emoji: "", label: "杂食猫", desc: "什么都吃，来者不拒",
   category: "",
   idleLines: [
     "喵...猫猫饿了...快去做点什么喂猫猫吧～",
