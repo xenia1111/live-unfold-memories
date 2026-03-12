@@ -55,7 +55,7 @@ const zh: Dict = {
 
   // HomePage
   "home.loading": "加载中...",
-  "home.allDone": "🎉 今天全部完成！太棒了",
+  "home.allDone": "今天全部完成！太棒了",
   "home.noTasks": "今天还空着呢",
   "home.addHint": "给自己安排点什么吧 👇",
   "home.upcoming": "即将到来",
