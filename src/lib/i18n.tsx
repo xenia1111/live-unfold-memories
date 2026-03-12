@@ -998,7 +998,7 @@ const esDict: Dict = {
   "cat.alive": "{n} días", "cat.food": "{n} comida", "cat.streak": "{n} días",
   "cat.photos": "{n} fotos", "cat.leaderboard": "Ranking",
   "game.nextLevel": "Faltan {n} para « {name} »", "game.maxLevel": "¡Nivel máximo!",
-  "game.recordHint": "📝 +10", "game.photoHint": "📸 +15",
+  "game.recordHint": "+10", "game.photoHint": "+15",
   "game.streakDays": "Racha", "game.streakReward": "{n}d bonus +{bonus}",
   "game.completed": "Completados", "game.achievements": "Logros",
   "game.first": "Primer paso", "game.firstDesc": "1er registro",
