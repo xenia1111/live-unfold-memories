@@ -314,8 +314,8 @@ const zh: Dict = {
   // GameStats
   "game.nextLevel": "距离「{name}」还需 {n} 猫粮",
   "game.maxLevel": "已达最高等级！",
-  "game.recordHint": "📝 记录 +10",
-  "game.photoHint": "📸 记录+照片 +15",
+  "game.recordHint": "记录 +10",
+  "game.photoHint": "记录+照片 +15",
   "game.streakDays": "连续天数",
   "game.streakReward": "{n}天奖 +{bonus}",
   "game.completed": "已完成",
