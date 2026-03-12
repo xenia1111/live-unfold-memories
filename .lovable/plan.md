@@ -1,48 +1,23 @@
 
 
-## Film Strip Carousel for Story Page
+## 移除两个不符合 iOS 规范的标题元素
 
-Transform the vertical story card list into a horizontal swipeable film-strip carousel, where each period (本周/上周/上上周) is a full-width "film frame" the user swipes through.
+### 要移除的内容
 
-### Design Concept
+1. **故事页顶部标题区** (`src/components/StoryPage.tsx` 第 175-181 行)
+   - 📖 图标 + "回忆是最美的礼物" 副标题
+   - "你的故事" 大标题
+   - 整个 `animate-fade-in mb-4` 的 div 块移除
 
-```text
-┌─────────────────────────────────┐
-│  Period Tabs (week/month/...)   │
-│  ┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐ │
-│  │  ◄  Film Frame 1 (本周)  ► │ │
-│  │                             │ │
-│  │  Title / Mood / Quote       │ │
-│  │  Progress bar               │ │
-│  │  Summary + Highlights       │ │
-│  │  AI button / Notes / Share  │ │
-│  │                             │ │
-│  └ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘ │
-│        ● ○ ○  (dot indicators)  │
-└─────────────────────────────────┘
-```
+2. **首页日期行** (`src/components/HomePage.tsx` 第 168-170 行)
+   - "3月5日 星期四" 的文字移除
 
-### Changes
+### 改动范围
 
-**`src/components/StoryPage.tsx`**
+| 文件 | 操作 |
+|------|------|
+| `src/components/StoryPage.tsx` | 删除第 175-181 行的标题区块 |
+| `src/components/HomePage.tsx` | 删除第 168-170 行的日期段落 |
 
-1. Replace the vertical `space-y-10` story card list with an Embla carousel (already installed via `embla-carousel-react`)
-2. Each story card becomes a `CarouselItem` — full-width swipeable frame
-3. Add film-strip styling: subtle sprocket-hole decorations on top/bottom edges of the carousel area, dark border framing
-4. Add dot indicators below the carousel showing current slide position
-5. Period tabs remain above the carousel as-is
-6. Remove the `animationDelay` stagger since cards are now one-at-a-time
-7. Track active slide index to sync with dot indicators
-
-### Technical Details
-
-- Use the existing `Carousel`, `CarouselContent`, `CarouselItem` from `src/components/ui/carousel.tsx`
-- Each card's content stays identical — just wrapped in carousel items
-- Add a film-frame border effect: `border-2 border-foreground/10` with small rounded-square "sprocket holes" as decorative pseudo-elements via CSS
-- Dot pagination: simple flex row of small circles, active one filled
-
-### Files to Edit
-| File | Change |
-|------|--------|
-| `src/components/StoryPage.tsx` | Wrap story cards in Carousel, add dot indicators and film-strip decoration |
+两处都是纯删除，不影响其他功能。
 
