@@ -37,6 +37,21 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [loadingKeys, setLoadingKeys] = useState<Set<string>>(new Set());
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    const onSelect = () => setActiveSlide(carouselApi.selectedScrollSnap());
+    carouselApi.on("select", onSelect);
+    onSelect();
+    return () => { carouselApi.off("select", onSelect); };
+  }, [carouselApi]);
+
+  // Reset carousel to first slide when period changes
+  useEffect(() => {
+    if (carouselApi) carouselApi.scrollTo(0, true);
+  }, [activePeriod, carouselApi]);
 
   const buildFallback = useCallback((allTasks: Task[], total: number, completed: number, rate: number): StoryData => {
     const catCount: Record<string, number> = {};
