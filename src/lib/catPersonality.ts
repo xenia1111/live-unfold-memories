@@ -65,7 +65,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "娱乐": {
-    emoji: "🎮", label: "玩咖猫", desc: "快乐味吃太多，猫猫变成派对动物了",
+    emoji: "", label: "玩咖猫", desc: "快乐味吃太多，猫猫变成派对动物了",
     category: "娱乐",
     idleLines: [
       "今天玩什么？猫猫已经热好身了！🕹️",
