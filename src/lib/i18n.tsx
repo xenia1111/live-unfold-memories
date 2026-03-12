@@ -728,7 +728,7 @@ const frDict: Dict = {
   "story.thisYear": "Cette année", "story.lastYear": "Année dernière",
   "story.current": "Actuel", "story.highlights": "Points forts",
   "story.aiGenerating": "L'IA écrit...", "story.refreshStory": "Autre version",
-  "story.generateAI": "✨ Générer une histoire avec l'IA",
+  "story.generateAI": "Générer une histoire avec l'IA",
   "story.notes": "Notes", "story.done": "Terminé", "story.edit": "Modifier",
   "story.writeSomething": "Écrire...",
   "story.notePlaceholder": "Notez vos sentiments, pensées...",
