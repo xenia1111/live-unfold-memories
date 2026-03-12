@@ -114,7 +114,7 @@ const zh: Dict = {
   "add.voiceTipStart": "知道了，开始说话",
 
   // TimePicker
-  "time.label": "⏰ 什么时候？",
+  "time.label": "什么时候？",
   "time.none": "不限",
   "time.allday": "全天",
   "time.point": "时间点",
