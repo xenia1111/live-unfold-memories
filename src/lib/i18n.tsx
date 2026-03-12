@@ -1172,7 +1172,7 @@ const jaDict: Dict = {
   "settings.newPassword": "新しいパスワード（6文字以上）", "settings.confirmPassword": "パスワード確認",
   "settings.confirmChange": "確認", "settings.fillAll": "すべて入力してください",
   "settings.minLength": "6文字以上必要です", "settings.mismatch": "パスワードが一致しません",
-  "settings.passwordUpdated": "パスワード更新 🔒", "settings.langChanged": "言語変更 🌍",
+  "settings.passwordUpdated": "パスワード更新", "settings.langChanged": "言語変更",
   "intro.title": "アプリについて", "intro.welcome": "ようこそ",
   "intro.comingSoon": "漫画チュートリアル近日公開！",
   "intro.step1Title": "毎日を記録", "intro.step1Desc": "タスクを作成して日常を計画しましょう。",
