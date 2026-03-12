@@ -6,8 +6,8 @@ import { getCatPersonality } from "@/lib/catPersonality";
 import { useI18n, useCategoryName } from "@/lib/i18n";
 
 const CATEGORY_EMOJIS: Record<string, string> = {
-  "美食": "🍜", "学习": "📚", "运动": "💪", "社交": "💬", "工作": "💼",
-  "美景": "🏔️", "娱乐": "🎮", "记录": "✍️", "健康": "🧘", "美丽": "💄",
+  "美食": "", "学习": "", "运动": "", "社交": "", "工作": "",
+  "美景": "", "娱乐": "", "记录": "", "健康": "", "美丽": "",
 };
 const ALL_CATEGORIES = Object.keys(CATEGORY_EMOJIS);
 
