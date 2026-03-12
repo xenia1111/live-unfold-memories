@@ -60,7 +60,7 @@ const CatRadarDialog = ({ open, onOpenChange, tasks }: CatRadarDialogProps) => {
             topCategories.map(([cat, count], i) => (
               <div key={cat} className="flex items-center gap-2 text-xs">
                 <span className="text-muted-foreground/50 w-4 text-right font-mono">{i + 1}.</span>
-                <span>{CATEGORY_EMOJIS[cat] || "📦"}</span>
+                <span className="font-medium text-foreground">{catName(cat)}</span>
                 <span className="font-medium text-foreground">{catName(cat)}</span>
                 <div className="flex-1 h-1.5 bg-muted/60 rounded-full overflow-hidden">
                   <div className="h-full rounded-full bg-gradient-to-r from-primary/60 to-accent/60 transition-all duration-500" style={{ width: `${topCategories[0] ? (count / topCategories[0][1]) * 100 : 0}%` }} />
