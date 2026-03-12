@@ -24,7 +24,7 @@ const mockPhotos = [
   "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=400&h=300&fit=crop",
 ];
 
-interface MockEvent { date: Date; title: string; icon: string; category: string; emoji: string; photos: string[]; }
+interface MockEvent { date: Date; title: string; icon: string; category: string; photos: string[]; }
 
 const generateMockEvents = (): MockEvent[] => {
   const today = new Date();
