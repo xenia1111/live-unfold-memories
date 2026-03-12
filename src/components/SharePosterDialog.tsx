@@ -216,7 +216,7 @@ async function generatePoster(
 
   // Calculate total content height
   const headerH = 80; // period + username
-  const emojiH = 100;
+  const emojiH = 0;
   const titleH = titleLines.length * (titleSize + 12);
   const openingH = olLines.length * (openingSize + 10);
   const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 420 : usablePhotos.length <= 4 ? 520 : 620) : 0;
