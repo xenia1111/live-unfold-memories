@@ -56,7 +56,7 @@ const CAT_PERSONALITIES: Record<string, CatPersonality> = {
     ],
   },
   "记录": {
-    emoji: "✍️", label: "日记猫", desc: "文字味的最好吃，猫猫都开始写诗了",
+    emoji: "", label: "日记猫", desc: "文字味的最好吃，猫猫都开始写诗了",
     category: "记录",
     idleLines: [
       "今天发生了什么？猫猫想听你讲故事～",
