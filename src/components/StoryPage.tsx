@@ -54,7 +54,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       summary: summaryBase,
       highlights,
       mood: total === 0 ? t("story.fallback.waitMood") : rate >= 0.8 ? t("story.fallback.fullMood") : rate >= 0.5 ? t("story.fallback.steadyMood") : t("story.fallback.buildMood"),
-      emoji: total === 0 ? "🌙" : rate >= 0.8 ? "🌟" : rate >= 0.5 ? "🚀" : "🌱",
+      emoji: "",
     };
   }, [t, catName]);
 

@@ -8,15 +8,10 @@ import type { Task } from "@/hooks/useTasks";
 import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
 
 const iconMap: Record<string, any> = { coffee: Coffee, dumbbell: Dumbbell, book: BookOpen, music: Music, heart: Heart, star: Star };
-const emojiMap: Record<string, string> = { dumbbell: "🏃", book: "📖", coffee: "☕", star: "🧘", heart: "📝", music: "🎵" };
+const emojiMap: Record<string, string> = {};
 const categoryColorMap: Record<string, string> = { "运动": "bg-accent/15 text-accent", "学习": "bg-primary/15 text-primary", "社交": "bg-secondary/15 text-secondary", "健康": "bg-secondary/15 text-secondary", "记录": "bg-primary/15 text-primary" };
 
-const seasonEmoji = (month: number): string => {
-  if (month >= 3 && month <= 5) return "🌸";
-  if (month >= 6 && month <= 8) return "🌻";
-  if (month >= 9 && month <= 11) return "🍂";
-  return "❄️";
-};
+const seasonEmoji = (_month: number): string => "";
 
 const mockPhotos = [
   "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",

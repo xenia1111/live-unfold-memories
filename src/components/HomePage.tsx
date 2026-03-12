@@ -185,7 +185,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
 
       <div className="mb-8 animate-fade-in">
         <h1 className="text-3xl font-bold text-foreground font-serif leading-tight">
-          {greeting.emoji} {greeting.text}
+          {greeting.text}
           {lifeDays ? (
             <span className="text-sm font-normal text-muted-foreground ml-2">({interpolate(t("greeting.lifeDays"), { n: lifeDays })})</span>
           ) : (
