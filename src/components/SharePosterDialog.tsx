@@ -246,10 +246,8 @@ async function generatePoster(
   ctx.textAlign = "left";
   curY += headerH + gap;
 
-  // === EMOJI ===
-  ctx.font = `${hasPhotos ? 80 : 100}px sans-serif`;
-  ctx.fillText(story.emoji, pad, curY + 70);
-  curY += emojiH + gap * 0.3;
+   // === Skip emoji section ===
+  curY += gap * 0.3;
 
   // === TITLE ===
   ctx.font = `700 ${titleSize}px ${handFont}`;
