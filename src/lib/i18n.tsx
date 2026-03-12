@@ -1115,7 +1115,7 @@ const jaDict: Dict = {
   "story.thisYear": "今年", "story.lastYear": "昨年",
   "story.current": "現在", "story.highlights": "ハイライト",
   "story.aiGenerating": "AIがストーリーを書いています...", "story.refreshStory": "別バージョン",
-  "story.generateAI": "✨ AIで温かいストーリーを生成",
+  "story.generateAI": "AIで温かいストーリーを生成",
   "story.notes": "メモ", "story.done": "完了", "story.edit": "編集",
   "story.writeSomething": "何か書く...",
   "story.notePlaceholder": "この期間の感想や思いを記録...",
