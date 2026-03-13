@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Mail, Lock, User, ArrowRight, Sparkles } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +12,9 @@ const AuthPage = () => {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +24,10 @@ const AuthPage = () => {
     }
     if (!isLogin && password.length < 6) {
       toast.error("密码至少6位");
+      return;
+    }
+    if (!isLogin && !agreedTerms) {
+      toast.error("请先阅读并同意隐私政策和用户协议");
       return;
     }
 
@@ -39,7 +47,7 @@ const AuthPage = () => {
           },
         });
         if (error) throw error;
-        toast.success("注册成功！请查看邮箱完成验证 📧");
+        toast.success("注册成功！请查看邮箱完成验证");
       }
     } catch (error: any) {
       const msg = error.message?.includes("Invalid login")
@@ -52,6 +60,16 @@ const AuthPage = () => {
       setLoading(false);
     }
   };
+
+  // Inline legal page views
+  if (showPrivacy) {
+    const PrivacyPolicyPage = require("@/components/PrivacyPolicyPage").default;
+    return <PrivacyPolicyPage onBack={() => setShowPrivacy(false)} />;
+  }
+  if (showTerms) {
+    const TermsOfServicePage = require("@/components/TermsOfServicePage").default;
+    return <TermsOfServicePage onBack={() => setShowTerms(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
@@ -103,9 +121,31 @@ const AuthPage = () => {
             />
           </div>
 
+          {/* Agreement checkbox — only for signup */}
+          {!isLogin && (
+            <div className="flex items-start gap-2.5 px-1">
+              <Checkbox
+                id="agree-terms"
+                checked={agreedTerms}
+                onCheckedChange={(v) => setAgreedTerms(v === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="agree-terms" className="text-xs text-muted-foreground leading-relaxed">
+                我已阅读并同意{" "}
+                <button type="button" onClick={() => setShowPrivacy(true)} className="text-primary underline underline-offset-2">
+                  隐私政策
+                </button>{" "}
+                和{" "}
+                <button type="button" onClick={() => setShowTerms(true)} className="text-primary underline underline-offset-2">
+                  用户协议
+                </button>
+              </label>
+            </div>
+          )}
+
           <Button
             type="submit"
-            disabled={loading}
+            disabled={loading || (!isLogin && !agreedTerms)}
             className="w-full h-12 rounded-2xl text-base font-medium gap-2"
           >
             {loading ? (
