@@ -29,6 +29,10 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showGeneralSettings, setShowGeneralSettings] = useState(false);
   const [showProductIntro, setShowProductIntro] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showAppearance, setShowAppearance] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [displayName, setDisplayName] = useState("探索者");
   const fileInputRef = useRef<HTMLInputElement>(null);
