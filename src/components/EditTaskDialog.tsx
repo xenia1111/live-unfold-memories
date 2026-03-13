@@ -70,7 +70,20 @@ const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTask
   const handleSave = async () => {
     if (!task || !title.trim() || saving) return;
     setSaving(true);
-    await onSave(task.id, { title: title.trim(), icon: selectedIcon, category: selectedCategory, time: selectedTime, completionPhoto: completionPhoto || undefined, completionNote: completionNote || undefined });
+    let photoUrl = completionPhoto || undefined;
+    // If there's a new local file (base64), upload it
+    if (photoFile && user && completionPhoto?.startsWith("data:")) {
+      try {
+        photoUrl = await uploadTaskPhoto(user.id, photoFile);
+      } catch (e) {
+        console.error("Upload failed:", e);
+        toast.error("上传照片失败");
+        setSaving(false);
+        return;
+      }
+    }
+    await onSave(task.id, { title: title.trim(), icon: selectedIcon, category: selectedCategory, time: selectedTime, completionPhoto: photoUrl, completionNote: completionNote || undefined });
+    setPhotoFile(null);
     setSaving(false); onOpenChange(false);
   };
 
