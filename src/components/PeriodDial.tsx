@@ -104,17 +104,26 @@ const PeriodDial = ({ activePeriod, onPeriodChange, viewMode, onViewModeToggle }
           {/* Center hub — clickable to toggle view mode */}
           <button
             onClick={onViewModeToggle}
-            className="absolute inset-[34%] rounded-full flex items-center justify-center active:scale-95 transition-transform"
+            className="absolute inset-[34%] rounded-full flex flex-col items-center justify-center active:scale-90 transition-all duration-300"
             style={{
-              background: "radial-gradient(circle at 45% 40%, hsl(0 0% 30%), hsl(0 0% 12%) 80%)",
-              boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.1)",
+              background: viewMode === "category"
+                ? "radial-gradient(circle at 45% 40%, hsl(121 45% 35%), hsl(121 40% 18%) 80%)"
+                : "radial-gradient(circle at 45% 40%, hsl(0 0% 30%), hsl(0 0% 12%) 80%)",
+              boxShadow: viewMode === "category"
+                ? "inset 0 1px 3px rgba(0,0,0,0.4), 0 0 12px rgba(76,175,80,0.3), 0 1px 1px rgba(255,255,255,0.1)"
+                : "inset 0 1px 3px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.1)",
             }}
           >
-            {viewMode === "period" ? (
-              <Layers size={16} className="text-white/60" />
-            ) : (
-              <BookOpen size={16} className="text-white/60" />
-            )}
+            <div className="relative">
+              {viewMode === "period" ? (
+                <Layers size={16} className="text-white/70 animate-pulse" style={{ animationDuration: "2.5s" }} />
+              ) : (
+                <BookOpen size={16} className="text-green-300" />
+              )}
+            </div>
+            <span className="text-[7px] font-medium mt-0.5 tracking-wider" style={{ color: viewMode === "category" ? "hsl(121 50% 70%)" : "rgba(255,255,255,0.45)" }}>
+              {viewMode === "period" ? "TAP" : "BACK"}
+            </span>
           </button>
 
           {/* Period holes arranged in circle */}
