@@ -224,76 +224,78 @@ async function generatePoster(
   const inkGreenLight = "rgba(47,94,46,0.55)";
   const inkGray = "rgba(60,55,45,0.4)";
 
+  // Strip emoji helper
+  const stripEmoji = (s: string) => s.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").replace(/\s{2,}/g, " ").trim();
+
   // --- Pre-calculate content blocks ---
   const usablePhotos = (template !== "text-only") ? photos.slice(0, 9) : [];
   const hasPhotos = usablePhotos.length > 0;
 
-  const titleSize = hasPhotos ? 68 : 82;
-  const openingSize = hasPhotos ? 38 : 46;
-  const summarySize = hasPhotos ? 36 : 42;
-  const highlightSize = hasPhotos ? 34 : 38;
+  const titleSize = hasPhotos ? 64 : 76;
+  const openingSize = hasPhotos ? 36 : 44;
+  const summarySize = hasPhotos ? 34 : 40;
+  const highlightSize = hasPhotos ? 32 : 36;
 
   ctx.font = `700 ${titleSize}px ${handFont}`;
-  const titleLines = wrapText(ctx, story.title, contentW);
+  const titleLines = wrapText(ctx, stripEmoji(story.title), contentW);
   ctx.font = `italic ${openingSize}px ${handFont}`;
-  const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW - 30);
+  const olLines = wrapText(ctx, `"${stripEmoji(story.openingLine)}"`, contentW - 40);
   ctx.font = `400 ${summarySize}px ${bodyFont}`;
-  const summaryLines = wrapText(ctx, story.summary, contentW);
+  const summaryLines = wrapText(ctx, stripEmoji(story.summary), contentW);
   ctx.font = `400 ${highlightSize}px ${bodyFont}`;
   const highlightLines: string[] = [];
   for (const h of story.highlights.slice(0, 4)) {
-    highlightLines.push(...wrapText(ctx, `· ${h}`, contentW - 20));
+    highlightLines.push(...wrapText(ctx, `· ${stripEmoji(h)}`, contentW - 20));
   }
 
-  // Layout
-  const headerH = 70;
-  const titleH = titleLines.length * (titleSize + 14);
-  const openingH = olLines.length * (openingSize + 12);
-  const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 400 : usablePhotos.length <= 4 ? 500 : 580) : 0;
-  const summaryH = summaryLines.length * (summarySize + 16);
-  const highlightH = highlightLines.length * (highlightSize + 12);
-  const footerH = 100;
+  // Layout — generous spacing
+  const headerH = 80;
+  const titleH = titleLines.length * (titleSize + 18);
+  const openingH = olLines.length * (openingSize + 16);
+  const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 400 : usablePhotos.length <= 4 ? 480 : 560) : 0;
+  const summaryH = summaryLines.length * (summarySize + 20);
+  const highlightH = highlightLines.length * (highlightSize + 14);
+  const footerH = 120;
 
   const totalContentH = headerH + titleH + openingH + photoH + summaryH + highlightH + footerH;
   const availableH = POSTER_H - pad * 2;
   const extraSpace = Math.max(0, availableH - totalContentH);
   const sectionCount = hasPhotos ? 7 : 6;
-  const gap = Math.min(extraSpace / sectionCount, 70);
+  const gap = Math.max(extraSpace / sectionCount, 40);
 
-  let curY = pad + 40;
+  let curY = pad + 50;
 
   // === HEADER ===
-  ctx.font = `500 30px ${bodyFont}`;
+  ctx.font = `500 28px ${bodyFont}`;
   ctx.fillStyle = inkGray;
   ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
   ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(60,55,45,0.3)";
+  ctx.fillStyle = "rgba(60,55,45,0.25)";
   ctx.fillText(`@${displayName}`, POSTER_W - pad, curY);
   ctx.textAlign = "left";
-  curY += headerH + gap * 0.5;
+  curY += headerH + gap;
 
-  // === TITLE (ink green, handwritten) ===
+  // === TITLE ===
   ctx.font = `700 ${titleSize}px ${handFont}`;
   ctx.fillStyle = inkGreen;
   for (const line of titleLines) {
     ctx.fillText(line, pad, curY);
-    curY += titleSize + 14;
+    curY += titleSize + 18;
   }
-  curY += gap * 0.5;
+  curY += gap;
 
-  // === OPENING LINE (italic, with left border) ===
-  // Draw quote border
+  // === OPENING LINE ===
   ctx.fillStyle = inkGreenLight;
-  roundRect(ctx, pad, curY - openingSize + 4, 3, olLines.length * (openingSize + 12) - 4, 2);
+  roundRect(ctx, pad, curY - openingSize + 6, 3, olLines.length * (openingSize + 16), 2);
   ctx.fill();
 
   ctx.font = `italic ${openingSize}px ${handFont}`;
   ctx.fillStyle = inkGreenLight;
   for (const line of olLines) {
-    ctx.fillText(line, pad + 18, curY);
-    curY += openingSize + 12;
+    ctx.fillText(line, pad + 22, curY);
+    curY += openingSize + 16;
   }
-  curY += gap;
+  curY += gap * 1.2;
 
   // === PHOTOS ===
   if (hasPhotos) {
@@ -328,39 +330,34 @@ async function generatePoster(
     curY += photoH + gap;
   }
 
-  // === SUMMARY (body text, dark ink) ===
+  // === SUMMARY ===
   ctx.font = `400 ${summarySize}px ${bodyFont}`;
   ctx.fillStyle = inkDark;
-  const sLineH = summarySize + 16;
+  const sLineH = summarySize + 20;
   for (const line of summaryLines) {
-    if (curY > POSTER_H - 280) break;
+    if (curY > POSTER_H - 300) break;
     ctx.fillText(line, pad, curY);
     curY += sLineH;
   }
-  curY += gap * 0.7;
+  curY += gap;
 
   // === HIGHLIGHTS ===
-  if (highlightLines.length > 0 && curY < POSTER_H - 220) {
-    // Small decorative leaf/dot
-    ctx.fillStyle = inkGreenLight;
-    ctx.beginPath();
-    ctx.arc(pad + 4, curY - 6, 3, 0, Math.PI * 2);
-    ctx.fill();
-
+  if (highlightLines.length > 0 && curY < POSTER_H - 240) {
     ctx.font = `400 ${highlightSize}px ${bodyFont}`;
     ctx.fillStyle = inkGreen;
     for (const line of highlightLines) {
-      if (curY > POSTER_H - 160) break;
+      if (curY > POSTER_H - 180) break;
       ctx.fillText(line, pad, curY);
-      curY += highlightSize + 12;
+      curY += highlightSize + 14;
     }
   }
 
   // === MOOD tag ===
   if (curY < POSTER_H - 160) {
-    ctx.font = `500 28px ${bodyFont}`;
-    ctx.fillStyle = "rgba(47,94,46,0.35)";
-    ctx.fillText(story.mood, pad, POSTER_H - 140);
+    curY = Math.max(curY + gap * 0.5, POSTER_H - 180);
+    ctx.font = `500 26px ${bodyFont}`;
+    ctx.fillStyle = "rgba(47,94,46,0.3)";
+    ctx.fillText(stripEmoji(story.mood), pad, POSTER_H - 140);
   }
 
   // === FOOTER ===
