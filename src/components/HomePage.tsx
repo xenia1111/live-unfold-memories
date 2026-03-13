@@ -193,8 +193,8 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
           )}
         </h1>
         <div className="mt-3 flex items-center gap-2.5">
-          <div className="flex-1 h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-foreground/70 transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
+          <div className="flex-1 h-1.5 bg-primary/15 rounded-full overflow-hidden">
+            <div className="h-full rounded-full gradient-progress transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
           </div>
           <span className="text-[11px] font-medium text-muted-foreground tabular-nums">{todayCompleted}/{todayTotal}</span>
         </div>
@@ -232,7 +232,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  {task.completed ? <CheckCircle2 size={20} className="text-muted-foreground flex-shrink-0" /> : <Circle size={20} className="text-card-foreground/25 flex-shrink-0" />}
+                  {task.completed ? <CheckCircle2 size={20} className="text-primary flex-shrink-0" /> : <Circle size={20} className="text-primary/25 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
                     <p className={cn("text-sm font-medium", task.completed ? "line-through text-muted-foreground" : "text-card-foreground")}>{task.title}</p>
                     <div className="flex items-center gap-1.5">
