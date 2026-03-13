@@ -101,22 +101,21 @@ const PeriodDial = ({ activePeriod, onPeriodChange, viewMode, onViewModeToggle }
             boxShadow: "inset 0 2px 6px rgba(0,0,0,0.4), 0 1px 2px rgba(255,255,255,0.05)",
           }}
         >
-          {/* Center hub — metal look */}
-          <div
-            className="absolute inset-[34%] rounded-full flex items-center justify-center"
+          {/* Center hub — clickable to toggle view mode */}
+          <button
+            onClick={onViewModeToggle}
+            className="absolute inset-[34%] rounded-full flex items-center justify-center active:scale-95 transition-transform"
             style={{
               background: "radial-gradient(circle at 45% 40%, hsl(0 0% 30%), hsl(0 0% 12%) 80%)",
               boxShadow: "inset 0 1px 3px rgba(0,0,0,0.5), 0 1px 1px rgba(255,255,255,0.1)",
             }}
           >
-            <div
-              className="w-5 h-5 rounded-full"
-              style={{
-                background: "radial-gradient(circle at 40% 35%, hsl(0 0% 35%), hsl(0 0% 15%))",
-                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.6)",
-              }}
-            />
-          </div>
+            {viewMode === "period" ? (
+              <Layers size={16} className="text-white/60" />
+            ) : (
+              <BookOpen size={16} className="text-white/60" />
+            )}
+          </button>
 
           {/* Period holes arranged in circle */}
           {periods.map((period, i) => {
