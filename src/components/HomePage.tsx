@@ -193,8 +193,8 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
           )}
         </h1>
         <div className="mt-3 flex items-center gap-2.5">
-          <div className="flex-1 h-1.5 bg-foreground/10 rounded-full overflow-hidden">
-            <div className="h-full rounded-full bg-foreground/70 transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
+          <div className="flex-1 h-1.5 bg-primary/15 rounded-full overflow-hidden">
+            <div className="h-full rounded-full gradient-progress transition-all duration-700 ease-out" style={{ width: `${progressPercent}%` }} />
           </div>
           <span className="text-[11px] font-medium text-muted-foreground tabular-nums">{todayCompleted}/{todayTotal}</span>
         </div>
