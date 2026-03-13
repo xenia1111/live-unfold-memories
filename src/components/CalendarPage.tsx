@@ -158,8 +158,8 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
                             )}
                           </div>
                           {/* Card */}
-                          <div onClick={(e) => { e.stopPropagation(); if (!item.id.startsWith('mock-')) { const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); } }}
-                            className={`rounded-2xl transition-all p-4 ${!item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''} ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-lg animate-today-glow' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
+                          <div onClick={(e) => { e.stopPropagation(); const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); }}
+                            className={`rounded-2xl transition-all p-4 cursor-pointer active:scale-[0.98] ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-lg animate-today-glow' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
                             <div className="flex items-center justify-between mb-1.5">
                               <div className="flex items-center gap-2">
                                 <span className="text-[11px] text-muted-foreground">{format(item.date, "M/d EEEE", { locale })}</span>
