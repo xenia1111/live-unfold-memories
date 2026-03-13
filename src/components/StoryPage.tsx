@@ -223,7 +223,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                               {story.highlights.map((h, i) => (
                                 <div key={i} className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-2xl bg-card/80 border border-border/20">
                                   <span className="text-primary/40 text-xs mt-0.5">·</span>
-                                  <span className="text-sm text-foreground/80 leading-relaxed">{h}</span>
+                                  <span className="text-sm text-foreground/80 leading-relaxed">{h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").trim()}</span>
                                 </div>
                               ))}
                             </div>
