@@ -227,6 +227,54 @@ const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
           </div>
         </DialogContent>
       </Dialog>
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-[320px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-center text-destructive">{lang === "zh" || lang === "ja" ? "确认注销账号" : "Delete Account"}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-2">
+            <p className="text-sm text-muted-foreground text-center leading-relaxed">
+              {lang === "zh" || lang === "ja"
+                ? "此操作将永久删除你的所有数据，包括任务、故事、照片和猫咪。此操作不可撤销。"
+                : "This will permanently delete all your data including tasks, stories, photos and your cat. This cannot be undone."}
+            </p>
+            <p className="text-xs text-muted-foreground text-center">
+              {lang === "zh" || lang === "ja" ? '请输入 "删除" 确认' : 'Type "DELETE" to confirm'}
+            </p>
+            <Input
+              value={deleteConfirmText}
+              onChange={e => setDeleteConfirmText(e.target.value)}
+              placeholder={lang === "zh" || lang === "ja" ? "删除" : "DELETE"}
+              className="rounded-xl text-center"
+            />
+            <Button
+              variant="destructive"
+              disabled={deleting || (lang === "zh" || lang === "ja" ? deleteConfirmText !== "删除" : deleteConfirmText !== "DELETE")}
+              onClick={async () => {
+                setDeleting(true);
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session) throw new Error("Not authenticated");
+                  const res = await supabase.functions.invoke("delete-account", {
+                    headers: { Authorization: `Bearer ${session.access_token}` },
+                  });
+                  if (res.error) throw res.error;
+                  await supabase.auth.signOut();
+                  toast.success(lang === "zh" || lang === "ja" ? "账号已注销" : "Account deleted");
+                  window.location.reload();
+                } catch (e: any) {
+                  toast.error(e.message || "注销失败");
+                } finally {
+                  setDeleting(false);
+                }
+              }}
+              className="rounded-xl"
+            >
+              {deleting ? "处理中..." : lang === "zh" || lang === "ja" ? "永久注销" : "Delete Forever"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
