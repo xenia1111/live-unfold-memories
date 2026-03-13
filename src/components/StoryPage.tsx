@@ -128,11 +128,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   return (
     <div className="px-5 pt-10 pb-24 max-w-lg mx-auto animate-fade-in">
 
-      {/* Decorative header */}
-      <div className="text-center mb-8 animate-slide-up">
-        <span className="text-3xl block mb-2">📖</span>
-        <p className="text-xs text-muted-foreground/60 italic font-serif">{t("story.headerSubtitle") || "记录每一段值得回味的时光"}</p>
-      </div>
 
       {/* View mode toggle — pill style */}
       <div className="flex gap-1.5 mb-7 p-1.5 rounded-3xl bg-muted/30 shadow-sm animate-fade-in" style={{ animationDelay: "0.05s" }}>
