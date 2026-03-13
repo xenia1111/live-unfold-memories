@@ -30,7 +30,7 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
               className={cn(
                 "flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-xl transition-all duration-300",
                 isActive
-                  ? "text-foreground scale-105"
+                  ? "text-primary scale-105"
                   : "text-muted-foreground hover:text-foreground/70"
               )}
             >

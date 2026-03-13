@@ -232,7 +232,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
                   )}
                   style={{ animationDelay: `${index * 0.04}s` }}
                 >
-                  {task.completed ? <CheckCircle2 size={20} className="text-muted-foreground flex-shrink-0" /> : <Circle size={20} className="text-card-foreground/25 flex-shrink-0" />}
+                  {task.completed ? <CheckCircle2 size={20} className="text-primary flex-shrink-0" /> : <Circle size={20} className="text-primary/25 flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
                     <p className={cn("text-sm font-medium", task.completed ? "line-through text-muted-foreground" : "text-card-foreground")}>{task.title}</p>
                     <div className="flex items-center gap-1.5">
