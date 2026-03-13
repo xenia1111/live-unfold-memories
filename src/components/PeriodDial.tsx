@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { BookOpen, Layers } from "lucide-react";
 
 type Period = "week" | "month" | "quarter" | "half" | "year";
 type ViewMode = "period" | "category";
