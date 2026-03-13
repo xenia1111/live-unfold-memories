@@ -1,10 +1,13 @@
 import { useState, useRef, useMemo } from "react";
-import { Camera, X, Sparkles, ImagePlus } from "lucide-react";
+import { Camera, X, Sparkles, ImagePlus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/hooks/useAuth";
+import { uploadTaskPhoto, dataUrlToFile } from "@/lib/uploadPhoto";
+import { toast } from "sonner";
 
 interface CompletionPhotoDialogProps {
   open: boolean;
