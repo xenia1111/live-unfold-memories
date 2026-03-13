@@ -13,43 +13,6 @@ const categoryColorMap: Record<string, string> = { "运动": "bg-accent/15 text-
 
 const seasonEmoji = (_month: number): string => "";
 
-const mockPhotos = [
-  "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=400&h=300&fit=crop",
-];
-
-interface MockEvent { date: Date; title: string; icon: string; category: string; photos: string[]; }
-
-const generateMockEvents = (): MockEvent[] => {
-  const today = new Date();
-  const events: MockEvent[] = [];
-  let photoIdx = 0;
-  for (let i = 90; i >= 0; i--) {
-    const date = new Date(today); date.setDate(date.getDate() - i);
-    if (Math.random() > 0.4) {
-      const items = [
-        { title: "晨跑 30分钟", icon: "dumbbell", category: "运动" },
-        { title: "阅读《人类简史》", icon: "book", category: "学习" },
-        { title: "咖啡时光", icon: "coffee", category: "社交" },
-        { title: "冥想 15分钟", icon: "star", category: "健康" },
-        { title: "写日记", icon: "heart", category: "记录" },
-      ];
-      const item = items[Math.floor(Math.random() * items.length)];
-      const photoCount = Math.random() > 0.35 ? Math.floor(Math.random() * 6) + 1 : 0;
-      const photos: string[] = [];
-      for (let p = 0; p < photoCount; p++) photos.push(mockPhotos[photoIdx++ % mockPhotos.length]);
-      events.push({ date, ...item, photos });
-    }
-  }
-  return events;
-};
-
 interface MonthPickerProps { months: { key: string; label: string; items: any[] }[]; onSelect: (key: string) => void; currentMonthKey: string; }
 
 const MonthPicker = ({ months, onSelect, currentMonthKey }: MonthPickerProps) => {
@@ -108,7 +71,6 @@ interface CalendarPageProps { tasks?: Task[]; onUpdateTask?: (id: string, update
 const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPageProps) => {
   const { t, locale } = useI18n();
   const catName = useCategoryName();
-  const [mockEvents] = useState<MockEvent[]>(generateMockEvents);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const todayRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
   const scrollRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
@@ -116,11 +78,10 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
 
   const allEvents = useMemo(() => {
     const items: { date: Date; id: string; title: string; icon: string; category: string; photos: string[] }[] = [];
-    mockEvents.forEach(e => items.push({ date: e.date, id: `mock-${e.date.getTime()}-${e.title}`, title: e.title, icon: e.icon, category: e.category, photos: e.photos }));
     tasks.filter(t => t.date && t.date <= new Date()).forEach(t => items.push({ date: t.date!, id: t.id, title: t.title, icon: t.icon, category: t.category, photos: t.completionPhoto ? [t.completionPhoto] : [] }));
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     return items;
-  }, [mockEvents, tasks]);
+  }, [tasks]);
 
   const groupedByMonth = useMemo(() => {
     const groups: { key: string; label: string; items: typeof allEvents }[] = [];
@@ -197,8 +158,8 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
                             )}
                           </div>
                           {/* Card */}
-                          <div onClick={(e) => { e.stopPropagation(); if (!item.id.startsWith('mock-')) { const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); } }}
-                            className={`rounded-2xl transition-all p-4 ${!item.id.startsWith('mock-') ? 'cursor-pointer active:scale-[0.98]' : ''} ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-lg animate-today-glow' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
+                          <div onClick={(e) => { e.stopPropagation(); const found = tasks.find(t => t.id === item.id); if (found) setEditingTask(found); }}
+                            className={`rounded-2xl transition-all p-4 cursor-pointer active:scale-[0.98] ${isToday ? 'bg-primary/5 border-2 border-primary/25 shadow-lg animate-today-glow' : 'bg-card border border-border/40 card-glow hover:border-primary/15'}`}>
                             <div className="flex items-center justify-between mb-1.5">
                               <div className="flex items-center gap-2">
                                 <span className="text-[11px] text-muted-foreground">{format(item.date, "M/d EEEE", { locale })}</span>

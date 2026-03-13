@@ -1,10 +1,13 @@
 import { useState, useRef, useMemo } from "react";
-import { Camera, X, Sparkles, ImagePlus } from "lucide-react";
+import { Camera, X, Sparkles, ImagePlus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/hooks/useAuth";
+import { uploadTaskPhoto, dataUrlToFile } from "@/lib/uploadPhoto";
+import { toast } from "sonner";
 
 interface CompletionPhotoDialogProps {
   open: boolean;
@@ -15,8 +18,10 @@ interface CompletionPhotoDialogProps {
 
 const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: CompletionPhotoDialogProps) => {
   const { t } = useI18n();
+  const { user } = useAuth();
   const [photo, setPhoto] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -35,7 +40,25 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
     }
   };
 
-  const handleConfirm = () => { onConfirm(photo || undefined, note || undefined); setPhoto(null); setNote(""); };
+  const handleConfirm = async () => {
+    let photoUrl: string | undefined;
+    if (photo && user) {
+      try {
+        setUploading(true);
+        const file = dataUrlToFile(photo);
+        photoUrl = await uploadTaskPhoto(user.id, file);
+      } catch (e) {
+        console.error("Upload failed:", e);
+        toast.error(t("complete.uploadFailed") || "上传照片失败");
+        setUploading(false);
+        return;
+      }
+      setUploading(false);
+    }
+    onConfirm(photoUrl, note || undefined);
+    setPhoto(null);
+    setNote("");
+  };
   const handleSkip = () => { onConfirm(undefined, undefined); setPhoto(null); setNote(""); };
   const hasContent = photo || note.trim();
 
@@ -81,9 +104,9 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
           )}
 
           <div className="flex gap-3 pt-1">
-            <button onClick={handleSkip} className="flex-1 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-all active:scale-[0.98]">{t("complete.skip")}</button>
-            <button onClick={handleConfirm} className={cn("flex-1 py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.98]", hasContent ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground")}>
-              {hasContent ? (<span className="flex items-center justify-center gap-1.5"><Sparkles size={14} />{t("complete.record")}</span>) : t("complete.done")}
+            <button onClick={handleSkip} disabled={uploading} className="flex-1 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-all active:scale-[0.98]">{t("complete.skip")}</button>
+            <button onClick={handleConfirm} disabled={uploading} className={cn("flex-1 py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.98]", hasContent && !uploading ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground")}>
+              {uploading ? (<span className="flex items-center justify-center gap-1.5"><Loader2 size={14} className="animate-spin" />{t("complete.uploading") || "上传中..."}</span>) : hasContent ? (<span className="flex items-center justify-center gap-1.5"><Sparkles size={14} />{t("complete.record")}</span>) : t("complete.done")}
             </button>
           </div>
         </div>
