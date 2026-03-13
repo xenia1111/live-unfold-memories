@@ -55,9 +55,16 @@ const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTask
     }
   }, [task, open]);
 
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) { const reader = new FileReader(); reader.onload = (ev) => setCompletionPhoto(ev.target?.result as string); reader.readAsDataURL(file); }
+    if (file) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => setCompletionPhoto(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async () => {
