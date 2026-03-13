@@ -187,13 +187,13 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
                       return (
                         <div key={item.id} ref={isToday ? el => { if (el) todayRef.current = el; } : undefined} className={`relative mb-3 animate-slide-up ${hasPhotos ? 'scrapbook-tilt' : ''}`} style={{ animationDelay: `${Math.min(i * 0.05, 0.4)}s` }}>
                           {/* Timeline node */}
-                          <div className={`absolute -left-8 top-4 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${isToday ? 'bg-primary shadow-md animate-breathe' : hasPhotos ? 'bg-primary/20 border-2 border-primary/40' : 'bg-card border-2 border-primary/30'}`}>
+                          <div className={`absolute -left-8 top-4 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${isToday ? 'bg-primary shadow-md animate-breathe' : hasPhotos ? 'bg-primary text-primary-foreground' : 'bg-muted border border-border'}`}>
                             {isToday ? (
-                              <span className="text-primary-foreground text-[10px]">●</span>
+                              <span className="text-primary-foreground text-[10px] font-bold">{format(item.date, "d")}</span>
                             ) : hasPhotos ? (
-                              <PawPrint size={11} className="text-primary" />
+                              <PawPrint size={11} className="text-primary-foreground" />
                             ) : (
-                              <span className="text-[11px]">{emoji}</span>
+                              <span className="text-[11px] text-muted-foreground">{emoji}</span>
                             )}
                           </div>
                           {/* Card */}
