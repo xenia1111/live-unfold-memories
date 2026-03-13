@@ -67,7 +67,7 @@ const CategoryStoryView = ({ tasks }: Props) => {
         return (
           <div key={card.category} className="animate-slide-up" style={{ animationDelay: `${i * 0.08}s` }}>
             <button onClick={() => setExpandedCat(isExpanded ? null : card.category)}
-              className={cn("w-full text-left rounded-3xl px-6 py-5 bg-gradient-to-br transition-all duration-300 shadow-sm", card.color, isExpanded && "rounded-b-none shadow-none")}>
+              className={cn("w-full text-left rounded-3xl px-6 py-5 transition-all duration-300 shadow-sm border border-border/30", card.color, isExpanded && "rounded-b-none shadow-none")}>
               <div className="flex items-center gap-4">
                 <span className="text-3xl w-12 h-12 flex items-center justify-center rounded-2xl bg-card/50">{card.emoji}</span>
                 <div className="flex-1 min-w-0">
