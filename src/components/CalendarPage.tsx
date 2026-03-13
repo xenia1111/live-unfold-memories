@@ -13,43 +13,6 @@ const categoryColorMap: Record<string, string> = { "运动": "bg-accent/15 text-
 
 const seasonEmoji = (_month: number): string => "";
 
-const mockPhotos = [
-  "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
-  "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?w=400&h=300&fit=crop",
-];
-
-interface MockEvent { date: Date; title: string; icon: string; category: string; photos: string[]; }
-
-const generateMockEvents = (): MockEvent[] => {
-  const today = new Date();
-  const events: MockEvent[] = [];
-  let photoIdx = 0;
-  for (let i = 90; i >= 0; i--) {
-    const date = new Date(today); date.setDate(date.getDate() - i);
-    if (Math.random() > 0.4) {
-      const items = [
-        { title: "晨跑 30分钟", icon: "dumbbell", category: "运动" },
-        { title: "阅读《人类简史》", icon: "book", category: "学习" },
-        { title: "咖啡时光", icon: "coffee", category: "社交" },
-        { title: "冥想 15分钟", icon: "star", category: "健康" },
-        { title: "写日记", icon: "heart", category: "记录" },
-      ];
-      const item = items[Math.floor(Math.random() * items.length)];
-      const photoCount = Math.random() > 0.35 ? Math.floor(Math.random() * 6) + 1 : 0;
-      const photos: string[] = [];
-      for (let p = 0; p < photoCount; p++) photos.push(mockPhotos[photoIdx++ % mockPhotos.length]);
-      events.push({ date, ...item, photos });
-    }
-  }
-  return events;
-};
-
 interface MonthPickerProps { months: { key: string; label: string; items: any[] }[]; onSelect: (key: string) => void; currentMonthKey: string; }
 
 const MonthPicker = ({ months, onSelect, currentMonthKey }: MonthPickerProps) => {
