@@ -133,7 +133,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       {viewMode === "category" ? <CategoryStoryView tasks={tasks} /> : (
         <>
           {/* Period dial */}
-          <PeriodDial activePeriod={activePeriod} onPeriodChange={setActivePeriod} />
+          <PeriodDial activePeriod={activePeriod} onPeriodChange={setActivePeriod} viewMode={viewMode} onViewModeToggle={() => setViewMode(v => v === "period" ? "category" : "period")} />
 
           {/* Film-strip carousel */}
           <div className="relative film-strip" key={activePeriod}>

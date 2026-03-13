@@ -21,7 +21,7 @@ const periods: { id: Period; label: string }[] = [
 
 const ANGLE_STEP = 360 / periods.length; // 72°
 
-const PeriodDial = ({ activePeriod, onPeriodChange }: PeriodDialProps) => {
+const PeriodDial = ({ activePeriod, onPeriodChange, viewMode, onViewModeToggle }: PeriodDialProps) => {
   const { t } = useI18n();
   const activeIndex = periods.findIndex(p => p.id === activePeriod);
   const rotation = -activeIndex * ANGLE_STEP;
