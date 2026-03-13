@@ -166,7 +166,13 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
         {menuItems.map(item => {
           const Icon = item.icon;
           return (
-            <button key={item.key} onClick={() => { if (item.key === "general") setShowGeneralSettings(true); if (item.key === "intro") setShowProductIntro(true); }}
+            <button key={item.key} onClick={() => {
+                if (item.key === "general") setShowGeneralSettings(true);
+                if (item.key === "intro") setShowProductIntro(true);
+                if (item.key === "notifications") setShowNotifications(true);
+                if (item.key === "appearance") setShowAppearance(true);
+                if (item.key === "privacy") setShowPrivacy(true);
+              }}
               className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]">
               <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Icon size={18} className="text-foreground" /></div>
               <div className="flex-1">
