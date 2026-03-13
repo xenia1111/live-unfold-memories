@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ChevronRight, Globe, Lock, Info, FileText, Shield } from "lucide-react";
+import { ArrowLeft, ChevronRight, Globe, Lock, Info, FileText, Shield, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
