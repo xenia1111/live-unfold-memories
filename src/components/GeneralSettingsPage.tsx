@@ -22,6 +22,8 @@ const languages = [
 
 interface Props {
   onBack: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
 }
 
 const GeneralSettingsPage = ({ onBack }: Props) => {
