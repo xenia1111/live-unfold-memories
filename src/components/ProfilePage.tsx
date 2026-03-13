@@ -104,7 +104,7 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   };
 
   if (showProfileEdit) return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadProfile(); }} />;
-  if (showGeneralSettings) return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} />;
+  if (showGeneralSettings) return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} onOpenPrivacy={() => { setShowGeneralSettings(false); setShowPrivacy(true); }} onOpenTerms={() => { setShowGeneralSettings(false); setShowTerms(true); }} />;
   if (showProductIntro) return <ProductIntroPage onBack={() => setShowProductIntro(false)} />;
   if (showNotifications) return <NotificationSettingsPage onBack={() => setShowNotifications(false)} />;
   if (showAppearance) return <AppearanceSettingsPage onBack={() => setShowAppearance(false)} />;
