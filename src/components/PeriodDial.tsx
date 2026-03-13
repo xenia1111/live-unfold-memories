@@ -2,10 +2,13 @@ import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 
 type Period = "week" | "month" | "quarter" | "half" | "year";
+type ViewMode = "period" | "category";
 
 interface PeriodDialProps {
   activePeriod: Period;
   onPeriodChange: (period: Period) => void;
+  viewMode: ViewMode;
+  onViewModeToggle: () => void;
 }
 
 const periods: { id: Period; label: string }[] = [

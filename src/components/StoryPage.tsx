@@ -129,15 +129,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     <div className="px-5 pt-10 pb-24 max-w-lg mx-auto animate-fade-in">
 
 
-      {/* View mode toggle — pill style */}
-      <div className="flex gap-1.5 mb-7 p-1.5 rounded-3xl bg-muted/30 shadow-sm animate-fade-in" style={{ animationDelay: "0.05s" }}>
-        <button onClick={() => setViewMode("period")} className={cn("flex-1 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "period" ? "bg-card text-foreground shadow-md" : "text-muted-foreground hover:text-foreground")}>
-          <BookOpen size={13} /><span>{t("story.byTime")}</span>
-        </button>
-        <button onClick={() => setViewMode("category")} className={cn("flex-1 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300 flex items-center justify-center gap-1.5", viewMode === "category" ? "bg-card text-foreground shadow-md" : "text-muted-foreground hover:text-foreground")}>
-          <Layers size={13} /><span>{t("story.byCategory")}</span>
-        </button>
-      </div>
 
       {viewMode === "category" ? <CategoryStoryView tasks={tasks} /> : (
         <>
