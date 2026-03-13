@@ -25,6 +25,7 @@ interface EditTaskDialogProps {
 const EditTaskDialog = ({ task, open, onOpenChange, onSave, onDelete }: EditTaskDialogProps) => {
   const { t, locale, dateFormat } = useI18n();
   const catName = useCategoryName();
+  const { user } = useAuth();
 
   const iconOptions = [
     { key: "coffee", icon: Coffee, label: t("icon.coffee") },
