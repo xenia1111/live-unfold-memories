@@ -26,7 +26,7 @@ interface Props {
   onOpenTerms?: () => void;
 }
 
-const GeneralSettingsPage = ({ onBack }: Props) => {
+const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
   const { lang, setLang, t } = useI18n();
   const [showLangDialog, setShowLangDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
