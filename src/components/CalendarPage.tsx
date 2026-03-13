@@ -71,7 +71,6 @@ interface CalendarPageProps { tasks?: Task[]; onUpdateTask?: (id: string, update
 const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPageProps) => {
   const { t, locale } = useI18n();
   const catName = useCategoryName();
-  const [mockEvents] = useState<MockEvent[]>(generateMockEvents);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const todayRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
   const scrollRef = useMemo(() => ({ current: null as HTMLDivElement | null }), []);
@@ -79,11 +78,10 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
 
   const allEvents = useMemo(() => {
     const items: { date: Date; id: string; title: string; icon: string; category: string; photos: string[] }[] = [];
-    mockEvents.forEach(e => items.push({ date: e.date, id: `mock-${e.date.getTime()}-${e.title}`, title: e.title, icon: e.icon, category: e.category, photos: e.photos }));
     tasks.filter(t => t.date && t.date <= new Date()).forEach(t => items.push({ date: t.date!, id: t.id, title: t.title, icon: t.icon, category: t.category, photos: t.completionPhoto ? [t.completionPhoto] : [] }));
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     return items;
-  }, [mockEvents, tasks]);
+  }, [tasks]);
 
   const groupedByMonth = useMemo(() => {
     const groups: { key: string; label: string; items: typeof allEvents }[] = [];
