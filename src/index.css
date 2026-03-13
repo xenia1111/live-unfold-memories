@@ -84,38 +84,38 @@
   }
 
   .dark {
-    --background: 200 10% 12%;
-    --foreground: 43 20% 90%;
-    --card: 200 8% 16%;
-    --card-foreground: 43 20% 90%;
-    --popover: 200 8% 16%;
-    --popover-foreground: 43 20% 90%;
-    --primary: 121 40% 45%;
+    --background: 220 12% 10%;
+    --foreground: 40 20% 95%;
+    --card: 220 10% 15%;
+    --card-foreground: 40 20% 93%;
+    --popover: 220 10% 15%;
+    --popover-foreground: 40 20% 93%;
+    --primary: 121 45% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 119 30% 30%;
-    --secondary-foreground: 43 20% 90%;
-    --muted: 200 8% 20%;
-    --muted-foreground: 43 10% 60%;
+    --secondary: 119 30% 35%;
+    --secondary-foreground: 40 20% 95%;
+    --muted: 220 10% 20%;
+    --muted-foreground: 40 10% 68%;
     --accent: 121 20% 22%;
-    --accent-foreground: 121 40% 55%;
+    --accent-foreground: 121 45% 60%;
     --destructive: 0 55% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 200 6% 25%;
-    --input: 200 6% 22%;
-    --ring: 121 40% 45%;
-    --sidebar-background: 200 10% 14%;
-    --sidebar-foreground: 43 20% 90%;
-    --sidebar-primary: 121 40% 45%;
+    --border: 220 8% 28%;
+    --input: 220 8% 22%;
+    --ring: 121 45% 50%;
+    --sidebar-background: 220 12% 12%;
+    --sidebar-foreground: 40 20% 95%;
+    --sidebar-primary: 121 45% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 121 20% 22%;
-    --sidebar-accent-foreground: 121 40% 55%;
-    --sidebar-border: 200 6% 25%;
-    --sidebar-ring: 121 40% 45%;
-    --warm-glow: 121 30% 40%;
-    --forest: 121 40% 45%;
+    --sidebar-accent-foreground: 121 45% 60%;
+    --sidebar-border: 220 8% 28%;
+    --sidebar-ring: 121 45% 50%;
+    --warm-glow: 121 35% 45%;
+    --forest: 121 45% 50%;
     --forest-light: 121 20% 22%;
-    --card-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
-    --card-shadow-hover: 0 6px 20px -4px hsl(0 0% 0% / 0.4);
+    --card-shadow: 0 2px 8px -2px hsl(0 0% 0% / 0.4);
+    --card-shadow-hover: 0 6px 20px -4px hsl(0 0% 0% / 0.5);
   }
 }
 
