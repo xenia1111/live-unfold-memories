@@ -330,39 +330,34 @@ async function generatePoster(
     curY += photoH + gap;
   }
 
-  // === SUMMARY (body text, dark ink) ===
+  // === SUMMARY ===
   ctx.font = `400 ${summarySize}px ${bodyFont}`;
   ctx.fillStyle = inkDark;
-  const sLineH = summarySize + 16;
+  const sLineH = summarySize + 20;
   for (const line of summaryLines) {
-    if (curY > POSTER_H - 280) break;
+    if (curY > POSTER_H - 300) break;
     ctx.fillText(line, pad, curY);
     curY += sLineH;
   }
-  curY += gap * 0.7;
+  curY += gap;
 
   // === HIGHLIGHTS ===
-  if (highlightLines.length > 0 && curY < POSTER_H - 220) {
-    // Small decorative leaf/dot
-    ctx.fillStyle = inkGreenLight;
-    ctx.beginPath();
-    ctx.arc(pad + 4, curY - 6, 3, 0, Math.PI * 2);
-    ctx.fill();
-
+  if (highlightLines.length > 0 && curY < POSTER_H - 240) {
     ctx.font = `400 ${highlightSize}px ${bodyFont}`;
     ctx.fillStyle = inkGreen;
     for (const line of highlightLines) {
-      if (curY > POSTER_H - 160) break;
+      if (curY > POSTER_H - 180) break;
       ctx.fillText(line, pad, curY);
-      curY += highlightSize + 12;
+      curY += highlightSize + 14;
     }
   }
 
   // === MOOD tag ===
   if (curY < POSTER_H - 160) {
-    ctx.font = `500 28px ${bodyFont}`;
-    ctx.fillStyle = "rgba(47,94,46,0.35)";
-    ctx.fillText(story.mood, pad, POSTER_H - 140);
+    curY = Math.max(curY + gap * 0.5, POSTER_H - 180);
+    ctx.font = `500 26px ${bodyFont}`;
+    ctx.fillStyle = "rgba(47,94,46,0.3)";
+    ctx.fillText(stripEmoji(story.mood), pad, POSTER_H - 140);
   }
 
   // === FOOTER ===
