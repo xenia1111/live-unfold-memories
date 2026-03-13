@@ -7,6 +7,10 @@ import { cn } from "@/lib/utils";
 import ProfileEditPage from "@/components/ProfileEditPage";
 import GeneralSettingsPage from "@/components/GeneralSettingsPage";
 import ProductIntroPage from "@/components/ProductIntroPage";
+import NotificationSettingsPage from "@/components/NotificationSettingsPage";
+import AppearanceSettingsPage from "@/components/AppearanceSettingsPage";
+import PrivacyPolicyPage from "@/components/PrivacyPolicyPage";
+import TermsOfServicePage from "@/components/TermsOfServicePage";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -25,6 +29,10 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
   const [showGeneralSettings, setShowGeneralSettings] = useState(false);
   const [showProductIntro, setShowProductIntro] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showAppearance, setShowAppearance] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [displayName, setDisplayName] = useState("探索者");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -96,8 +104,12 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   };
 
   if (showProfileEdit) return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadProfile(); }} />;
-  if (showGeneralSettings) return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} />;
+  if (showGeneralSettings) return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} onOpenPrivacy={() => { setShowGeneralSettings(false); setShowPrivacy(true); }} onOpenTerms={() => { setShowGeneralSettings(false); setShowTerms(true); }} />;
   if (showProductIntro) return <ProductIntroPage onBack={() => setShowProductIntro(false)} />;
+  if (showNotifications) return <NotificationSettingsPage onBack={() => setShowNotifications(false)} />;
+  if (showAppearance) return <AppearanceSettingsPage onBack={() => setShowAppearance(false)} />;
+  if (showPrivacy) return <PrivacyPolicyPage onBack={() => setShowPrivacy(false)} />;
+  if (showTerms) return <TermsOfServicePage onBack={() => setShowTerms(false)} />;
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
@@ -154,7 +166,13 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
         {menuItems.map(item => {
           const Icon = item.icon;
           return (
-            <button key={item.key} onClick={() => { if (item.key === "general") setShowGeneralSettings(true); if (item.key === "intro") setShowProductIntro(true); }}
+            <button key={item.key} onClick={() => {
+                if (item.key === "general") setShowGeneralSettings(true);
+                if (item.key === "intro") setShowProductIntro(true);
+                if (item.key === "notifications") setShowNotifications(true);
+                if (item.key === "appearance") setShowAppearance(true);
+                if (item.key === "privacy") setShowPrivacy(true);
+              }}
               className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]">
               <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center"><Icon size={18} className="text-foreground" /></div>
               <div className="flex-1">
