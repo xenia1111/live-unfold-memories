@@ -106,6 +106,10 @@ const ProfilePage = ({ tasks = [] }: ProfilePageProps) => {
   if (showProfileEdit) return <ProfileEditPage onBack={() => { setShowProfileEdit(false); loadProfile(); }} />;
   if (showGeneralSettings) return <GeneralSettingsPage onBack={() => setShowGeneralSettings(false)} />;
   if (showProductIntro) return <ProductIntroPage onBack={() => setShowProductIntro(false)} />;
+  if (showNotifications) return <NotificationSettingsPage onBack={() => setShowNotifications(false)} />;
+  if (showAppearance) return <AppearanceSettingsPage onBack={() => setShowAppearance(false)} />;
+  if (showPrivacy) return <PrivacyPolicyPage onBack={() => setShowPrivacy(false)} />;
+  if (showTerms) return <TermsOfServicePage onBack={() => setShowTerms(false)} />;
 
   return (
     <div className="px-5 pt-12 pb-24 max-w-lg mx-auto">
