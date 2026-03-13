@@ -172,171 +172,209 @@ async function generatePoster(
   canvas.width = POSTER_W;
   canvas.height = POSTER_H;
   const ctx = canvas.getContext("2d")!;
-  const pad = 80;
+  const pad = 90;
   const contentW = POSTER_W - pad * 2;
 
-  // Background
-  ctx.fillStyle = "#0B0B0D";
+  // === Letter paper background ===
+  // Warm cream base
+  ctx.fillStyle = "#F5F0E8";
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
-  // Subtle glow effects
-  const glow = ctx.createRadialGradient(200, 400, 50, 200, 400, 700);
-  glow.addColorStop(0, "rgba(140, 220, 60, 0.07)");
-  glow.addColorStop(1, "rgba(140, 220, 60, 0)");
-  ctx.fillStyle = glow;
+  // Paper grain noise texture
+  const imageData = ctx.getImageData(0, 0, POSTER_W, POSTER_H);
+  const data = imageData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    const noise = (Math.random() - 0.5) * 12;
+    data[i] += noise;
+    data[i + 1] += noise;
+    data[i + 2] += noise - 2;
+  }
+  ctx.putImageData(imageData, 0, 0);
+
+  // Subtle aged edge vignette
+  const vignette = ctx.createRadialGradient(POSTER_W / 2, POSTER_H / 2, 300, POSTER_W / 2, POSTER_H / 2, POSTER_W);
+  vignette.addColorStop(0, "rgba(245,240,232,0)");
+  vignette.addColorStop(1, "rgba(200,190,170,0.3)");
+  ctx.fillStyle = vignette;
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
-  const glow2 = ctx.createRadialGradient(POSTER_W - 200, POSTER_H - 400, 50, POSTER_W - 200, POSTER_H - 400, 600);
-  glow2.addColorStop(0, "rgba(140, 220, 60, 0.04)");
-  glow2.addColorStop(1, "rgba(140, 220, 60, 0)");
-  ctx.fillStyle = glow2;
-  ctx.fillRect(0, 0, POSTER_W, POSTER_H);
+  // Horizontal ruled lines (letter paper style)
+  const lineSpacing = 56;
+  const lineStartY = 280;
+  ctx.strokeStyle = "rgba(180,170,150,0.2)";
+  ctx.lineWidth = 1;
+  for (let y = lineStartY; y < POSTER_H - 120; y += lineSpacing) {
+    ctx.beginPath();
+    ctx.moveTo(pad - 10, y);
+    ctx.lineTo(POSTER_W - pad + 10, y);
+    ctx.stroke();
+  }
 
-  // --- Pre-calculate content blocks to distribute evenly ---
+  // Left margin line (red, like real letter paper)
+  ctx.strokeStyle = "rgba(190,120,100,0.2)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(pad - 20, 0);
+  ctx.lineTo(pad - 20, POSTER_H);
+  ctx.stroke();
+
+  // Ink colors
+  const inkDark = "#2A2A24";
+  const inkGreen = "#2F5E2E";
+  const inkGreenLight = "rgba(47,94,46,0.55)";
+  const inkGray = "rgba(60,55,45,0.4)";
+
+  // --- Pre-calculate content blocks ---
   const usablePhotos = (template !== "text-only") ? photos.slice(0, 9) : [];
   const hasPhotos = usablePhotos.length > 0;
 
-  // Measure all text blocks
-  const titleSize = hasPhotos ? 72 : 88;
-  const openingSize = hasPhotos ? 42 : 50;
-  const summarySize = hasPhotos ? 40 : 48;
-  const highlightSize = hasPhotos ? 36 : 42;
+  const titleSize = hasPhotos ? 68 : 82;
+  const openingSize = hasPhotos ? 38 : 46;
+  const summarySize = hasPhotos ? 36 : 42;
+  const highlightSize = hasPhotos ? 34 : 38;
 
   ctx.font = `700 ${titleSize}px ${handFont}`;
   const titleLines = wrapText(ctx, story.title, contentW);
   ctx.font = `italic ${openingSize}px ${handFont}`;
-  const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW);
-  ctx.font = `400 ${summarySize}px ${handFont}`;
+  const olLines = wrapText(ctx, `"${story.openingLine}"`, contentW - 30);
+  ctx.font = `400 ${summarySize}px ${bodyFont}`;
   const summaryLines = wrapText(ctx, story.summary, contentW);
-  ctx.font = `400 ${highlightSize}px ${handFont}`;
+  ctx.font = `400 ${highlightSize}px ${bodyFont}`;
   const highlightLines: string[] = [];
   for (const h of story.highlights.slice(0, 4)) {
-    highlightLines.push(...wrapText(ctx, `· ${h}`, contentW));
+    highlightLines.push(...wrapText(ctx, `· ${h}`, contentW - 20));
   }
 
-  // Calculate total content height
-  const headerH = 80; // period + username
-  const emojiH = 0;
-  const titleH = titleLines.length * (titleSize + 12);
-  const openingH = olLines.length * (openingSize + 10);
-  const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 420 : usablePhotos.length <= 4 ? 520 : 620) : 0;
-  const summaryH = summaryLines.length * (summarySize + 14);
-  const highlightH = highlightLines.length * (highlightSize + 10);
-  const moodH = 40;
+  // Layout
+  const headerH = 70;
+  const titleH = titleLines.length * (titleSize + 14);
+  const openingH = olLines.length * (openingSize + 12);
+  const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 400 : usablePhotos.length <= 4 ? 500 : 580) : 0;
+  const summaryH = summaryLines.length * (summarySize + 16);
+  const highlightH = highlightLines.length * (highlightSize + 12);
   const footerH = 100;
 
-  const totalContentH = headerH + emojiH + titleH + openingH + photoH + summaryH + highlightH + moodH + footerH;
+  const totalContentH = headerH + titleH + openingH + photoH + summaryH + highlightH + footerH;
   const availableH = POSTER_H - pad * 2;
   const extraSpace = Math.max(0, availableH - totalContentH);
-
-  // Distribute extra space as gaps between sections
   const sectionCount = hasPhotos ? 7 : 6;
-  const gap = Math.min(extraSpace / sectionCount, 80); // cap gap
+  const gap = Math.min(extraSpace / sectionCount, 70);
 
-  let curY = pad + 50;
+  let curY = pad + 40;
 
-  // === HEADER: Period + Username ===
-  ctx.font = `500 34px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  // === HEADER ===
+  ctx.font = `500 30px ${bodyFont}`;
+  ctx.fillStyle = inkGray;
   ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
-  ctx.font = `400 30px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.25)";
   ctx.textAlign = "right";
+  ctx.fillStyle = "rgba(60,55,45,0.3)";
   ctx.fillText(`@${displayName}`, POSTER_W - pad, curY);
   ctx.textAlign = "left";
-  curY += headerH + gap;
+  curY += headerH + gap * 0.5;
 
-   // === Skip emoji section ===
-  curY += gap * 0.3;
-
-  // === TITLE ===
+  // === TITLE (ink green, handwritten) ===
   ctx.font = `700 ${titleSize}px ${handFont}`;
-  ctx.fillStyle = "#8CDC3C";
+  ctx.fillStyle = inkGreen;
   for (const line of titleLines) {
     ctx.fillText(line, pad, curY);
-    curY += titleSize + 12;
+    curY += titleSize + 14;
   }
-  curY += gap * 0.6;
+  curY += gap * 0.5;
 
-  // === OPENING LINE ===
+  // === OPENING LINE (italic, with left border) ===
+  // Draw quote border
+  ctx.fillStyle = inkGreenLight;
+  roundRect(ctx, pad, curY - openingSize + 4, 3, olLines.length * (openingSize + 12) - 4, 2);
+  ctx.fill();
+
   ctx.font = `italic ${openingSize}px ${handFont}`;
-  ctx.fillStyle = "rgba(140, 220, 60, 0.65)";
+  ctx.fillStyle = inkGreenLight;
   for (const line of olLines) {
-    ctx.fillText(line, pad, curY);
-    curY += openingSize + 10;
+    ctx.fillText(line, pad + 18, curY);
+    curY += openingSize + 12;
   }
   curY += gap;
 
   // === PHOTOS ===
   if (hasPhotos) {
+    // Add subtle shadow behind photo area
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.08)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = "#F5F0E8";
+    roundRect(ctx, pad, curY, contentW, photoH, 16);
+    ctx.fill();
+    ctx.restore();
+
     if (template === "photo-blur") {
       try {
         const bgImg = await loadImage(usablePhotos[0]);
         ctx.save();
-        roundRect(ctx, pad, curY, contentW, photoH, 24);
+        roundRect(ctx, pad, curY, contentW, photoH, 16);
         ctx.clip();
-        ctx.filter = "blur(20px) brightness(0.4)";
+        ctx.filter = "blur(20px) brightness(0.6) saturate(0.8)";
         ctx.drawImage(bgImg, pad - 40, curY - 40, contentW + 80, photoH + 80);
         ctx.filter = "none";
         ctx.restore();
-        const innerPad = 30;
-        await drawPhotoGrid(ctx, usablePhotos, pad + innerPad, curY + innerPad, contentW - innerPad * 2, photoH - innerPad * 2, 12);
+        const innerPad = 24;
+        await drawPhotoGrid(ctx, usablePhotos, pad + innerPad, curY + innerPad, contentW - innerPad * 2, photoH - innerPad * 2, 10);
       } catch {
-        await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 12);
+        await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 10);
       }
     } else {
-      await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 12);
+      await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 10);
     }
     curY += photoH + gap;
   }
 
-  // === SUMMARY ===
-  ctx.font = `400 ${summarySize}px ${handFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  const lineHeight = summarySize + 14;
+  // === SUMMARY (body text, dark ink) ===
+  ctx.font = `400 ${summarySize}px ${bodyFont}`;
+  ctx.fillStyle = inkDark;
+  const sLineH = summarySize + 16;
   for (const line of summaryLines) {
-    if (curY > POSTER_H - 300) break;
+    if (curY > POSTER_H - 280) break;
     ctx.fillText(line, pad, curY);
-    curY += lineHeight;
+    curY += sLineH;
   }
-  curY += gap * 0.8;
+  curY += gap * 0.7;
 
   // === HIGHLIGHTS ===
-  if (highlightLines.length > 0 && curY < POSTER_H - 250) {
-    // Divider
-    ctx.strokeStyle = "rgba(140, 220, 60, 0.2)";
-    ctx.lineWidth = 1;
+  if (highlightLines.length > 0 && curY < POSTER_H - 220) {
+    // Small decorative leaf/dot
+    ctx.fillStyle = inkGreenLight;
     ctx.beginPath();
-    ctx.moveTo(pad, curY - gap * 0.3);
-    ctx.lineTo(pad + 200, curY - gap * 0.3);
-    ctx.stroke();
+    ctx.arc(pad + 4, curY - 6, 3, 0, Math.PI * 2);
+    ctx.fill();
 
-    ctx.font = `400 ${highlightSize}px ${handFont}`;
-    ctx.fillStyle = "rgba(140, 220, 60, 0.65)";
+    ctx.font = `400 ${highlightSize}px ${bodyFont}`;
+    ctx.fillStyle = inkGreen;
     for (const line of highlightLines) {
-      if (curY > POSTER_H - 180) break;
+      if (curY > POSTER_H - 160) break;
       ctx.fillText(line, pad, curY);
-      curY += highlightSize + 10;
+      curY += highlightSize + 12;
     }
   }
 
-  // === MOOD (bottom area) ===
-  ctx.font = `500 32px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.2)";
-  ctx.fillText(`💭 ${story.mood}`, pad, POSTER_H - 130);
+  // === MOOD tag ===
+  if (curY < POSTER_H - 160) {
+    ctx.font = `500 28px ${bodyFont}`;
+    ctx.fillStyle = "rgba(47,94,46,0.35)";
+    ctx.fillText(story.mood, pad, POSTER_H - 140);
+  }
 
   // === FOOTER ===
-  ctx.strokeStyle = "rgba(140, 220, 60, 0.12)";
+  ctx.strokeStyle = "rgba(180,170,150,0.3)";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(pad, POSTER_H - 95);
-  ctx.lineTo(POSTER_W - pad, POSTER_H - 95);
+  ctx.moveTo(pad, POSTER_H - 100);
+  ctx.lineTo(POSTER_W - pad, POSTER_H - 100);
   ctx.stroke();
 
-  ctx.font = `400 26px ${bodyFont}`;
-  ctx.fillStyle = "rgba(255,255,255,0.12)";
+  ctx.font = `400 24px ${bodyFont}`;
+  ctx.fillStyle = "rgba(60,55,45,0.2)";
   ctx.textAlign = "right";
-  ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 55);
+  ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 60);
   ctx.textAlign = "left";
 
   return canvas.toDataURL("image/png");
