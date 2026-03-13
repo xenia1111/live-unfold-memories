@@ -53,7 +53,7 @@
     --warm-glow: 119 34% 28%;
     --forest: 121 32% 17%;
     --forest-light: 119 20% 90%;
-    --story-gradient: linear-gradient(135deg, hsl(119, 20%, 92%), hsl(119, 30%, 78%));
+    --story-gradient: linear-gradient(135deg, hsl(121, 32%, 22%), hsl(119, 34%, 32%));
     --progress-gradient: linear-gradient(90deg, hsl(121, 32%, 17%), hsl(119, 34%, 28%));
     --card-shadow: 0 1px 4px -1px hsl(47 15% 50% / 0.08);
     --card-shadow-hover: 0 4px 16px -4px hsl(47 15% 40% / 0.12);
