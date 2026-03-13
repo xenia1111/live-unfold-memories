@@ -54,8 +54,8 @@ const TermsOfServicePage = ({ onBack }: Props) => {
         <section>
           <h2 className="font-bold text-foreground mb-1">{isZh ? "5. 免责声明" : "5. Disclaimer"}</h2>
           <p>{isZh
-            ? "本服务按"原样"提供，不提供任何形式的保证。我们不保证服务不会中断、及时、安全或无错误。"
-            : "The service is provided \"as is\" without warranties of any kind. We do not guarantee that the service will be uninterrupted, timely, secure, or error-free."
+            ? '本服务按"原样"提供，不提供任何形式的保证。我们不保证服务不会中断、及时、安全或无错误。'
+            : 'The service is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted, timely, secure, or error-free.'
           }</p>
         </section>
 
