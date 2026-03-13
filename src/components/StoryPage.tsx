@@ -130,11 +130,11 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
 
 
+      {/* Period dial — always visible, center toggles view mode */}
+      <PeriodDial activePeriod={activePeriod} onPeriodChange={setActivePeriod} viewMode={viewMode} onViewModeToggle={() => setViewMode(v => v === "period" ? "category" : "period")} />
+
       {viewMode === "category" ? <CategoryStoryView tasks={tasks} /> : (
         <>
-          {/* Period dial */}
-          <PeriodDial activePeriod={activePeriod} onPeriodChange={setActivePeriod} viewMode={viewMode} onViewModeToggle={() => setViewMode(v => v === "period" ? "category" : "period")} />
-
           {/* Film-strip carousel */}
           <div className="relative film-strip" key={activePeriod}>
             <Carousel setApi={setCarouselApi} className="w-full" opts={{ align: "start", loop: false }}>
