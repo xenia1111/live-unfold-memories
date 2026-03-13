@@ -141,6 +141,30 @@ const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
             <p className="text-xs text-muted-foreground">v{APP_VERSION}</p>
           </div>
         </div>
+
+        {onOpenPrivacy && (
+          <button onClick={onOpenPrivacy} className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]">
+            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+              <Shield size={18} className="text-foreground" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">{lang === "zh" || lang === "ja" ? "隐私政策" : "Privacy Policy"}</p>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </button>
+        )}
+
+        {onOpenTerms && (
+          <button onClick={onOpenTerms} className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-border/50 text-left transition-all active:scale-[0.98]">
+            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
+              <FileText size={18} className="text-foreground" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">{lang === "zh" || lang === "ja" ? "用户协议" : "Terms of Service"}</p>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </button>
+        )}
       </div>
 
       <Dialog open={showLangDialog} onOpenChange={setShowLangDialog}>
