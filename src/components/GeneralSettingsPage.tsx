@@ -164,7 +164,22 @@ const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
             </div>
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground">{lang === "zh" || lang === "ja" ? "用户协议" : "Terms of Service"}</p>
-            </div>
+
+        {/* Delete Account */}
+        <button
+          onClick={() => setShowDeleteDialog(true)}
+          className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-destructive/20 text-left transition-all active:scale-[0.98] mt-6"
+        >
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+            <Trash2 size={18} className="text-destructive" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-destructive">{lang === "zh" || lang === "ja" ? "注销账号" : "Delete Account"}</p>
+            <p className="text-xs text-muted-foreground">{lang === "zh" || lang === "ja" ? "永久删除所有数据，不可恢复" : "Permanently delete all data"}</p>
+          </div>
+          <ChevronRight size={16} className="text-muted-foreground" />
+        </button>
+      </div>
             <ChevronRight size={16} className="text-muted-foreground" />
           </button>
         )}
