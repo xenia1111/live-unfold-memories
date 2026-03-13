@@ -18,8 +18,10 @@ interface CompletionPhotoDialogProps {
 
 const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: CompletionPhotoDialogProps) => {
   const { t } = useI18n();
+  const { user } = useAuth();
   const [photo, setPhoto] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
