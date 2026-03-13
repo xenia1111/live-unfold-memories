@@ -172,206 +172,185 @@ async function generatePoster(
   canvas.width = POSTER_W;
   canvas.height = POSTER_H;
   const ctx = canvas.getContext("2d")!;
-  const pad = 90;
-  const contentW = POSTER_W - pad * 2;
 
-  // === Letter paper background ===
-  // Warm cream base
-  ctx.fillStyle = "#F5F0E8";
+  const stripEmoji = (s: string) => s.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").replace(/\s{2,}/g, " ").trim();
+
+  // === BACKGROUND: Rich deep green ===
+  const bgGrad = ctx.createLinearGradient(0, 0, POSTER_W, POSTER_H);
+  bgGrad.addColorStop(0, "#1A2F1A");
+  bgGrad.addColorStop(0.5, "#152815");
+  bgGrad.addColorStop(1, "#0F200F");
+  ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, POSTER_W, POSTER_H);
 
-  // Paper grain noise texture
+  // Soft light bloom top-left
+  const bloom1 = ctx.createRadialGradient(150, 300, 0, 150, 300, 600);
+  bloom1.addColorStop(0, "rgba(180,210,140,0.08)");
+  bloom1.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = bloom1;
+  ctx.fillRect(0, 0, POSTER_W, POSTER_H);
+
+  // Soft light bloom bottom-right
+  const bloom2 = ctx.createRadialGradient(POSTER_W - 200, POSTER_H - 400, 0, POSTER_W - 200, POSTER_H - 400, 500);
+  bloom2.addColorStop(0, "rgba(200,220,160,0.05)");
+  bloom2.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = bloom2;
+  ctx.fillRect(0, 0, POSTER_W, POSTER_H);
+
+  // Subtle noise grain
   const imageData = ctx.getImageData(0, 0, POSTER_W, POSTER_H);
-  const data = imageData.data;
-  for (let i = 0; i < data.length; i += 4) {
-    const noise = (Math.random() - 0.5) * 12;
-    data[i] += noise;
-    data[i + 1] += noise;
-    data[i + 2] += noise - 2;
+  const pixels = imageData.data;
+  for (let i = 0; i < pixels.length; i += 4) {
+    const n = (Math.random() - 0.5) * 8;
+    pixels[i] += n; pixels[i + 1] += n; pixels[i + 2] += n;
   }
   ctx.putImageData(imageData, 0, 0);
 
-  // Subtle aged edge vignette
-  const vignette = ctx.createRadialGradient(POSTER_W / 2, POSTER_H / 2, 300, POSTER_W / 2, POSTER_H / 2, POSTER_W);
-  vignette.addColorStop(0, "rgba(245,240,232,0)");
-  vignette.addColorStop(1, "rgba(200,190,170,0.3)");
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, POSTER_W, POSTER_H);
-
-  // Horizontal ruled lines (letter paper style)
-  const lineSpacing = 56;
-  const lineStartY = 280;
-  ctx.strokeStyle = "rgba(180,170,150,0.2)";
-  ctx.lineWidth = 1;
-  for (let y = lineStartY; y < POSTER_H - 120; y += lineSpacing) {
-    ctx.beginPath();
-    ctx.moveTo(pad - 10, y);
-    ctx.lineTo(POSTER_W - pad + 10, y);
-    ctx.stroke();
-  }
-
-  // Left margin line (red, like real letter paper)
-  ctx.strokeStyle = "rgba(190,120,100,0.2)";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(pad - 20, 0);
-  ctx.lineTo(pad - 20, POSTER_H);
-  ctx.stroke();
-
-  // Ink colors
-  const inkDark = "#2A2A24";
-  const inkGreen = "#2F5E2E";
-  const inkGreenLight = "rgba(47,94,46,0.55)";
-  const inkGray = "rgba(60,55,45,0.4)";
-
-  // Strip emoji helper
-  const stripEmoji = (s: string) => s.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").replace(/\s{2,}/g, " ").trim();
-
-  // --- Pre-calculate content blocks ---
+  // === LAYOUT CONSTANTS ===
+  const marginX = 110;
+  const contentW = POSTER_W - marginX * 2;
   const usablePhotos = (template !== "text-only") ? photos.slice(0, 9) : [];
   const hasPhotos = usablePhotos.length > 0;
 
-  const titleSize = hasPhotos ? 64 : 76;
-  const openingSize = hasPhotos ? 36 : 44;
-  const summarySize = hasPhotos ? 34 : 40;
-  const highlightSize = hasPhotos ? 32 : 36;
+  // === DECORATIVE TOP LINE ===
+  ctx.strokeStyle = "rgba(180,210,140,0.15)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(marginX, 100);
+  ctx.lineTo(POSTER_W - marginX, 100);
+  ctx.stroke();
 
+  // === HEADER: period + name ===
+  let curY = 160;
+  ctx.font = `300 26px ${bodyFont}`;
+  ctx.fillStyle = "rgba(200,220,170,0.4)";
+  ctx.letterSpacing = "3px";
+  ctx.fillText(`${periodLabel}  ·  ${timeRange}`.toUpperCase(), marginX, curY);
+  ctx.textAlign = "right";
+  ctx.fillStyle = "rgba(200,220,170,0.3)";
+  ctx.fillText(`@${displayName}`, POSTER_W - marginX, curY);
+  ctx.textAlign = "left";
+
+  // === TITLE: large, editorial ===
+  curY += 110;
+  const titleSize = hasPhotos ? 72 : 88;
   ctx.font = `700 ${titleSize}px ${handFont}`;
   const titleLines = wrapText(ctx, stripEmoji(story.title), contentW);
-  ctx.font = `italic ${openingSize}px ${handFont}`;
-  const olLines = wrapText(ctx, `"${stripEmoji(story.openingLine)}"`, contentW - 40);
-  ctx.font = `400 ${summarySize}px ${bodyFont}`;
-  const summaryLines = wrapText(ctx, stripEmoji(story.summary), contentW);
-  ctx.font = `400 ${highlightSize}px ${bodyFont}`;
-  const highlightLines: string[] = [];
-  for (const h of story.highlights.slice(0, 4)) {
-    highlightLines.push(...wrapText(ctx, `· ${stripEmoji(h)}`, contentW - 20));
-  }
-
-  // Layout — generous spacing
-  const headerH = 80;
-  const titleH = titleLines.length * (titleSize + 18);
-  const openingH = olLines.length * (openingSize + 16);
-  const photoH = hasPhotos ? (usablePhotos.length <= 2 ? 400 : usablePhotos.length <= 4 ? 480 : 560) : 0;
-  const summaryH = summaryLines.length * (summarySize + 20);
-  const highlightH = highlightLines.length * (highlightSize + 14);
-  const footerH = 120;
-
-  const totalContentH = headerH + titleH + openingH + photoH + summaryH + highlightH + footerH;
-  const availableH = POSTER_H - pad * 2;
-  const extraSpace = Math.max(0, availableH - totalContentH);
-  const sectionCount = hasPhotos ? 7 : 6;
-  const gap = Math.max(extraSpace / sectionCount, 40);
-
-  let curY = pad + 50;
-
-  // === HEADER ===
-  ctx.font = `500 28px ${bodyFont}`;
-  ctx.fillStyle = inkGray;
-  ctx.fillText(`${periodLabel} · ${timeRange}`, pad, curY);
-  ctx.textAlign = "right";
-  ctx.fillStyle = "rgba(60,55,45,0.25)";
-  ctx.fillText(`@${displayName}`, POSTER_W - pad, curY);
-  ctx.textAlign = "left";
-  curY += headerH + gap;
-
-  // === TITLE ===
-  ctx.font = `700 ${titleSize}px ${handFont}`;
-  ctx.fillStyle = inkGreen;
+  ctx.fillStyle = "#E8E4D4";
   for (const line of titleLines) {
-    ctx.fillText(line, pad, curY);
-    curY += titleSize + 18;
+    ctx.fillText(line, marginX, curY);
+    curY += titleSize + 20;
   }
-  curY += gap;
 
-  // === OPENING LINE ===
-  ctx.fillStyle = inkGreenLight;
-  roundRect(ctx, pad, curY - openingSize + 6, 3, olLines.length * (openingSize + 16), 2);
+  // === OPENING QUOTE ===
+  curY += 30;
+  const openingSize = hasPhotos ? 38 : 46;
+  ctx.font = `italic ${openingSize}px ${handFont}`;
+  const olLines = wrapText(ctx, `"${stripEmoji(story.openingLine)}"`, contentW - 50);
+
+  // Quote accent line
+  ctx.fillStyle = "rgba(160,200,120,0.35)";
+  roundRect(ctx, marginX, curY - openingSize + 8, 3, olLines.length * (openingSize + 18), 2);
   ctx.fill();
 
-  ctx.font = `italic ${openingSize}px ${handFont}`;
-  ctx.fillStyle = inkGreenLight;
+  ctx.fillStyle = "rgba(180,210,140,0.7)";
   for (const line of olLines) {
-    ctx.fillText(line, pad + 22, curY);
-    curY += openingSize + 16;
+    ctx.fillText(line, marginX + 24, curY);
+    curY += openingSize + 18;
   }
-  curY += gap * 1.2;
 
   // === PHOTOS ===
   if (hasPhotos) {
-    // Add subtle shadow behind photo area
-    ctx.save();
-    ctx.shadowColor = "rgba(0,0,0,0.08)";
-    ctx.shadowBlur = 20;
-    ctx.shadowOffsetY = 4;
-    ctx.fillStyle = "#F5F0E8";
-    roundRect(ctx, pad, curY, contentW, photoH, 16);
-    ctx.fill();
-    ctx.restore();
+    curY += 50;
+    const photoH = usablePhotos.length <= 2 ? 380 : usablePhotos.length <= 4 ? 460 : 540;
 
     if (template === "photo-blur") {
       try {
         const bgImg = await loadImage(usablePhotos[0]);
         ctx.save();
-        roundRect(ctx, pad, curY, contentW, photoH, 16);
+        roundRect(ctx, marginX, curY, contentW, photoH, 20);
         ctx.clip();
-        ctx.filter = "blur(20px) brightness(0.6) saturate(0.8)";
-        ctx.drawImage(bgImg, pad - 40, curY - 40, contentW + 80, photoH + 80);
+        ctx.filter = "blur(20px) brightness(0.5) saturate(0.7)";
+        ctx.drawImage(bgImg, marginX - 40, curY - 40, contentW + 80, photoH + 80);
         ctx.filter = "none";
         ctx.restore();
-        const innerPad = 24;
-        await drawPhotoGrid(ctx, usablePhotos, pad + innerPad, curY + innerPad, contentW - innerPad * 2, photoH - innerPad * 2, 10);
+        const ip = 24;
+        await drawPhotoGrid(ctx, usablePhotos, marginX + ip, curY + ip, contentW - ip * 2, photoH - ip * 2, 10);
       } catch {
-        await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 10);
+        await drawPhotoGrid(ctx, usablePhotos, marginX, curY, contentW, photoH, 10);
       }
     } else {
-      await drawPhotoGrid(ctx, usablePhotos, pad, curY, contentW, photoH, 10);
+      await drawPhotoGrid(ctx, usablePhotos, marginX, curY, contentW, photoH, 10);
     }
-    curY += photoH + gap;
+    curY += photoH + 50;
+  } else {
+    curY += 60;
   }
 
-  // === SUMMARY ===
-  ctx.font = `400 ${summarySize}px ${bodyFont}`;
-  ctx.fillStyle = inkDark;
-  const sLineH = summarySize + 20;
-  for (const line of summaryLines) {
-    if (curY > POSTER_H - 300) break;
-    ctx.fillText(line, pad, curY);
-    curY += sLineH;
-  }
-  curY += gap;
-
-  // === HIGHLIGHTS ===
-  if (highlightLines.length > 0 && curY < POSTER_H - 240) {
-    ctx.font = `400 ${highlightSize}px ${bodyFont}`;
-    ctx.fillStyle = inkGreen;
-    for (const line of highlightLines) {
-      if (curY > POSTER_H - 180) break;
-      ctx.fillText(line, pad, curY);
-      curY += highlightSize + 14;
-    }
-  }
-
-  // === MOOD tag ===
-  if (curY < POSTER_H - 160) {
-    curY = Math.max(curY + gap * 0.5, POSTER_H - 180);
-    ctx.font = `500 26px ${bodyFont}`;
-    ctx.fillStyle = "rgba(47,94,46,0.3)";
-    ctx.fillText(stripEmoji(story.mood), pad, POSTER_H - 140);
-  }
-
-  // === FOOTER ===
-  ctx.strokeStyle = "rgba(180,170,150,0.3)";
+  // === DIVIDER ===
+  ctx.strokeStyle = "rgba(180,210,140,0.12)";
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(pad, POSTER_H - 100);
-  ctx.lineTo(POSTER_W - pad, POSTER_H - 100);
+  ctx.moveTo(marginX, curY);
+  ctx.lineTo(marginX + 120, curY);
+  ctx.stroke();
+  curY += 50;
+
+  // === SUMMARY ===
+  const summarySize = hasPhotos ? 34 : 40;
+  ctx.font = `400 ${summarySize}px ${bodyFont}`;
+  const summaryLines = wrapText(ctx, stripEmoji(story.summary), contentW);
+  ctx.fillStyle = "rgba(230,225,210,0.8)";
+  const sLineH = summarySize + 22;
+  for (const line of summaryLines) {
+    if (curY > POSTER_H - 380) break;
+    ctx.fillText(line, marginX, curY);
+    curY += sLineH;
+  }
+
+  // === HIGHLIGHTS ===
+  curY += 40;
+  const highlightSize = hasPhotos ? 30 : 34;
+  ctx.font = `400 ${highlightSize}px ${bodyFont}`;
+  const cleanHighlights = story.highlights.slice(0, 3).map(h => stripEmoji(h));
+
+  if (cleanHighlights.length > 0 && curY < POSTER_H - 280) {
+    for (const h of cleanHighlights) {
+      if (curY > POSTER_H - 240) break;
+      // Dot
+      ctx.fillStyle = "rgba(160,200,120,0.5)";
+      ctx.beginPath();
+      ctx.arc(marginX + 6, curY - highlightSize * 0.3, 4, 0, Math.PI * 2);
+      ctx.fill();
+      // Text
+      ctx.fillStyle = "rgba(180,210,140,0.65)";
+      const hLines = wrapText(ctx, h, contentW - 30);
+      for (const hl of hLines) {
+        ctx.fillText(hl, marginX + 24, curY);
+        curY += highlightSize + 14;
+      }
+      curY += 6;
+    }
+  }
+
+  // === MOOD — bottom left ===
+  ctx.font = `400 24px ${bodyFont}`;
+  ctx.fillStyle = "rgba(180,210,140,0.25)";
+  ctx.fillText(stripEmoji(story.mood), marginX, POSTER_H - 150);
+
+  // === BOTTOM LINE ===
+  ctx.strokeStyle = "rgba(180,210,140,0.12)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(marginX, POSTER_H - 110);
+  ctx.lineTo(POSTER_W - marginX, POSTER_H - 110);
   ctx.stroke();
 
-  ctx.font = `400 24px ${bodyFont}`;
-  ctx.fillStyle = "rgba(60,55,45,0.2)";
+  // === FOOTER BRAND ===
+  ctx.font = `300 22px ${bodyFont}`;
+  ctx.fillStyle = "rgba(200,220,170,0.18)";
   ctx.textAlign = "right";
-  ctx.fillText("Unfold · 展开你的生活", POSTER_W - pad, POSTER_H - 60);
+  ctx.fillText("Unfold · 展开你的生活", POSTER_W - marginX, POSTER_H - 70);
   ctx.textAlign = "left";
 
   return canvas.toDataURL("image/png");
