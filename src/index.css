@@ -10,53 +10,53 @@
   }
 
   :root {
-    --background: 195 60% 92%;
-    --foreground: 210 20% 15%;
+    --background: 40 30% 91%;
+    --foreground: 150 30% 15%;
 
-    --card: 195 40% 96%;
-    --card-foreground: 210 20% 15%;
+    --card: 40 25% 96%;
+    --card-foreground: 150 30% 15%;
 
-    --popover: 195 40% 96%;
-    --popover-foreground: 210 20% 15%;
+    --popover: 40 25% 96%;
+    --popover-foreground: 150 30% 15%;
 
-    --primary: 195 70% 42%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 150 30% 22%;
+    --primary-foreground: 40 30% 94%;
 
-    --secondary: 195 30% 80%;
-    --secondary-foreground: 210 20% 15%;
+    --secondary: 150 15% 82%;
+    --secondary-foreground: 150 30% 15%;
 
-    --muted: 195 25% 88%;
-    --muted-foreground: 210 10% 45%;
+    --muted: 40 20% 86%;
+    --muted-foreground: 150 10% 42%;
 
-    --accent: 195 50% 72%;
-    --accent-foreground: 210 20% 15%;
+    --accent: 150 20% 75%;
+    --accent-foreground: 150 30% 15%;
 
     --destructive: 0 55% 48%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 15% 30%;
-    --input: 195 20% 85%;
-    --ring: 195 70% 42%;
+    --border: 150 10% 75%;
+    --input: 40 18% 85%;
+    --ring: 150 30% 22%;
 
     --radius: 1rem;
 
-    --sidebar-background: 195 45% 90%;
-    --sidebar-foreground: 210 20% 20%;
-    --sidebar-primary: 195 70% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 195 30% 85%;
-    --sidebar-accent-foreground: 210 20% 15%;
-    --sidebar-border: 210 15% 30%;
-    --sidebar-ring: 195 70% 42%;
+    --sidebar-background: 40 25% 89%;
+    --sidebar-foreground: 150 30% 18%;
+    --sidebar-primary: 150 30% 22%;
+    --sidebar-primary-foreground: 40 30% 94%;
+    --sidebar-accent: 150 15% 82%;
+    --sidebar-accent-foreground: 150 30% 15%;
+    --sidebar-border: 150 10% 75%;
+    --sidebar-ring: 150 30% 22%;
 
     /* Custom tokens */
-    --warm-glow: 195 70% 42%;
-    --forest: 195 50% 35%;
-    --forest-light: 195 30% 80%;
-    --story-gradient: linear-gradient(135deg, hsl(195, 60%, 85%), hsl(195, 70%, 70%));
-    --progress-gradient: linear-gradient(90deg, hsl(195, 70%, 50%), hsl(195, 60%, 65%));
-    --card-shadow: 0 2px 16px -4px hsl(210 15% 30% / 0.12);
-    --card-shadow-hover: 0 8px 30px -8px hsl(210 15% 30% / 0.2);
+    --warm-glow: 150 30% 28%;
+    --forest: 150 30% 22%;
+    --forest-light: 150 15% 80%;
+    --story-gradient: linear-gradient(135deg, hsl(150, 20%, 85%), hsl(150, 30%, 65%));
+    --progress-gradient: linear-gradient(90deg, hsl(150, 30%, 30%), hsl(150, 25%, 45%));
+    --card-shadow: 0 2px 16px -4px hsl(150 10% 30% / 0.1);
+    --card-shadow-hover: 0 8px 30px -8px hsl(150 10% 30% / 0.18);
   }
 
   .theme-mono {
