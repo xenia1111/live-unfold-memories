@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ChevronRight, Globe, Lock, Info, FileText, Shield } from "lucide-react";
+import { ArrowLeft, ChevronRight, Globe, Lock, Info, FileText, Shield, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -30,6 +30,9 @@ const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
   const { lang, setLang, t } = useI18n();
   const [showLangDialog, setShowLangDialog] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -161,7 +164,22 @@ const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
             </div>
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground">{lang === "zh" || lang === "ja" ? "用户协议" : "Terms of Service"}</p>
-            </div>
+
+        {/* Delete Account */}
+        <button
+          onClick={() => setShowDeleteDialog(true)}
+          className="w-full flex items-center gap-4 bg-card rounded-2xl p-4 card-glow border border-destructive/20 text-left transition-all active:scale-[0.98] mt-6"
+        >
+          <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+            <Trash2 size={18} className="text-destructive" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-destructive">{lang === "zh" || lang === "ja" ? "注销账号" : "Delete Account"}</p>
+            <p className="text-xs text-muted-foreground">{lang === "zh" || lang === "ja" ? "永久删除所有数据，不可恢复" : "Permanently delete all data"}</p>
+          </div>
+          <ChevronRight size={16} className="text-muted-foreground" />
+        </button>
+      </div>
             <ChevronRight size={16} className="text-muted-foreground" />
           </button>
         )}
@@ -205,6 +223,54 @@ const GeneralSettingsPage = ({ onBack, onOpenPrivacy, onOpenTerms }: Props) => {
             <Input type="password" placeholder={t("settings.confirmPassword")} value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="rounded-xl" />
             <Button onClick={handlePasswordChange} disabled={loading} className="rounded-xl mt-1">
               {loading ? "处理中..." : t("settings.confirmChange")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-[320px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-center text-destructive">{lang === "zh" || lang === "ja" ? "确认注销账号" : "Delete Account"}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 py-2">
+            <p className="text-sm text-muted-foreground text-center leading-relaxed">
+              {lang === "zh" || lang === "ja"
+                ? "此操作将永久删除你的所有数据，包括任务、故事、照片和猫咪。此操作不可撤销。"
+                : "This will permanently delete all your data including tasks, stories, photos and your cat. This cannot be undone."}
+            </p>
+            <p className="text-xs text-muted-foreground text-center">
+              {lang === "zh" || lang === "ja" ? '请输入 "删除" 确认' : 'Type "DELETE" to confirm'}
+            </p>
+            <Input
+              value={deleteConfirmText}
+              onChange={e => setDeleteConfirmText(e.target.value)}
+              placeholder={lang === "zh" || lang === "ja" ? "删除" : "DELETE"}
+              className="rounded-xl text-center"
+            />
+            <Button
+              variant="destructive"
+              disabled={deleting || (lang === "zh" || lang === "ja" ? deleteConfirmText !== "删除" : deleteConfirmText !== "DELETE")}
+              onClick={async () => {
+                setDeleting(true);
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session) throw new Error("Not authenticated");
+                  const res = await supabase.functions.invoke("delete-account", {
+                    headers: { Authorization: `Bearer ${session.access_token}` },
+                  });
+                  if (res.error) throw res.error;
+                  await supabase.auth.signOut();
+                  toast.success(lang === "zh" || lang === "ja" ? "账号已注销" : "Account deleted");
+                  window.location.reload();
+                } catch (e: any) {
+                  toast.error(e.message || "注销失败");
+                } finally {
+                  setDeleting(false);
+                }
+              }}
+              className="rounded-xl"
+            >
+              {deleting ? "处理中..." : lang === "zh" || lang === "ja" ? "永久注销" : "Delete Forever"}
             </Button>
           </div>
         </DialogContent>
