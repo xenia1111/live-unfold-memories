@@ -40,7 +40,25 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
     }
   };
 
-  const handleConfirm = () => { onConfirm(photo || undefined, note || undefined); setPhoto(null); setNote(""); };
+  const handleConfirm = async () => {
+    let photoUrl: string | undefined;
+    if (photo && user) {
+      try {
+        setUploading(true);
+        const file = dataUrlToFile(photo);
+        photoUrl = await uploadTaskPhoto(user.id, file);
+      } catch (e) {
+        console.error("Upload failed:", e);
+        toast.error(t("complete.uploadFailed") || "上传照片失败");
+        setUploading(false);
+        return;
+      }
+      setUploading(false);
+    }
+    onConfirm(photoUrl, note || undefined);
+    setPhoto(null);
+    setNote("");
+  };
   const handleSkip = () => { onConfirm(undefined, undefined); setPhoto(null); setNote(""); };
   const hasContent = photo || note.trim();
 
