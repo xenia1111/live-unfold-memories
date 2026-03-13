@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, Trash2, Camera } from "lucide-react";
+import { X, Coffee, Dumbbell, BookOpen, Music, Heart, Star, ImagePlus, Trash2, Camera, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -8,6 +8,9 @@ import {
 import type { Task } from "@/hooks/useTasks";
 import TimePicker from "@/components/TimePicker";
 import { useI18n, useCategoryName } from "@/lib/i18n";
+import { useAuth } from "@/hooks/useAuth";
+import { uploadTaskPhoto, dataUrlToFile } from "@/lib/uploadPhoto";
+import { toast } from "sonner";
 
 const categoryOptions = ["运动", "学习", "社交", "工作", "健康", "记录", "娱乐", "美食", "美景"];
 
