@@ -10,7 +10,7 @@ import type { Task } from "@/hooks/useTasks";
 import { useI18n, interpolate, useCategoryName } from "@/lib/i18n";
 
 const CATEGORY_EMOJIS: Record<string, string> = { "美食": "🍜", "学习": "📖", "运动": "🏃", "社交": "☕", "工作": "💼", "美景": "🏔️", "娱乐": "🎵", "记录": "📝", "健康": "🧘", "美丽": "💄" };
-const CATEGORY_COLORS: Record<string, string> = { "美食": "from-orange-100/60 to-amber-50/40", "学习": "from-violet-100/60 to-purple-50/40", "运动": "from-blue-100/60 to-cyan-50/40", "社交": "from-pink-100/60 to-rose-50/40", "工作": "from-slate-100/60 to-gray-50/40", "美景": "from-emerald-100/60 to-sky-50/40", "娱乐": "from-fuchsia-100/60 to-pink-50/40", "记录": "from-amber-100/60 to-yellow-50/40", "健康": "from-teal-100/60 to-green-50/40", "美丽": "from-rose-100/60 to-pink-50/40" };
+const CATEGORY_COLORS: Record<string, string> = { "美食": "bg-primary/5", "学习": "bg-primary/5", "运动": "bg-primary/5", "社交": "bg-primary/5", "工作": "bg-primary/5", "美景": "bg-primary/5", "娱乐": "bg-primary/5", "记录": "bg-primary/5", "健康": "bg-primary/5", "美丽": "bg-primary/5" };
 
 interface CategoryCard { category: string; emoji: string; color: string; vibe: string; tasks: Task[]; completed: Task[]; photos: string[]; latestDate: Date | null; }
 interface Props { tasks: Task[]; }
