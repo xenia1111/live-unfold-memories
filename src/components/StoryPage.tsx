@@ -271,13 +271,68 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   };
 
   return (
-    <div className="h-[calc(100vh-80px)] overflow-y-auto snap-y snap-mandatory scroll-smooth" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-      <style>{`.snap-section::-webkit-scrollbar { display: none; }`}</style>
-      {months.map((m, i) => (
-        <div key={m.key} className="snap-start min-h-[calc(100vh-80px)] flex items-center py-2">
-          {renderMonthCard(m, i)}
-        </div>
-      ))}
+    <div
+      className="h-[calc(100vh-80px)] relative overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {months.map((m, i) => {
+        const offset = i - activeIndex;
+        const isActive = offset === 0;
+        const isNearby = Math.abs(offset) <= 2;
+
+        if (!isNearby) return null;
+
+        let translateY = "0%";
+        let scale = 1;
+        let opacity = 1;
+        let zIndex = 10;
+
+        if (offset === -1) {
+          translateY = "calc(-100% + 44px)";
+          scale = 0.96;
+          opacity = 0.6;
+          zIndex = 8;
+        } else if (offset === -2) {
+          translateY = "calc(-100% + 18px)";
+          scale = 0.92;
+          opacity = 0.25;
+          zIndex = 6;
+        } else if (offset === 1) {
+          translateY = "calc(100% - 44px)";
+          scale = 0.96;
+          opacity = 0.6;
+          zIndex = 8;
+        } else if (offset === 2) {
+          translateY = "calc(100% - 18px)";
+          scale = 0.92;
+          opacity = 0.25;
+          zIndex = 6;
+        }
+
+        return (
+          <div
+            key={m.key}
+            className={cn(
+              "absolute inset-0 transition-all duration-500 ease-out",
+              !isActive && "cursor-pointer"
+            )}
+            style={{
+              transform: `translateY(${translateY}) scale(${scale})`,
+              opacity,
+              zIndex,
+            }}
+            onClick={!isActive ? () => goTo(i) : undefined}
+          >
+            <div className={cn(
+              "h-full pb-4",
+              isActive ? "overflow-y-auto" : "overflow-hidden pointer-events-none"
+            )} style={{ scrollbarWidth: "none" }}>
+              {renderMonthCard(m, i)}
+            </div>
+          </div>
+        );
+      })}
 
       {shareDialog && (
         <SharePosterDialog
