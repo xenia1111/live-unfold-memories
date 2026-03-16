@@ -164,6 +164,7 @@ const zh: Dict = {
   "story.writeSomething": "想说点什么？",
   "story.notePlaceholder": "这段时间有什么想记住的？随便写...",
   "story.share": "发给朋友看看",
+  "story.categoryView": "分类回顾",
   "story.copied": "复制好了",
   "story.generateFailed": "没写出来，先看看简单总结吧",
   "story.fallback.waiting": "还没开始呢",
