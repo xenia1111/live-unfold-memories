@@ -130,8 +130,8 @@ function drawCalendarGrid(
   const startDow = getDay(firstDay);
   const daysInMonth = getDaysInMonth(firstDay);
 
-  const cellSize = 42;
-  const gap = 4;
+  const cellSize = 36;
+  const gap = 3;
   const gridW = 7 * (cellSize + gap) - gap;
 
   // Accent color from theme
@@ -143,7 +143,7 @@ function drawCalendarGrid(
 
   // Weekday headers
   const labels = lang === "zh" ? WEEKDAY_LABELS : WEEKDAY_LABELS_EN;
-  ctx.font = `500 20px 'Noto Sans SC', sans-serif`;
+  ctx.font = `500 16px 'Noto Sans SC', sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   for (let d = 0; d < 7; d++) {
@@ -153,9 +153,9 @@ function drawCalendarGrid(
   }
 
   // Day cells
-  let curY = y + 36;
+  let curY = y + 28;
   let col = startDow;
-  ctx.font = `600 22px 'Noto Sans SC', sans-serif`;
+  ctx.font = `600 18px 'Noto Sans SC', sans-serif`;
 
   for (let day = 1; day <= daysInMonth; day++) {
     const cx = x + col * (cellSize + gap) + cellSize / 2;
@@ -220,45 +220,55 @@ async function generatePoster(
   const accentL = tc ? Math.max(tc.l - 5, 40) : 40;
   const accentColor = `hsl(${accentH}, ${accentS}%, ${accentL}%)`;
 
-  // Layout: top section (paper ~45%) + photo section (bottom ~55%)
-  const topSectionH = hasPhotos ? Math.round(POSTER_H * 0.45) : POSTER_H;
+  // Layout: calculate highlights height to determine top section size dynamically
+  const highlights = story.highlights.slice(0, 4).map(h => stripEmoji(h));
+
+  const marginX = 80;
+  const contentW = POSTER_W - marginX * 2;
+
+  // === Measure content to compute top section height ===
+  // Month name + year: ~140px, highlights: ~50px each, padding: ~80px
+  const calGridH = 280; // approximate calendar height
+  const highlightsH = highlights.length * 58 + 20;
+  const monthHeaderH = 140;
+  const topPadding = 80;
+  const bottomPad = 40;
+  const minTopH = topPadding + Math.max(monthHeaderH + highlightsH, calGridH + 30) + bottomPad;
+  const topSectionH = hasPhotos ? Math.min(Math.max(minTopH, 520), Math.round(POSTER_H * 0.42)) : POSTER_H;
   const photoSectionH = hasPhotos ? POSTER_H - topSectionH : 0;
 
   // === TOP SECTION: Paper texture ===
   drawPaperTexture(ctx, POSTER_W, topSectionH);
 
-  const marginX = 80;
-  const contentW = POSTER_W - marginX * 2;
-
   // Month name - large handwriting, top-left
-  let curY = 100;
+  let curY = topPadding;
   const monthLabel = hasCal
     ? (lang === "zh" ? calendarData.monthName : MONTH_EN[calendarData.month])
     : periodLabel;
 
-  ctx.font = `700 110px ${handFont}`;
+  ctx.font = `700 100px ${handFont}`;
   ctx.fillStyle = accentColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText(monthLabel, marginX, curY);
-  const monthTextW = ctx.measureText(monthLabel).width;
 
-  // Year below month name
+  // Year - smaller, right after month name on same line or just below
   if (hasCal) {
-    curY += 120;
-    ctx.font = `400 36px 'Noto Sans SC', sans-serif`;
-    ctx.fillStyle = "rgba(80,75,65,0.45)";
-    ctx.fillText(String(calendarData.year), marginX, curY);
-    curY += 60;
+    curY += 110;
+    ctx.font = `300 28px 'Noto Sans SC', sans-serif`;
+    ctx.fillStyle = "rgba(80,75,65,0.4)";
+    ctx.fillText(String(calendarData.year), marginX + 4, curY);
+    curY += 44;
   } else {
-    curY += 130;
+    curY += 120;
   }
 
-  // Calendar grid - positioned to the right of month name
+  // Calendar grid - right side, anchored to right margin
   if (hasCal) {
-    const calX = Math.max(marginX + monthTextW + 40, POSTER_W - 380);
+    const calGridW = 7 * (36 + 3) - 3; // matches cellSize+gap in drawCalendarGrid
+    const calX = POSTER_W - marginX - calGridW;
     drawCalendarGrid(
-      ctx, calX, 110,
+      ctx, calX, topPadding + 10,
       calendarData.year, calendarData.month,
       calendarData.completedDates,
       calendarData.taskDates,
@@ -267,17 +277,16 @@ async function generatePoster(
     );
   }
 
-  // Highlights with ✽ markers
-  const highlights = story.highlights.slice(0, 4).map(h => stripEmoji(h));
-  const highlightMaxW = hasCal ? Math.min(contentW, POSTER_W - 420) : contentW;
+  // Highlights - left column, below year
+  const highlightMaxW = hasCal ? contentW * 0.55 : contentW;
 
   ctx.textBaseline = "alphabetic";
   if (highlights.length > 0) {
-    const hlSize = 42;
+    const hlSize = 38;
     ctx.font = `400 ${hlSize}px ${handFont}`;
 
     for (const h of highlights) {
-      if (curY > topSectionH - 60) break;
+      if (curY > topSectionH - 50) break;
 
       // ✽ marker
       ctx.fillStyle = accentColor;
@@ -288,13 +297,13 @@ async function generatePoster(
       // Text
       ctx.fillStyle = accentColor;
       ctx.globalAlpha = 0.85;
-      const hLines = wrapText(ctx, h, highlightMaxW - 60);
+      const hLines = wrapText(ctx, h, highlightMaxW - 52);
       for (const hl of hLines) {
-        ctx.fillText(hl, marginX + 52, curY + hlSize);
-        curY += hlSize + 14;
+        ctx.fillText(hl, marginX + 48, curY + hlSize);
+        curY += hlSize + 10;
       }
       ctx.globalAlpha = 1;
-      curY += 8;
+      curY += 4;
     }
   }
 
