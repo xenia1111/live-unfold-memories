@@ -185,6 +185,11 @@ const zh: Dict = {
   "story.fallback.steadyMood": "还行",
   "story.fallback.buildMood": "刚起步",
   "story.formatMonth": "yyyy年M月",
+  "story.noPhotos": "完成任务时拍张照，记录美好瞬间",
+  "story.backToMonths": "返回月历",
+  "home.today": "今天",
+  "complete.uploadFailed": "上传照片失败",
+  "complete.uploading": "上传中...",
 
   // CategoryStoryView
   "catStory.empty": "还没做完什么事呢，去安排一件试试？",
