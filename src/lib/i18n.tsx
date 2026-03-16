@@ -926,7 +926,7 @@ const esDict: Dict = {
   "story.notes": "Notas", "story.done": "Hecho", "story.edit": "Editar",
   "story.writeSomething": "Escribir...",
   "story.notePlaceholder": "Registra tus sentimientos...",
-  "story.share": "Compartir", "story.copied": "Copiado",
+  "story.share": "Compartir", "story.categoryView": "Por categoría", "story.copied": "Copiado",
   "story.generateFailed": "Error al generar",
   "story.fallback.waiting": "Esperando", "story.fallback.highlight": "Momentos clave",
   "story.fallback.steady": "Progreso constante", "story.fallback.building": "Construyendo",
