@@ -17,10 +17,8 @@ interface StoryPageProps { tasks: Task[]; }
 const MONTH_NAMES_ZH = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
 const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-const CARD_GAP = 12;
-const PEEK = 28; // px visible of adjacent cards top+bottom
-const SWIPE_THRESHOLD_RATIO = 0.2;
-const SWIPE_VELOCITY_THRESHOLD = 0.3;
+const PEEK_HEIGHT = 48; // px height of each peeking card header
+const SCALE_STEP = 0.02; // scale reduction per layer
 
 const StoryPage = ({ tasks }: StoryPageProps) => {
   const { t, lang } = useI18n();
@@ -33,43 +31,30 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [showCategory, setShowCategory] = useState(false);
   const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
 
-  // Carousel state
+  // Swipe state
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-  const touchRef = useRef<{ y: number; time: number; scrollTop: number; canSwipe: boolean } | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const touchRef = useRef<{ y: number; time: number; canSwipe: boolean } | null>(null);
 
-  // Container height + non-passive touchmove for preventDefault
-  const [containerHeight, setContainerHeight] = useState(0);
-  useEffect(() => {
-    const measure = () => {
-      if (containerRef.current) setContainerHeight(containerRef.current.clientHeight);
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
-
-  // We need a ref-based touchmove handler to use { passive: false }
+  // Non-passive touchmove
   const touchMoveHandler = useRef<(e: TouchEvent) => void>();
   touchMoveHandler.current = (e: TouchEvent) => {
     const start = touchRef.current;
-    if (!start || !containerHeight) return;
+    if (!start) return;
 
     const dy = e.touches[0].clientY - start.y;
-    const scrollEl = scrollRefs.current.get(activeIndex);
 
     if (!start.canSwipe) {
+      const scrollEl = scrollRef.current;
       if (scrollEl) {
         const atTop = scrollEl.scrollTop <= 1;
         const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
-        const swipingDown = dy > 0;
-        const swipingUp = dy < 0;
-        if ((swipingDown && atTop) || (swipingUp && atBottom)) {
+        if ((dy > 0 && atTop) || (dy < 0 && atBottom)) {
           start.canSwipe = true;
         } else {
-          return;
+          return; // let internal scroll happen
         }
       } else {
         start.canSwipe = true;
@@ -78,6 +63,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
     if (start.canSwipe) {
       e.preventDefault();
+      // Resist at boundaries
       let offset = dy;
       if ((activeIndex === 0 && dy > 0) || (activeIndex === months.length - 1 && dy < 0)) {
         offset = dy * 0.3;
@@ -145,14 +131,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     } finally { setLoadingKeys(prev => { const n = new Set(prev); n.delete(m.key); return n; }); }
   }, [saveAiStory, t]);
 
-  // Touch handlers for vertical carousel
+  // Touch handlers
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    const scrollEl = scrollRefs.current.get(activeIndex);
-    const scrollTop = scrollEl ? scrollEl.scrollTop : 0;
-    touchRef.current = { y: e.touches[0].clientY, time: Date.now(), scrollTop, canSwipe: false };
-  }, [activeIndex]);
-
-  // touchMove is handled via native event listener above (non-passive)
+    touchRef.current = { y: e.touches[0].clientY, time: Date.now(), canSwipe: false };
+  }, []);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const start = touchRef.current;
@@ -167,10 +149,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     const dy = e.changedTouches[0].clientY - start.y;
     const dt = Date.now() - start.time;
     const velocity = Math.abs(dy) / dt;
-    const threshold = containerHeight * SWIPE_THRESHOLD_RATIO;
+    const threshold = 80;
 
     let newIndex = activeIndex;
-    if (Math.abs(dy) > threshold || velocity > SWIPE_VELOCITY_THRESHOLD) {
+    if (Math.abs(dy) > threshold || velocity > 0.3) {
       if (dy < 0 && activeIndex < months.length - 1) newIndex = activeIndex + 1;
       else if (dy > 0 && activeIndex > 0) newIndex = activeIndex - 1;
     }
@@ -178,12 +160,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     setActiveIndex(newIndex);
     setDragOffset(0);
     setIsDragging(false);
-  }, [activeIndex, containerHeight, isDragging, months.length]);
-
-  // Calculate translateY — card is shorter than container to show peek of adjacent cards
-  const cardHeight = containerHeight ? containerHeight - PEEK * 2 : 0;
-  const stride = cardHeight + CARD_GAP;
-  const translateY = containerHeight ? PEEK + -(activeIndex * stride) + dragOffset : 0;
+  }, [activeIndex, isDragging, months.length]);
 
   if (showCategory) {
     return (
@@ -197,172 +174,168 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     );
   }
 
-  const renderMonthCard = (m: typeof months[0], index: number) => {
+  // Compute how many peek slots are above the active card
+  const peekSlots = activeIndex; // number of cards peeking above
+  const peekAreaHeight = peekSlots * PEEK_HEIGHT;
+
+  const renderActiveCard = (m: typeof months[0]) => {
     const s = aiStories[m.key] || buildFallback(m);
     const hasAIStory = !!aiStories[m.key];
     const loading = loadingKeys.has(m.key);
 
     return (
       <div
-        key={m.key}
-        className="w-full shrink-0 px-4"
-        style={{ height: `${cardHeight}px` }}
+        ref={el => { if (el) scrollRef.current = el; }}
+        className="flex-1 overflow-y-auto"
+        style={{ scrollbarWidth: "none" }}
       >
-        <div className="h-full rounded-3xl border border-border/30 bg-card shadow-lg overflow-hidden flex flex-col">
-          <div
-            ref={el => { if (el) scrollRefs.current.set(index, el); }}
-            className="flex-1 overflow-y-auto"
-            style={{ scrollbarWidth: "none" }}
-          >
-            <div className="px-5 pt-6 pb-4">
-              {/* Header */}
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-foreground leading-none tracking-tight" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
-                    {m.monthName}
-                  </h1>
-                  <p className="text-xs text-muted-foreground mt-1">{m.year}</p>
-                  {index === 0 && (
-                    <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                      {t("story.current")}
-                    </span>
-                  )}
-                </div>
-                <div className="w-[130px] shrink-0">
-                  <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} />
-                </div>
-              </div>
-              <div className="flex items-center gap-3 mt-4">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  <span>{m.completedCount} {t("story.completed") || "已完成"}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="w-1.5 h-1.5 rounded-full bg-border" />
-                  <span>{m.total - m.completedCount} {t("story.pending") || "待完成"}</span>
-                </div>
-                {m.photos.length > 0 && (
-                  <div className="text-xs text-muted-foreground ml-auto">📷 {m.photos.length}</div>
-                )}
-              </div>
-            </div>
-
-            {/* AI Summary highlights */}
-            <div className="px-5 py-4 border-t border-dashed border-border/30">
-              <div className="space-y-2">
-                {s.highlights.slice(0, 4).map((h, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <span className="text-primary/60 text-xs mt-0.5 shrink-0">✽</span>
-                    <span className="text-sm text-foreground/80 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
-                      {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").trim()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              {s.summary && (
-                <p className="text-xs text-muted-foreground mt-3 leading-relaxed italic">{s.summary}</p>
+        <div className="px-5 pt-6 pb-4">
+          {/* Header */}
+          <div className="flex items-start gap-4">
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-foreground leading-none tracking-tight" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
+                {m.monthName}
+              </h1>
+              <p className="text-xs text-muted-foreground mt-1">{m.year}</p>
+              {activeIndex === 0 && (
+                <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                  {t("story.current")}
+                </span>
               )}
             </div>
-
-            {/* Photo collage */}
-            {m.photos.length > 0 && (
-              <div className="px-5 py-4 border-t border-dashed border-border/30">
-                <div className="rounded-2xl overflow-hidden mb-2.5 aspect-[16/10] bg-muted/20">
-                  <img src={m.photos[0]} alt="" className="w-full h-full object-cover" />
-                </div>
-                {m.photos.length > 1 && (
-                  <div className="flex gap-2">
-                    {m.photos.slice(1, 5).map((photo, i) => (
-                      <div key={i} className="flex-1 aspect-square rounded-xl overflow-hidden bg-muted/20">
-                        <img src={photo} alt="" className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                    {m.photos.length > 5 && (
-                      <div className="flex-1 aspect-square rounded-xl bg-muted/30 flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground font-medium">+{m.photos.length - 5}</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* No photos empty state */}
-            {m.photos.length === 0 && m.completedCount > 0 && (
-              <div className="px-5 py-6 border-t border-dashed border-border/30 text-center">
-                <span className="text-2xl block mb-1">📷</span>
-                <p className="text-xs text-muted-foreground">{t("story.noPhotos") || "完成任务时拍张照，记录美好瞬间"}</p>
-              </div>
-            )}
-
-            {/* Action buttons */}
-            <div className="px-5 py-4 border-t border-dashed border-border/30 space-y-2.5">
-              <button
-                onClick={() => generateAIStory(m)}
-                disabled={loading}
-                className={cn(
-                  "w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-medium transition-all duration-300",
-                  hasAIStory
-                    ? "bg-muted/30 text-muted-foreground hover:text-foreground"
-                    : "gradient-warm text-primary-foreground shadow-sm hover:shadow-md active:scale-[0.98]"
-                )}
-              >
-                {loading ? (
-                  <><Loader2 size={14} className="animate-spin" /><span>{t("story.aiGenerating")}</span></>
-                ) : hasAIStory ? (
-                  <><RefreshCw size={14} /><span>{t("story.refreshStory")}</span></>
-                ) : (
-                  <><Sparkles size={14} /><span>{t("story.generateAI")}</span></>
-                )}
-              </button>
-
-              <div className="pt-2">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <PenLine size={12} className="text-primary/50" />
-                    <span className="text-[11px] font-semibold text-foreground/60">{t("story.notes")}</span>
-                  </div>
-                  {editingNote === m.key ? (
-                    <button onClick={() => { setEditingNote(null); saveNote(m.key, notes[m.key] || ""); }} className="flex items-center gap-1 text-[11px] text-primary font-medium">
-                      <Check size={12} /><span>{t("story.done")}</span>
-                    </button>
-                  ) : (
-                    <button onClick={() => setEditingNote(m.key)} className="text-[11px] text-muted-foreground/50 hover:text-primary transition-colors italic">
-                      {notes[m.key] ? t("story.edit") : t("story.writeSomething")}
-                    </button>
-                  )}
-                </div>
-                {editingNote === m.key ? (
-                  <textarea autoFocus value={notes[m.key] || ""} onChange={e => saveNote(m.key, e.target.value)} placeholder={t("story.notePlaceholder")}
-                    className="w-full min-h-[70px] p-3 rounded-2xl bg-muted/15 border border-border/20 text-sm text-foreground placeholder:text-muted-foreground/30 resize-none focus:outline-none focus:ring-1 focus:ring-primary/20 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }} />
-                ) : notes[m.key] ? (
-                  <div onClick={() => setEditingNote(m.key)} className="px-3 py-2.5 rounded-2xl bg-muted/10 text-sm text-foreground/60 leading-relaxed whitespace-pre-wrap cursor-pointer hover:bg-muted/20 transition-colors border border-border/10" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
-                    {notes[m.key]}
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="flex gap-2 pt-1">
-                <button
-                  onClick={() => {
-                    const s2 = aiStories[m.key] || buildFallback(m);
-                    setShareDialog({ story: s2, periodLabel: m.label, timeRange: `${format(m.start, "M/d")} - ${format(m.end, "M/d")}`, photos: m.photos });
-                  }}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-muted/15 text-muted-foreground hover:text-primary text-[11px] font-medium transition-all"
-                >
-                  <Share2 size={12} /><span>{t("story.share")}</span>
-                </button>
-                <button
-                  onClick={() => setShowCategory(true)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-muted/15 text-muted-foreground hover:text-primary text-[11px] font-medium transition-all"
-                >
-                  <Layers size={12} /><span>{t("story.categoryView") || "分类回顾"}</span>
-                </button>
-              </div>
+            <div className="w-[130px] shrink-0">
+              <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} />
             </div>
-            <div className="h-4" />
+          </div>
+          <div className="flex items-center gap-3 mt-4">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+              <span>{m.completedCount} {t("story.completed") || "已完成"}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="w-1.5 h-1.5 rounded-full bg-border" />
+              <span>{m.total - m.completedCount} {t("story.pending") || "待完成"}</span>
+            </div>
+            {m.photos.length > 0 && (
+              <div className="text-xs text-muted-foreground ml-auto">📷 {m.photos.length}</div>
+            )}
           </div>
         </div>
+
+        {/* AI Summary highlights */}
+        <div className="px-5 py-4 border-t border-dashed border-border/30">
+          <div className="space-y-2">
+            {s.highlights.slice(0, 4).map((h, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <span className="text-primary/60 text-xs mt-0.5 shrink-0">✽</span>
+                <span className="text-sm text-foreground/80 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
+                  {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").trim()}
+                </span>
+              </div>
+            ))}
+          </div>
+          {s.summary && (
+            <p className="text-xs text-muted-foreground mt-3 leading-relaxed italic">{s.summary}</p>
+          )}
+        </div>
+
+        {/* Photo collage */}
+        {m.photos.length > 0 && (
+          <div className="px-5 py-4 border-t border-dashed border-border/30">
+            <div className="rounded-2xl overflow-hidden mb-2.5 aspect-[16/10] bg-muted/20">
+              <img src={m.photos[0]} alt="" className="w-full h-full object-cover" />
+            </div>
+            {m.photos.length > 1 && (
+              <div className="flex gap-2">
+                {m.photos.slice(1, 5).map((photo, i) => (
+                  <div key={i} className="flex-1 aspect-square rounded-xl overflow-hidden bg-muted/20">
+                    <img src={photo} alt="" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+                {m.photos.length > 5 && (
+                  <div className="flex-1 aspect-square rounded-xl bg-muted/30 flex items-center justify-center">
+                    <span className="text-xs text-muted-foreground font-medium">+{m.photos.length - 5}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* No photos empty state */}
+        {m.photos.length === 0 && m.completedCount > 0 && (
+          <div className="px-5 py-6 border-t border-dashed border-border/30 text-center">
+            <span className="text-2xl block mb-1">📷</span>
+            <p className="text-xs text-muted-foreground">{t("story.noPhotos") || "完成任务时拍张照，记录美好瞬间"}</p>
+          </div>
+        )}
+
+        {/* Action buttons */}
+        <div className="px-5 py-4 border-t border-dashed border-border/30 space-y-2.5">
+          <button
+            onClick={() => generateAIStory(m)}
+            disabled={loading}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-medium transition-all duration-300",
+              hasAIStory
+                ? "bg-muted/30 text-muted-foreground hover:text-foreground"
+                : "gradient-warm text-primary-foreground shadow-sm hover:shadow-md active:scale-[0.98]"
+            )}
+          >
+            {loading ? (
+              <><Loader2 size={14} className="animate-spin" /><span>{t("story.aiGenerating")}</span></>
+            ) : hasAIStory ? (
+              <><RefreshCw size={14} /><span>{t("story.refreshStory")}</span></>
+            ) : (
+              <><Sparkles size={14} /><span>{t("story.generateAI")}</span></>
+            )}
+          </button>
+
+          <div className="pt-2">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <PenLine size={12} className="text-primary/50" />
+                <span className="text-[11px] font-semibold text-foreground/60">{t("story.notes")}</span>
+              </div>
+              {editingNote === m.key ? (
+                <button onClick={() => { setEditingNote(null); saveNote(m.key, notes[m.key] || ""); }} className="flex items-center gap-1 text-[11px] text-primary font-medium">
+                  <Check size={12} /><span>{t("story.done")}</span>
+                </button>
+              ) : (
+                <button onClick={() => setEditingNote(m.key)} className="text-[11px] text-muted-foreground/50 hover:text-primary transition-colors italic">
+                  {notes[m.key] ? t("story.edit") : t("story.writeSomething")}
+                </button>
+              )}
+            </div>
+            {editingNote === m.key ? (
+              <textarea autoFocus value={notes[m.key] || ""} onChange={e => saveNote(m.key, e.target.value)} placeholder={t("story.notePlaceholder")}
+                className="w-full min-h-[70px] p-3 rounded-2xl bg-muted/15 border border-border/20 text-sm text-foreground placeholder:text-muted-foreground/30 resize-none focus:outline-none focus:ring-1 focus:ring-primary/20 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }} />
+            ) : notes[m.key] ? (
+              <div onClick={() => setEditingNote(m.key)} className="px-3 py-2.5 rounded-2xl bg-muted/10 text-sm text-foreground/60 leading-relaxed whitespace-pre-wrap cursor-pointer hover:bg-muted/20 transition-colors border border-border/10" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
+                {notes[m.key]}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => {
+                const s2 = aiStories[m.key] || buildFallback(m);
+                setShareDialog({ story: s2, periodLabel: m.label, timeRange: `${format(m.start, "M/d")} - ${format(m.end, "M/d")}`, photos: m.photos });
+              }}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-muted/15 text-muted-foreground hover:text-primary text-[11px] font-medium transition-all"
+            >
+              <Share2 size={12} /><span>{t("story.share")}</span>
+            </button>
+            <button
+              onClick={() => setShowCategory(true)}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-muted/15 text-muted-foreground hover:text-primary text-[11px] font-medium transition-all"
+            >
+              <Layers size={12} /><span>{t("story.categoryView") || "分类回顾"}</span>
+            </button>
+          </div>
+        </div>
+        <div className="h-4" />
       </div>
     );
   };
@@ -374,37 +347,94 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Carousel track */}
+      {/* Stacked peek headers for months behind the active card */}
+      {months.slice(0, activeIndex).map((m, i) => {
+        const distFromActive = activeIndex - i; // 1 = directly behind, 2 = two layers back, etc.
+        const scale = 1 - distFromActive * SCALE_STEP;
+        const topPos = i * PEEK_HEIGHT;
+
+        return (
+          <div
+            key={m.key}
+            className="absolute left-0 right-0 cursor-pointer"
+            style={{
+              top: `${topPos}px`,
+              zIndex: i + 1,
+              transform: `scale(${Math.max(scale, 0.88)})`,
+              transformOrigin: "top center",
+              transition: isDragging ? "none" : "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
+            }}
+            onClick={() => { setActiveIndex(i); setDragOffset(0); }}
+          >
+            <div className="mx-4 h-[48px] rounded-t-2xl bg-card border border-b-0 border-border/30 shadow-md flex items-center px-5 gap-3">
+              <h2
+                className="text-base font-bold text-foreground/70 truncate"
+                style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}
+              >
+                {m.monthName}
+              </h2>
+              <span className="text-[10px] text-muted-foreground">{m.year}</span>
+              <div className="ml-auto flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span>{m.completedCount}/{m.total}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Active (front) card */}
       <div
-        className="flex flex-col"
+        className="absolute left-0 right-0 bottom-0"
         style={{
-          transform: `translateY(${translateY}px)`,
-          transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
-          gap: `${CARD_GAP}px`,
+          top: `${peekAreaHeight}px`,
+          zIndex: activeIndex + 1,
+          transform: `translateY(${isDragging ? dragOffset : 0}px)`,
+          transition: isDragging ? "none" : "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
         }}
       >
-        {months.map((m, i) => renderMonthCard(m, i))}
+        <div className="mx-4 h-full rounded-t-3xl border border-border/30 bg-card shadow-xl overflow-hidden flex flex-col">
+          {renderActiveCard(months[activeIndex])}
+        </div>
       </div>
 
-      {/* Page dots indicator */}
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-1">
-        {months.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => { setActiveIndex(i); setDragOffset(0); }}
-            className={cn(
-              "w-1.5 rounded-full transition-all duration-300",
-              i === activeIndex ? "h-4 bg-primary" : "h-1.5 bg-border/50"
-            )}
-          />
-        ))}
-      </div>
+      {/* Cards below active — peek from bottom (future months if going back) */}
+      {months.slice(activeIndex + 1).map((m, i) => {
+        const belowIndex = i; // 0 = directly below
+        const scale = 1 - (belowIndex + 1) * SCALE_STEP;
+        return (
+          <div
+            key={m.key}
+            className="absolute left-0 right-0 cursor-pointer"
+            style={{
+              bottom: 0,
+              height: `${PEEK_HEIGHT}px`,
+              zIndex: 0,
+              transform: `translateY(${(belowIndex + 1) * 6}px) scale(${Math.max(scale, 0.88)})`,
+              transformOrigin: "bottom center",
+              transition: isDragging ? "none" : "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
+              opacity: belowIndex < 2 ? 1 - belowIndex * 0.3 : 0,
+            }}
+            onClick={() => { setActiveIndex(activeIndex + 1 + i); setDragOffset(0); }}
+          >
+            <div className="mx-4 h-full rounded-b-2xl bg-card border border-t-0 border-border/30 shadow-md flex items-center px-5 gap-3">
+              <h2
+                className="text-base font-bold text-foreground/70 truncate"
+                style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}
+              >
+                {m.monthName}
+              </h2>
+              <span className="text-[10px] text-muted-foreground">{m.year}</span>
+            </div>
+          </div>
+        );
+      })}
 
-      {/* Back to current month button */}
+      {/* Back to current month */}
       {activeIndex !== 0 && (
         <button
           onClick={() => { setActiveIndex(0); setDragOffset(0); }}
-          className="absolute top-3 right-10 z-20 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-[11px] font-medium shadow-md hover:bg-primary transition-colors"
+          className="absolute top-2 right-4 z-50 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-[11px] font-medium shadow-md hover:bg-primary transition-colors"
         >
           <span>← {months[0].monthName}</span>
         </button>
