@@ -220,45 +220,55 @@ async function generatePoster(
   const accentL = tc ? Math.max(tc.l - 5, 40) : 40;
   const accentColor = `hsl(${accentH}, ${accentS}%, ${accentL}%)`;
 
-  // Layout: top section (paper ~45%) + photo section (bottom ~55%)
-  const topSectionH = hasPhotos ? Math.round(POSTER_H * 0.45) : POSTER_H;
+  // Layout: calculate highlights height to determine top section size dynamically
+  const highlights = story.highlights.slice(0, 4).map(h => stripEmoji(h));
+
+  const marginX = 80;
+  const contentW = POSTER_W - marginX * 2;
+
+  // === Measure content to compute top section height ===
+  // Month name + year: ~140px, highlights: ~50px each, padding: ~80px
+  const calGridH = 280; // approximate calendar height
+  const highlightsH = highlights.length * 58 + 20;
+  const monthHeaderH = 140;
+  const topPadding = 80;
+  const bottomPad = 40;
+  const minTopH = topPadding + Math.max(monthHeaderH + highlightsH, calGridH + 30) + bottomPad;
+  const topSectionH = hasPhotos ? Math.min(Math.max(minTopH, 520), Math.round(POSTER_H * 0.42)) : POSTER_H;
   const photoSectionH = hasPhotos ? POSTER_H - topSectionH : 0;
 
   // === TOP SECTION: Paper texture ===
   drawPaperTexture(ctx, POSTER_W, topSectionH);
 
-  const marginX = 80;
-  const contentW = POSTER_W - marginX * 2;
-
   // Month name - large handwriting, top-left
-  let curY = 100;
+  let curY = topPadding;
   const monthLabel = hasCal
     ? (lang === "zh" ? calendarData.monthName : MONTH_EN[calendarData.month])
     : periodLabel;
 
-  ctx.font = `700 110px ${handFont}`;
+  ctx.font = `700 100px ${handFont}`;
   ctx.fillStyle = accentColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText(monthLabel, marginX, curY);
-  const monthTextW = ctx.measureText(monthLabel).width;
 
-  // Year below month name
+  // Year - smaller, right after month name on same line or just below
   if (hasCal) {
-    curY += 120;
-    ctx.font = `400 36px 'Noto Sans SC', sans-serif`;
-    ctx.fillStyle = "rgba(80,75,65,0.45)";
-    ctx.fillText(String(calendarData.year), marginX, curY);
-    curY += 60;
+    curY += 110;
+    ctx.font = `300 28px 'Noto Sans SC', sans-serif`;
+    ctx.fillStyle = "rgba(80,75,65,0.4)";
+    ctx.fillText(String(calendarData.year), marginX + 4, curY);
+    curY += 44;
   } else {
-    curY += 130;
+    curY += 120;
   }
 
-  // Calendar grid - positioned to the right of month name
+  // Calendar grid - right side, anchored to right margin
   if (hasCal) {
-    const calX = Math.max(marginX + monthTextW + 40, POSTER_W - 380);
+    const calGridW = 7 * (36 + 3) - 3; // matches cellSize+gap in drawCalendarGrid
+    const calX = POSTER_W - marginX - calGridW;
     drawCalendarGrid(
-      ctx, calX, 110,
+      ctx, calX, topPadding + 10,
       calendarData.year, calendarData.month,
       calendarData.completedDates,
       calendarData.taskDates,
