@@ -39,7 +39,7 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {renderPage()}
-      <AddTaskDialog onAdd={addTask} />
+      {activeTab === "home" && <AddTaskDialog onAdd={addTask} />}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
