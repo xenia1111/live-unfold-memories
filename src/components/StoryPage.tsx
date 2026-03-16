@@ -370,9 +370,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         />
       )}
     </div>
-  );
-    </div>
-  );
 };
 
 export default StoryPage;
