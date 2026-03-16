@@ -314,7 +314,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               )}
             </button>
 
-            <div className="pt-2">
+            <div className="pt-1">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <PenLine size={12} className="text-primary/50" />
