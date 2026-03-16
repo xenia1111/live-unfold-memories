@@ -94,7 +94,11 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       const monthTasks = tasks.filter(t => t.date && isWithinInterval(t.date, { start, end }));
       const completed = monthTasks.filter(t => t.completed);
       const incomplete = monthTasks.filter(t => !t.completed);
-      const photos = completed.map(t => t.completionPhoto).filter((p): p is string => !!p);
+      let photos = completed.map(t => t.completionPhoto).filter((p): p is string => !!p);
+      // Demo photos for current month preview
+      if (i === 0 && photos.length === 0) {
+        photos = ["/images/demo-photo-1.jpg", "/images/demo-photo-2.jpg", "/images/demo-photo-3.jpg"];
+      }
       const completedDates = new Set(completed.map(t => t.date ? format(t.date, "yyyy-MM-dd") : "").filter(Boolean));
       const taskDates = new Set(monthTasks.map(t => t.date ? format(t.date, "yyyy-MM-dd") : "").filter(Boolean));
       const incompleteDates = new Set(incomplete.map(t => t.date ? format(t.date, "yyyy-MM-dd") : "").filter(Boolean));
