@@ -125,6 +125,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     });
   }, [months]);
 
+  const buildFallback = useCallback((m: typeof months[0]): StoryData => {
     const rate = m.total > 0 ? m.completedCount / m.total : 0;
     const catCount: Record<string, number> = {};
     m.completed.forEach(t => { catCount[t.category] = (catCount[t.category] || 0) + 1; });
