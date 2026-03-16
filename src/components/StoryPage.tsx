@@ -376,7 +376,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     >
       {/* Carousel track */}
       <div
-        className="flex flex-col pt-2"
+        className="flex flex-col"
         style={{
           transform: `translateY(${translateY}px)`,
           transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
