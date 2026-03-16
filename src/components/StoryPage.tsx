@@ -259,7 +259,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           </div>
 
           {m.photos.length > 0 && (
-            <div className="px-5 py-4 border-t border-dashed border-border/30">
+            <div className="px-5 py-2 border-t border-dashed border-border/30">
               <div className="relative">
                 {/* Hero photo - large, takes most width */}
                 <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-muted/20 shadow-sm">
@@ -294,12 +294,12 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             </div>
           )}
 
-          <div className="px-5 py-4 border-t border-dashed border-border/30 space-y-2.5">
+          <div className="px-5 py-2 border-t border-dashed border-border/30 space-y-1.5">
             <button
               onClick={() => generateAIStory(m)}
               disabled={loading}
               className={cn(
-                "w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-medium transition-all duration-300",
+                "w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300",
                 hasAIStory
                   ? "bg-muted/30 text-muted-foreground hover:text-foreground"
                   : "gradient-warm text-primary-foreground shadow-sm hover:shadow-md active:scale-[0.98]"
@@ -314,7 +314,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               )}
             </button>
 
-            <div className="pt-2">
+            <div className="pt-1">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <PenLine size={12} className="text-primary/50" />
@@ -340,7 +340,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               ) : null}
             </div>
 
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2">
               <button
                 onClick={() => {
                   const s2 = aiStories[m.key] || buildFallback(m);
@@ -358,7 +358,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               </button>
             </div>
           </div>
-          <div className="h-4" />
+          <div className="h-2" />
         </div>
       </div>
     );
