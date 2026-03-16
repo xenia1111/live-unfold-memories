@@ -18,7 +18,8 @@ const MONTH_NAMES_ZH = ["一月", "二月", "三月", "四月", "五月", "六�
 const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const PEEK_HEIGHT = 48; // px height of each peeking card header
-const SCALE_STEP = 0.02; // scale reduction per layer
+const SCALE_STEP = 0.03; // scale reduction per layer
+const MAX_VISIBLE_BEHIND = 4; // max peeking cards behind active
 
 const StoryPage = ({ tasks }: StoryPageProps) => {
   const { t, lang } = useI18n();
@@ -174,14 +175,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     );
   }
 
+  // Only show up to MAX_VISIBLE_BEHIND peeking cards behind active
   const olderStack = months
-    .slice(activeIndex + 1)
+    .slice(activeIndex + 1, activeIndex + 1 + MAX_VISIBLE_BEHIND)
     .map((month, offset) => ({ month, index: activeIndex + 1 + offset }))
-    .reverse();
-
-  const newerStack = months
-    .slice(0, activeIndex)
-    .map((month, index) => ({ month, index }))
     .reverse();
 
   const activeTop = olderStack.length * PEEK_HEIGHT;
@@ -390,37 +387,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         </div>
       </div>
 
-      {newerStack.slice(0, 2).map(({ month, index }, layerIndex) => {
-        const scale = 1 - (layerIndex + 1) * SCALE_STEP;
-
-        return (
-          <div
-            key={month.key}
-            className="absolute left-0 right-0 cursor-pointer"
-            style={{
-              bottom: `${layerIndex * 10}px`,
-              height: `${PEEK_HEIGHT}px`,
-              zIndex: 0,
-              transform: `scale(${Math.max(scale, 0.9)})`,
-              transformOrigin: "bottom center",
-              transition: isDragging ? "none" : "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
-              opacity: 1 - layerIndex * 0.25,
-            }}
-            onClick={() => { setActiveIndex(index); setDragOffset(0); }}
-          >
-            <div className="mx-4 h-full rounded-b-2xl bg-card border border-t-0 border-border/30 shadow-md flex items-center px-5 gap-3">
-              <h2 className="text-base font-bold text-foreground/70 truncate" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
-                {month.monthName}
-              </h2>
-              <span className="text-[10px] text-muted-foreground">{month.year}</span>
-              <div className="ml-auto flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span>{month.completedCount}/{month.total}</span>
-              </div>
-            </div>
-          </div>
-        );
-      })}
 
       {activeIndex !== 0 && (
         <button
