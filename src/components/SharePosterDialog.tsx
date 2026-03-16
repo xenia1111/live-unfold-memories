@@ -226,55 +226,62 @@ async function generatePoster(
   const marginX = 80;
   const contentW = POSTER_W - marginX * 2;
 
-  // === Measure content to compute top section height ===
-  // Month name + year: ~140px, highlights: ~50px each, padding: ~80px
-  const calGridH = 280; // approximate calendar height
-  const highlightsH = highlights.length * 58 + 20;
-  const monthHeaderH = 140;
+  // Calendar grid dimensions: 7*(48+4)-4 = 360px wide
+  const calCellSize = 48;
+  const calGap = 4;
+  const calGridW = 7 * (calCellSize + calGap) - calGap; // 360
+  const calGridH = 320;
   const topPadding = 80;
-  const bottomPad = 40;
-  const minTopH = topPadding + Math.max(monthHeaderH + highlightsH, calGridH + 30) + bottomPad;
-  const topSectionH = hasPhotos ? Math.min(Math.max(minTopH, 520), Math.round(POSTER_H * 0.42)) : POSTER_H;
+
+  // Compute top section: tight fit around content
+  const highlightsH = highlights.length * 54 + 20;
+  const monthHeaderH = 130;
+  const bottomPad = 30;
+  const leftColH = monthHeaderH + highlightsH;
+  const minTopH = topPadding + Math.max(leftColH, calGridH) + bottomPad;
+  const topSectionH = hasPhotos ? Math.min(Math.max(minTopH, 480), Math.round(POSTER_H * 0.42)) : POSTER_H;
   const photoSectionH = hasPhotos ? POSTER_H - topSectionH : 0;
 
   // === TOP SECTION: Paper texture ===
   drawPaperTexture(ctx, POSTER_W, topSectionH);
 
-  // Month name - large handwriting, top-left
-  let curY = topPadding;
-  const monthLabel = hasCal
-    ? (lang === "zh" ? calendarData.monthName : MONTH_EN[calendarData.month])
-    : periodLabel;
-
-  ctx.font = `700 100px ${handFont}`;
-  ctx.fillStyle = accentColor;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "top";
-  ctx.fillText(monthLabel, marginX, curY);
-
-  // Year - smaller, right after month name on same line or just below
-  if (hasCal) {
-    curY += 110;
-    ctx.font = `300 28px 'Noto Sans SC', sans-serif`;
-    ctx.fillStyle = "rgba(80,75,65,0.4)";
-    ctx.fillText(String(calendarData.year), marginX + 4, curY);
-    curY += 44;
-  } else {
-    curY += 120;
-  }
-
   // Calendar grid - right side, anchored to right margin
+  const calX = POSTER_W - marginX - calGridW;
   if (hasCal) {
-    const calGridW = 7 * (36 + 3) - 3; // matches cellSize+gap in drawCalendarGrid
-    const calX = POSTER_W - marginX - calGridW;
     drawCalendarGrid(
-      ctx, calX, topPadding + 10,
+      ctx, calX, topPadding + 8,
       calendarData.year, calendarData.month,
       calendarData.completedDates,
       calendarData.taskDates,
       calendarData.themeColor,
       lang,
     );
+  }
+
+  // Left column: month name + year + highlights
+  // Max width for left text = calX - marginX - gap
+  const leftMaxW = calX - marginX - 30;
+
+  let curY = topPadding;
+  const monthLabel = hasCal
+    ? (lang === "zh" ? calendarData.monthName : MONTH_EN[calendarData.month])
+    : periodLabel;
+
+  ctx.font = `700 96px ${handFont}`;
+  ctx.fillStyle = accentColor;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText(monthLabel, marginX, curY);
+
+  // Year below month name
+  if (hasCal) {
+    curY += 105;
+    ctx.font = `300 28px 'Noto Sans SC', sans-serif`;
+    ctx.fillStyle = "rgba(80,75,65,0.4)";
+    ctx.fillText(String(calendarData.year), marginX + 4, curY);
+    curY += 44;
+  } else {
+    curY += 115;
   }
 
   // Highlights - left column, below year
