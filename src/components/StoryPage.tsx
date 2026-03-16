@@ -354,7 +354,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                 onClick={() => setShowCategory(true)}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-muted/15 text-muted-foreground hover:text-primary text-[11px] font-medium transition-all"
               >
-                <Layers size={12} /><span>{t("story.categoryView") || "分类回顾"}</span>
+                <Layers size={12} /><span>{t("story.categoryView")}</span>
               </button>
             </div>
           </div>
