@@ -282,11 +282,11 @@ async function generatePoster(
 
   ctx.textBaseline = "alphabetic";
   if (highlights.length > 0) {
-    const hlSize = 42;
+    const hlSize = 38;
     ctx.font = `400 ${hlSize}px ${handFont}`;
 
     for (const h of highlights) {
-      if (curY > topSectionH - 60) break;
+      if (curY > topSectionH - 50) break;
 
       // ✽ marker
       ctx.fillStyle = accentColor;
@@ -297,13 +297,13 @@ async function generatePoster(
       // Text
       ctx.fillStyle = accentColor;
       ctx.globalAlpha = 0.85;
-      const hLines = wrapText(ctx, h, highlightMaxW - 60);
+      const hLines = wrapText(ctx, h, highlightMaxW - 52);
       for (const hl of hLines) {
-        ctx.fillText(hl, marginX + 52, curY + hlSize);
-        curY += hlSize + 14;
+        ctx.fillText(hl, marginX + 48, curY + hlSize);
+        curY += hlSize + 10;
       }
       ctx.globalAlpha = 1;
-      curY += 8;
+      curY += 4;
     }
   }
 
