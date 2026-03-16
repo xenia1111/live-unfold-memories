@@ -212,7 +212,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                 )}
               </div>
               <div className="w-[130px] shrink-0">
-                <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} />
+                <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} taskDates={m.taskDates} incompleteDates={m.incompleteDates} />
               </div>
             </div>
             <div className="flex items-center gap-3 mt-4">
