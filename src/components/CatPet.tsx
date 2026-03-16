@@ -272,7 +272,7 @@ const CatPet = ({ tasks }: CatPetProps) => {
             {stage.level < 0 ? (
               /* 蛋阶段：巢里的蛋左右晃动 */
               <button onClick={() => setShowRadar(true)} className="animate-egg-wobble active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-                <TransparentImage src={eggNest} alt="egg" className="w-24 h-24 object-contain" style={{ imageRendering: "pixelated" }} />
+                <img src={eggNest} alt="egg" className="w-24 h-24 object-contain" style={{ imageRendering: "pixelated" }} />
               </button>
             ) : (
               /* 猫阶段：走来走去 */
