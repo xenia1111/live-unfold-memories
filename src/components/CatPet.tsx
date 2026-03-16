@@ -97,20 +97,6 @@ import bgGarden from "@/assets/bg-garden.png";
 import bgCardboardBox from "@/assets/bg-cardboard-box.png";
 import EggHatchEffect from "@/components/EggHatchEffect";
 import { useI18n, interpolate } from "@/lib/i18n";
-import { removeWhiteBackground } from "@/lib/imageUtils";
-
-const TransparentImage = ({ src, alt, className, style }: any) => {
-  const [tSrc, setTSrc] = useState(src);
-  useEffect(() => {
-    let mounted = true;
-    setTSrc(src);
-    removeWhiteBackground(src).then(res => {
-      if (mounted) setTSrc(res);
-    });
-    return () => { mounted = false; };
-  }, [src]);
-  return <img src={tSrc} alt={alt} className={className} style={style} />;
-};
 
 const BG_IMAGES: Record<string, string> = { grassland: bgGrassland, cottage: bgCottage, garden: bgGarden, cardboard: bgCardboardBox };
 
