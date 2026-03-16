@@ -83,14 +83,14 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
   const goTo = (idx: number) => setActiveIndex(Math.max(0, Math.min(months.length - 1, idx)));
 
-  // Touch swipe handling
+  // Touch swipe handling (vertical)
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientY);
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStart === null) return;
     const diff = touchStart - e.changedTouches[0].clientY;
-    if (Math.abs(diff) > 60) {
-      if (diff > 0) goTo(activeIndex + 1); // swipe up → next (older)
-      else goTo(activeIndex - 1); // swipe down → prev (newer)
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(activeIndex + 1); // swipe up → older month
+      else goTo(activeIndex - 1); // swipe down → newer month
     }
     setTouchStart(null);
   };
@@ -270,84 +270,94 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     );
   };
 
+  // How many older months are stacked above the active one
+  const PEEK_HEIGHT = 36; // px each stacked card edge shows
+  const MAX_STACKED = 5; // max visible stacked edges above
+
   return (
     <div
       className="h-[calc(100vh-80px)] relative overflow-hidden"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Stacked older months behind (above the active card) */}
       {months.map((m, i) => {
-        const offset = i - activeIndex;
-        const isActive = offset === 0;
-        const isNearby = Math.abs(offset) <= 2;
+        if (i <= activeIndex) return null; // only older months (higher index = older)
+        const stackPos = i - activeIndex; // 1, 2, 3...
+        if (stackPos > MAX_STACKED) return null;
 
-        if (!isNearby) return null;
-
-        let translateY = "0%";
-        let scale = 1;
-        let zIndex = 10;
-
-        if (offset === -1) {
-          translateY = "calc(-100% + 40px)";
-          scale = 0.97;
-          zIndex = 8;
-        } else if (offset === -2) {
-          translateY = "calc(-100% + 16px)";
-          scale = 0.94;
-          zIndex = 6;
-        } else if (offset === 1) {
-          translateY = "calc(100% - 40px)";
-          scale = 0.97;
-          zIndex = 8;
-        } else if (offset === 2) {
-          translateY = "calc(100% - 16px)";
-          scale = 0.94;
-          zIndex = 6;
-        }
-
-        const edgeShadow = offset < 0
-          ? "shadow-[0_8px_24px_-4px_hsl(var(--foreground)/0.08)]"
-          : offset > 0
-          ? "shadow-[0_-8px_24px_-4px_hsl(var(--foreground)/0.08)]"
-          : "";
+        const topOffset = (stackPos - 1) * PEEK_HEIGHT;
 
         return (
           <div
             key={m.key}
-            className={cn(
-              "absolute inset-0 transition-all duration-500 ease-out",
-              !isActive && "cursor-pointer"
-            )}
+            onClick={() => goTo(i)}
+            className="absolute left-0 right-0 cursor-pointer transition-all duration-500 ease-out"
             style={{
-              transform: `translateY(${translateY}) scale(${scale})`,
-              zIndex,
+              top: `${topOffset}px`,
+              height: `${PEEK_HEIGHT}px`,
+              zIndex: MAX_STACKED - stackPos + 1,
             }}
-            onClick={!isActive ? () => goTo(i) : undefined}
           >
             <div className={cn(
-              "absolute inset-0 bg-background border border-border/20",
-              offset <= 0 ? "rounded-b-3xl" : "rounded-t-3xl",
-              edgeShadow
-            )} />
-            <div className={cn(
-              "relative h-full pb-4",
-              isActive ? "overflow-y-auto" : "overflow-hidden pointer-events-none"
-            )} style={{ scrollbarWidth: "none" }}>
-              {!isActive && offset > 0 && (
-                <div className="px-8 pt-3.5 pb-2 border-b border-border/10">
-                  <span className="text-[11px] font-medium text-muted-foreground/50 tracking-wide">{m.monthName} {m.year}</span>
-                </div>
-              )}
-              {!isActive && offset < 0 && (
-                <div className="absolute bottom-0 left-0 right-0 px-8 pb-3.5 pt-2 border-t border-border/10">
-                  <span className="text-[11px] font-medium text-muted-foreground/50 tracking-wide">{m.monthName} {m.year}</span>
-                </div>
-              )}
-              {isActive && renderMonthCard(m, i)}
+              "h-full rounded-t-2xl bg-card border border-b-0 border-border/25 px-6 flex items-center",
+              "shadow-[0_-2px_8px_-2px_hsl(var(--foreground)/0.06)]"
+            )}>
+              <span
+                className="text-sm font-semibold text-foreground/50 tracking-wide"
+                style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}
+              >
+                {m.monthName}
+              </span>
+              <span className="text-[10px] text-muted-foreground/40 ml-2">{m.year}</span>
             </div>
           </div>
         );
       })}
+
+      {/* Active card — positioned below the stacked edges */}
+      <div
+        key={activeMonth.key}
+        className="absolute left-0 right-0 bottom-0 transition-all duration-500 ease-out animate-fade-in"
+        style={{
+          top: `${Math.min(activeIndex > 0 ? 0 : 0, MAX_STACKED) * 0 + Math.min(months.length - 1 - activeIndex, MAX_STACKED) * PEEK_HEIGHT}px`,
+          zIndex: MAX_STACKED + 2,
+        }}
+      >
+        <div className={cn(
+          "h-full rounded-t-3xl bg-card border border-b-0 border-border/25 overflow-hidden",
+          "shadow-[0_-4px_20px_-4px_hsl(var(--foreground)/0.1)]"
+        )}>
+          <div className="h-full overflow-y-auto pb-4" style={{ scrollbarWidth: "none" }}>
+            {renderMonthCard(activeMonth, activeIndex)}
+          </div>
+        </div>
+      </div>
+
+      {/* Newer month peek at the very bottom (if we scrolled to an older month) */}
+      {activeIndex > 0 && (
+        <div
+          onClick={() => goTo(activeIndex - 1)}
+          className="absolute left-0 right-0 bottom-0 cursor-pointer transition-all duration-500 ease-out"
+          style={{
+            height: `${PEEK_HEIGHT}px`,
+            zIndex: MAX_STACKED + 3,
+          }}
+        >
+          <div className={cn(
+            "h-full rounded-b-2xl bg-card border border-t-0 border-border/25 px-6 flex items-center justify-center",
+            "shadow-[0_2px_8px_-2px_hsl(var(--foreground)/0.06)]"
+          )}>
+            <span
+              className="text-sm font-semibold text-foreground/50 tracking-wide"
+              style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}
+            >
+              {months[activeIndex - 1].monthName}
+            </span>
+            <span className="text-[10px] text-muted-foreground/40 ml-2">{months[activeIndex - 1].year}</span>
+          </div>
+        </div>
+      )}
 
       {shareDialog && (
         <SharePosterDialog
