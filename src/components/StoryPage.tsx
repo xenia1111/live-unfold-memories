@@ -98,21 +98,28 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     const dt = Date.now() - start.time;
     const absDy = Math.abs(dy);
 
-    // Need minimum distance and reasonable speed
-    if (absDy < 40 || dt > 600) return;
+    if (absDy < 30 || dt > 800) return;
 
-    // Check if scroll container is at boundary
+    const velocity = absDy / dt; // px/ms
+
+    // Fast swipe → always switch month regardless of scroll position
+    if (velocity > 0.3) {
+      if (dy > 0) goTo(activeIndex + 1);
+      else goTo(activeIndex - 1);
+      return;
+    }
+
+    // Slow swipe → only switch if scroll is at boundary
     const el = scrollRef.current;
     if (el) {
       const atTop = el.scrollTop <= 5;
       const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 5;
-
-      if (dy > 0 && !atBottom) return; // swiping up but not at bottom — let scroll handle it
-      if (dy < 0 && !atTop) return; // swiping down but not at top — let scroll handle it
+      if (dy > 0 && !atBottom) return;
+      if (dy < 0 && !atTop) return;
     }
 
-    if (dy > 0) goTo(activeIndex + 1); // swipe up → older
-    else goTo(activeIndex - 1); // swipe down → newer
+    if (dy > 0) goTo(activeIndex + 1);
+    else goTo(activeIndex - 1);
   }, [activeIndex, goTo]);
 
   if (showCategory) {
@@ -306,6 +313,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   return (
     <div
       className="h-[calc(100vh-80px)] relative overflow-hidden"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Stacked OLDER months above — oldest at top, newest near active */}
       {months.map((m, i) => {
@@ -355,8 +364,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           "h-full rounded-t-3xl bg-card border border-b-0 border-border/20 overflow-hidden",
           "shadow-[0_-4px_16px_-4px_hsl(var(--foreground)/0.08)]"
         )}>
-          <div ref={scrollRef} className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}
-            onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+          <div ref={scrollRef} className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
             {renderMonthCard(activeMonth, activeIndex)}
             <div className="h-20" />
           </div>
