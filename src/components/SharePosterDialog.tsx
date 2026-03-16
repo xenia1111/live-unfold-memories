@@ -130,8 +130,8 @@ function drawCalendarGrid(
   const startDow = getDay(firstDay);
   const daysInMonth = getDaysInMonth(firstDay);
 
-  const cellSize = 36;
-  const gap = 3;
+  const cellSize = 48;
+  const gap = 4;
   const gridW = 7 * (cellSize + gap) - gap;
 
   // Accent color from theme
@@ -143,7 +143,7 @@ function drawCalendarGrid(
 
   // Weekday headers
   const labels = lang === "zh" ? WEEKDAY_LABELS : WEEKDAY_LABELS_EN;
-  ctx.font = `500 16px 'Noto Sans SC', sans-serif`;
+  ctx.font = `500 20px 'Noto Sans SC', sans-serif`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   for (let d = 0; d < 7; d++) {
@@ -153,9 +153,9 @@ function drawCalendarGrid(
   }
 
   // Day cells
-  let curY = y + 28;
+  let curY = y + 34;
   let col = startDow;
-  ctx.font = `600 18px 'Noto Sans SC', sans-serif`;
+  ctx.font = `600 22px 'Noto Sans SC', sans-serif`;
 
   for (let day = 1; day <= daysInMonth; day++) {
     const cx = x + col * (cellSize + gap) + cellSize / 2;
