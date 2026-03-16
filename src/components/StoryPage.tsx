@@ -27,7 +27,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCategory, setShowCategory] = useState(false);
   const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const touchStartRef = useRef<{ y: number; time: number } | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Build 12 months of data
   const months = useMemo(() => {
@@ -83,17 +84,36 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
   const goTo = (idx: number) => setActiveIndex(Math.max(0, Math.min(months.length - 1, idx)));
 
-  // Touch swipe handling (vertical)
-  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientY);
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStart === null) return;
-    const diff = touchStart - e.changedTouches[0].clientY;
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) goTo(activeIndex + 1); // swipe up → older month
-      else goTo(activeIndex - 1); // swipe down → newer month
+  // Swipe handling — works on both stacked edges and main card
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartRef.current = { y: e.touches[0].clientY, time: Date.now() };
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    if (!start) return;
+    touchStartRef.current = null;
+
+    const dy = start.y - e.changedTouches[0].clientY;
+    const dt = Date.now() - start.time;
+    const absDy = Math.abs(dy);
+
+    // Need minimum distance and reasonable speed
+    if (absDy < 40 || dt > 600) return;
+
+    // Check if scroll container is at boundary
+    const el = scrollRef.current;
+    if (el) {
+      const atTop = el.scrollTop <= 5;
+      const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 5;
+
+      if (dy > 0 && !atBottom) return; // swiping up but not at bottom — let scroll handle it
+      if (dy < 0 && !atTop) return; // swiping down but not at top — let scroll handle it
     }
-    setTouchStart(null);
-  };
+
+    if (dy > 0) goTo(activeIndex + 1); // swipe up → older
+    else goTo(activeIndex - 1); // swipe down → newer
+  }, [activeIndex, goTo]);
 
   if (showCategory) {
     return (
@@ -286,8 +306,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   return (
     <div
       className="h-[calc(100vh-80px)] relative overflow-hidden"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
     >
       {/* Stacked OLDER months above — oldest at top, newest near active */}
       {months.map((m, i) => {
@@ -337,20 +355,19 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           "h-full rounded-t-3xl bg-card border border-b-0 border-border/20 overflow-hidden",
           "shadow-[0_-4px_16px_-4px_hsl(var(--foreground)/0.08)]"
         )}>
-          <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          <div ref={scrollRef} className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}
+            onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             {renderMonthCard(activeMonth, activeIndex)}
-            <div className="h-20" /> {/* bottom spacing for nav bar */}
+            <div className="h-20" />
           </div>
         </div>
 
-        {/* "Back to this month" floating button */}
         {activeIndex !== 0 && (
           <button
             onClick={() => goTo(0)}
             className="absolute top-3 right-4 z-10 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-[11px] font-medium shadow-md hover:bg-primary transition-colors"
           >
-            <ChevronRight size={12} />
-            <span>{t("story.current") || "本月"}</span>
+            <span>← {months[0].monthName}</span>
           </button>
         )}
       </div>
