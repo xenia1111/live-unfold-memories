@@ -366,7 +366,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-[calc(100vh-80px)] relative overflow-hidden pt-14"
+      className="h-[calc(100vh-80px)] relative overflow-hidden"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
