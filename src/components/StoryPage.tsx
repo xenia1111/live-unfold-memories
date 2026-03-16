@@ -358,7 +358,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               </button>
             </div>
           </div>
-          <div className="h-4" />
+          <div className="h-2" />
         </div>
       </div>
     );
