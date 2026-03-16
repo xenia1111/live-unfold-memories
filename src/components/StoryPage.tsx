@@ -389,13 +389,15 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
 
       {activeIndex !== 0 && (
-        <div className="absolute top-0 left-0 right-0 z-50 flex justify-center pt-1.5 pointer-events-none">
+        <div
+          className="absolute right-6 z-50"
+          style={{ top: `${activeTop + 14}px` }}
+        >
           <button
             onClick={() => { setActiveIndex(0); setDragOffset(0); }}
-            className="pointer-events-auto flex items-center gap-1 text-[11px] text-primary/70 font-medium hover:text-primary transition-colors py-1 px-2"
+            className="rounded-full border border-border/60 bg-background/90 px-3.5 py-1.5 text-[11px] font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background"
           >
-            <span className="w-1 h-1 rounded-full bg-primary/60" />
-            <span>{t("story.current") || "本月"}</span>
+            {lang === "zh" ? "回到本月" : "Back to this month"}
           </button>
         </div>
       )}
