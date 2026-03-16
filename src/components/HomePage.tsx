@@ -207,11 +207,17 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
         <CatPet tasks={tasks} />
       </div>
 
+      {/* ── 今天 ── */}
       <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
+        <div className="flex items-center gap-2 mb-3">
+          <Star size={14} className="text-primary/60" />
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.today") || "今天"}</span>
+          {todayTotal > 0 && <span className="text-[10px] text-muted-foreground/40 ml-1">{todayCompleted}/{todayTotal}</span>}
+        </div>
         {todayTotal === 0 ? (
-          <div className="text-center py-12 px-6 rounded-2xl bg-card shadow-sm border border-border/50">
+          <div className="text-center py-8 px-6 rounded-2xl bg-card shadow-sm border border-border/50">
             <div className="inline-block animate-egg-wobble mb-3">
-              <img src={eggNestImg} alt="" className="w-16 h-16 mx-auto object-contain" />
+              <img src={eggNestImg} alt="" className="w-14 h-14 mx-auto object-contain" />
             </div>
             <p className="text-sm text-card-foreground/70 font-medium">{t("home.noTasks")}</p>
             <p className="text-xs text-muted-foreground mt-1">{t("home.addHint")}</p>
@@ -250,13 +256,19 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
         )}
       </section>
 
-      {futureTasks.length > 0 && (
-        <section className="mb-4 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <button onClick={() => setShowUpcoming(true)} className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all">
-            <CalendarDays size={14} className="text-primary/60" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.upcoming")}</span>
-            <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
-          </button>
+      {/* ── 即将到来 ── */}
+      <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+        <button onClick={() => futureTasks.length > 0 && setShowUpcoming(true)} className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all">
+          <CalendarDays size={14} className="text-primary/60" />
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.upcoming")}</span>
+          {futureTasks.length > 0 && <span className="text-[10px] text-muted-foreground/40 ml-1">{futureTasks.length}</span>}
+          {futureTasks.length > 0 && <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />}
+        </button>
+        {futureTasks.length === 0 ? (
+          <div className="text-center py-6 px-6 rounded-2xl bg-card/60 border border-border/30">
+            <p className="text-xs text-muted-foreground">暂无近期安排</p>
+          </div>
+        ) : (
           <div className="space-y-2">
             {futureTasks.slice(0, 3).map(task => {
               const Icon = iconMap[task.icon] || Star;
@@ -277,17 +289,22 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
               );
             })}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
-      {backlogTasks.length > 0 && (
-        <section className="animate-fade-in" style={{ animationDelay: "0.3s" }}>
-          <button onClick={() => setShowBacklog(true)} className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all">
-            <Inbox size={14} className="text-primary/60" />
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.backlog")}</span>
-            <span className="text-[10px] text-muted-foreground/40 ml-1">{backlogTasks.length}</span>
-            <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />
-          </button>
+      {/* ── 计划中 ── */}
+      <section className="mb-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
+        <button onClick={() => backlogTasks.length > 0 && setShowBacklog(true)} className="flex items-center gap-2 w-full text-left mb-3 group active:scale-[0.98] transition-all">
+          <Inbox size={14} className="text-primary/60" />
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.backlog")}</span>
+          {backlogTasks.length > 0 && <span className="text-[10px] text-muted-foreground/40 ml-1">{backlogTasks.length}</span>}
+          {backlogTasks.length > 0 && <ChevronRight size={14} className="text-muted-foreground/40 ml-auto" />}
+        </button>
+        {backlogTasks.length === 0 ? (
+          <div className="text-center py-6 px-6 rounded-2xl bg-card/60 border border-border/30">
+            <p className="text-xs text-muted-foreground">没有待定的事项</p>
+          </div>
+        ) : (
           <div className="space-y-2">
             {backlogTasks.slice(0, 2).map(task => {
               const Icon = iconMap[task.icon] || Star;
@@ -307,8 +324,8 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
               );
             })}
           </div>
-        </section>
-      )}
+        )}
+      </section>
 
       <Sheet open={showUpcoming} onOpenChange={setShowUpcoming}>
         <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl px-0 pb-0">
