@@ -192,7 +192,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       <div className="px-5 pt-10 pb-24 max-w-lg mx-auto animate-fade-in">
         <button onClick={() => setShowCategory(false)} className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4 hover:text-foreground transition-colors">
           <span>←</span>
-          <span>{t("story.backToMonths") || "返回月历"}</span>
+          <span>{t("story.backToMonths")}</span>
         </button>
         <CategoryStoryView tasks={tasks} />
       </div>
