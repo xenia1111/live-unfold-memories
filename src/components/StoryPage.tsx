@@ -285,28 +285,23 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
         let translateY = "0%";
         let scale = 1;
-        let opacity = 1;
         let zIndex = 10;
 
         if (offset === -1) {
-          translateY = "calc(-100% + 44px)";
-          scale = 0.96;
-          opacity = 0.6;
+          translateY = "calc(-100% + 40px)";
+          scale = 0.97;
           zIndex = 8;
         } else if (offset === -2) {
-          translateY = "calc(-100% + 18px)";
-          scale = 0.92;
-          opacity = 0.25;
+          translateY = "calc(-100% + 16px)";
+          scale = 0.94;
           zIndex = 6;
         } else if (offset === 1) {
-          translateY = "calc(100% - 44px)";
-          scale = 0.96;
-          opacity = 0.6;
+          translateY = "calc(100% - 40px)";
+          scale = 0.97;
           zIndex = 8;
         } else if (offset === 2) {
-          translateY = "calc(100% - 18px)";
-          scale = 0.92;
-          opacity = 0.25;
+          translateY = "calc(100% - 16px)";
+          scale = 0.94;
           zIndex = 6;
         }
 
@@ -319,16 +314,23 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             )}
             style={{
               transform: `translateY(${translateY}) scale(${scale})`,
-              opacity,
               zIndex,
             }}
             onClick={!isActive ? () => goTo(i) : undefined}
           >
+            {/* Solid background layer to prevent text bleed-through */}
+            <div className="absolute inset-0 bg-background rounded-t-3xl" />
             <div className={cn(
-              "h-full pb-4",
+              "relative h-full pb-4",
               isActive ? "overflow-y-auto" : "overflow-hidden pointer-events-none"
             )} style={{ scrollbarWidth: "none" }}>
-              {renderMonthCard(m, i)}
+              {/* For non-active cards, show a mini label at the visible edge */}
+              {!isActive && (
+                <div className="px-8 pt-3 pb-2">
+                  <span className="text-xs font-medium text-muted-foreground/60">{m.monthName} {m.year}</span>
+                </div>
+              )}
+              {isActive && renderMonthCard(m, i)}
             </div>
           </div>
         );
