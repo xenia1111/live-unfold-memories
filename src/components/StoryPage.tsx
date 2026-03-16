@@ -252,29 +252,36 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
           {m.photos.length > 0 && (
             <div className="px-5 py-4 border-t border-dashed border-border/30">
-              <div className="rounded-2xl overflow-hidden mb-2.5 aspect-[16/10] bg-muted/20">
-                <img src={m.photos[0]} alt="" className="w-full h-full object-cover" />
-              </div>
-              {m.photos.length > 1 && (
-                <div className="flex gap-2">
-                  {m.photos.slice(1, 5).map((photo, i) => (
-                    <div key={i} className="flex-1 aspect-square rounded-xl overflow-hidden bg-muted/20">
-                      <img src={photo} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                  {m.photos.length > 5 && (
-                    <div className="flex-1 aspect-square rounded-xl bg-muted/30 flex items-center justify-center">
-                      <span className="text-xs text-muted-foreground font-medium">+{m.photos.length - 5}</span>
-                    </div>
-                  )}
+              <div className="relative">
+                {/* Hero photo - large, takes most width */}
+                <div className="rounded-2xl overflow-hidden aspect-[3/4] bg-muted/20 shadow-sm">
+                  <img src={m.photos[0]} alt="" className="w-full h-full object-cover" />
                 </div>
-              )}
+                {/* Smaller photos stacked on right side, overlapping */}
+                {m.photos.length > 1 && (
+                  <div className="absolute right-3 bottom-4 flex flex-col gap-2">
+                    {m.photos.slice(1, 4).map((photo, i) => (
+                      <div
+                        key={i}
+                        className="w-[72px] h-[72px] rounded-xl overflow-hidden bg-muted/20 border-2 border-card shadow-lg"
+                        style={{ transform: `rotate(${i % 2 === 0 ? 2 : -1.5}deg)` }}
+                      >
+                        <img src={photo} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                    {m.photos.length > 4 && (
+                      <div className="w-[72px] h-[72px] rounded-xl bg-foreground/60 border-2 border-card shadow-lg flex items-center justify-center backdrop-blur-sm">
+                        <span className="text-xs text-card font-semibold">+{m.photos.length - 4}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {m.photos.length === 0 && m.completedCount > 0 && (
             <div className="px-5 py-6 border-t border-dashed border-border/30 text-center">
-              <span className="text-2xl block mb-1">📷</span>
               <p className="text-xs text-muted-foreground">{t("story.noPhotos") || "完成任务时拍张照，记录美好瞬间"}</p>
             </div>
           )}
