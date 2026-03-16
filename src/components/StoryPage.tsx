@@ -389,13 +389,15 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
 
       {activeIndex !== 0 && (
-        <button
-          onClick={() => { setActiveIndex(0); setDragOffset(0); }}
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg hover:shadow-xl active:scale-95 transition-all animate-fade-in"
-        >
-          <span>←</span>
-          <span>{months[0].monthName}</span>
-        </button>
+        <div className="absolute top-0 left-0 right-0 z-50 flex justify-center pt-1.5 pointer-events-none">
+          <button
+            onClick={() => { setActiveIndex(0); setDragOffset(0); }}
+            className="pointer-events-auto flex items-center gap-1 text-[11px] text-primary/70 font-medium hover:text-primary transition-colors py-1 px-2"
+          >
+            <span className="w-1 h-1 rounded-full bg-primary/60" />
+            <span>{t("story.current") || "本月"}</span>
+          </button>
+        </div>
       )}
 
       {shareDialog && (
