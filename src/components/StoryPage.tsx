@@ -17,7 +17,8 @@ interface StoryPageProps { tasks: Task[]; }
 const MONTH_NAMES_ZH = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
 const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-const CARD_GAP = 16;
+const CARD_GAP = 12;
+const PEEK = 28; // px visible of adjacent cards top+bottom
 const SWIPE_THRESHOLD_RATIO = 0.2;
 const SWIPE_VELOCITY_THRESHOLD = 0.3;
 
@@ -39,7 +40,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const scrollRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const touchRef = useRef<{ y: number; time: number; scrollTop: number; canSwipe: boolean } | null>(null);
 
-  // Container height
+  // Container height + non-passive touchmove for preventDefault
   const [containerHeight, setContainerHeight] = useState(0);
   useEffect(() => {
     const measure = () => {
@@ -48,6 +49,50 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // We need a ref-based touchmove handler to use { passive: false }
+  const touchMoveHandler = useRef<(e: TouchEvent) => void>();
+  touchMoveHandler.current = (e: TouchEvent) => {
+    const start = touchRef.current;
+    if (!start || !containerHeight) return;
+
+    const dy = e.touches[0].clientY - start.y;
+    const scrollEl = scrollRefs.current.get(activeIndex);
+
+    if (!start.canSwipe) {
+      if (scrollEl) {
+        const atTop = scrollEl.scrollTop <= 1;
+        const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
+        const swipingDown = dy > 0;
+        const swipingUp = dy < 0;
+        if ((swipingDown && atTop) || (swipingUp && atBottom)) {
+          start.canSwipe = true;
+        } else {
+          return;
+        }
+      } else {
+        start.canSwipe = true;
+      }
+    }
+
+    if (start.canSwipe) {
+      e.preventDefault();
+      let offset = dy;
+      if ((activeIndex === 0 && dy > 0) || (activeIndex === months.length - 1 && dy < 0)) {
+        offset = dy * 0.3;
+      }
+      setDragOffset(offset);
+      setIsDragging(true);
+    }
+  };
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: TouchEvent) => touchMoveHandler.current?.(e);
+    el.addEventListener("touchmove", handler, { passive: false });
+    return () => el.removeEventListener("touchmove", handler);
   }, []);
 
   // Build 12 months of data
@@ -107,46 +152,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     touchRef.current = { y: e.touches[0].clientY, time: Date.now(), scrollTop, canSwipe: false };
   }, [activeIndex]);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    const start = touchRef.current;
-    if (!start || !containerHeight) return;
-
-    const dy = e.touches[0].clientY - start.y;
-    const scrollEl = scrollRefs.current.get(activeIndex);
-
-    // Determine if we should allow page swiping vs internal scrolling
-    if (!start.canSwipe) {
-      // Check if scroll is at boundary
-      if (scrollEl) {
-        const atTop = scrollEl.scrollTop <= 1;
-        const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
-        const swipingDown = dy > 0; // pulling content down = go to previous
-        const swipingUp = dy < 0;   // pulling content up = go to next
-
-        if ((swipingDown && atTop) || (swipingUp && atBottom)) {
-          start.canSwipe = true;
-        } else if (!atTop && !atBottom) {
-          return; // let internal scroll handle it
-        } else {
-          return;
-        }
-      } else {
-        start.canSwipe = true;
-      }
-    }
-
-    // Prevent internal scroll when we're carousel-swiping
-    if (start.canSwipe) {
-      e.preventDefault();
-      // Add resistance at boundaries
-      let offset = dy;
-      if ((activeIndex === 0 && dy > 0) || (activeIndex === months.length - 1 && dy < 0)) {
-        offset = dy * 0.3; // rubber band effect
-      }
-      setDragOffset(offset);
-      setIsDragging(true);
-    }
-  }, [activeIndex, containerHeight, months.length]);
+  // touchMove is handled via native event listener above (non-passive)
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const start = touchRef.current;
@@ -174,9 +180,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     setIsDragging(false);
   }, [activeIndex, containerHeight, isDragging, months.length]);
 
-  // Calculate translateY
-  const cardHeight = containerHeight ? containerHeight - CARD_GAP : 0;
-  const translateY = containerHeight ? -(activeIndex * (cardHeight + CARD_GAP)) + dragOffset : 0;
+  // Calculate translateY — card is shorter than container to show peek of adjacent cards
+  const cardHeight = containerHeight ? containerHeight - PEEK * 2 : 0;
+  const stride = cardHeight + CARD_GAP;
+  const translateY = containerHeight ? PEEK + -(activeIndex * stride) + dragOffset : 0;
 
   if (showCategory) {
     return (
@@ -365,12 +372,11 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       ref={containerRef}
       className="h-[calc(100vh-80px)] relative overflow-hidden"
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* Carousel track */}
       <div
-        className="flex flex-col pt-2"
+        className="flex flex-col"
         style={{
           transform: `translateY(${translateY}px)`,
           transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
