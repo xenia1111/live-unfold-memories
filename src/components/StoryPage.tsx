@@ -290,7 +290,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
           {m.photos.length === 0 && m.completedCount > 0 && (
             <div className="px-5 py-6 border-t border-dashed border-border/30 text-center">
-              <p className="text-xs text-muted-foreground">{t("story.noPhotos") || "完成任务时拍张照，记录美好瞬间"}</p>
+              <p className="text-xs text-muted-foreground">{t("story.noPhotos")}</p>
             </div>
           )}
 

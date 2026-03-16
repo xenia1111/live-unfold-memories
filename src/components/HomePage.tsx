@@ -211,7 +211,7 @@ const HomePage = ({ tasks, loading, onCompleteTask, onUpdateTask, onDeleteTask, 
       <section className="mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
         <div className="flex items-center gap-2 mb-3">
           <Star size={14} className="text-primary/60" />
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.today") || "今天"}</span>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t("home.today")}</span>
           {todayTotal > 0 && <span className="text-[10px] text-muted-foreground/40 ml-1">{todayCompleted}/{todayTotal}</span>}
         </div>
         {todayTotal === 0 ? (
