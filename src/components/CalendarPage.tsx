@@ -102,7 +102,7 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
 
   return (
     <div ref={el => { if (el) scrollRef.current = el; }}>
-      <div className="fixed top-0 left-0 right-0 z-40 bg-card/80 backdrop-blur-xl border-b border-border/50">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
           <h1 className="text-lg font-bold text-foreground font-serif">{t("cal.title")}</h1>
           <div className="flex items-center gap-2">

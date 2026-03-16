@@ -161,7 +161,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                         </div>
 
                         {/* Film frame card */}
-                        <div className={cn("rounded-3xl overflow-hidden shadow-sm border-2 border-foreground/8 relative", card.decor.bg)}>
+                        <div className={cn("rounded-3xl overflow-hidden shadow-sm border-2 border-foreground/8 relative bg-card", card.decor.bg)}>
                           {/* Sprocket holes — top */}
                           <div className="flex justify-between px-4 py-1.5">
                             {Array.from({ length: 8 }).map((_, i) => (
