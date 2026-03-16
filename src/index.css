@@ -136,7 +136,8 @@
   }
 
   .dark body {
-    background: hsl(30, 12%, 10%);
+    background: hsl(30, 12%, 10%) !important;
+    background-attachment: unset !important;
   }
 
   h1, h2, h3 {
