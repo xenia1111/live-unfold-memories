@@ -21,6 +21,7 @@ const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", 
 const PEEK_HEIGHT = 48; // px height of each peeking card header
 const SCALE_STEP = 0.03; // scale reduction per layer
 const MAX_VISIBLE_BEHIND = 2; // max peeking cards behind active
+const SAFE_TOP = 56; // px safe area padding matching pt-14
 
 const StoryPage = ({ tasks }: StoryPageProps) => {
   const { t, lang } = useI18n();
@@ -366,7 +367,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   return (
     <div
       ref={containerRef}
-      className="h-[calc(100vh-80px)] relative overflow-hidden pt-14"
+      className="h-[calc(100vh-80px)] relative overflow-hidden"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -379,7 +380,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             key={month.key}
             className="absolute left-0 right-0 bottom-0 cursor-pointer"
             style={{
-              top: `${layerIndex * PEEK_HEIGHT}px`,
+              top: `${SAFE_TOP + layerIndex * PEEK_HEIGHT}px`,
               zIndex: layerIndex + 1,
               transform: `scale(${Math.max(scale, 0.86)})`,
               transformOrigin: "top center",
@@ -397,7 +398,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       <div
         className="absolute left-0 right-0 bottom-0"
         style={{
-          top: `${activeTop}px`,
+          top: `${SAFE_TOP + activeTop}px`,
           zIndex: olderStack.length + 20,
           transform: `translateY(${isDragging ? dragOffset : 0}px)`,
           transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
