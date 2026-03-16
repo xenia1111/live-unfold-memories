@@ -51,7 +51,7 @@ const zh: Dict = {
   "greeting.evening": "傍晚好",
   "greeting.night": "晚安",
   "greeting.lifeDays": "生命的第{n}天",
-  "greeting.setBirthday": "设置生日，开启生命计时",
+  "greeting.setBirthday": "设置生日，记录你的每一天",
 
   // HomePage
   "home.loading": "加载中...",
