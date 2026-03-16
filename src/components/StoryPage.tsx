@@ -426,6 +426,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           periodLabel={shareDialog.periodLabel}
           timeRange={shareDialog.timeRange}
           photos={shareDialog.photos}
+          calendarData={shareDialog.calendarData}
         />
       )}
     </div>
