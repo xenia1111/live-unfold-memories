@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import { extractDominantColor, hslToString } from "@/lib/colorExtract";
 import { Sparkles, Share2, RefreshCw, Loader2, PenLine, Check, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SharePosterDialog from "./SharePosterDialog";
@@ -109,6 +110,21 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     });
   }, [tasks, lang, t]);
 
+  // Extract dominant color from first photo of each month
+  const [monthColors, setMonthColors] = useState<Record<string, { h: number; s: number; l: number }>>({});
+
+  useEffect(() => {
+    months.forEach(m => {
+      if (m.photos.length > 0 && !monthColors[m.key]) {
+        extractDominantColor(m.photos[0]).then(color => {
+          if (color) {
+            setMonthColors(prev => ({ ...prev, [m.key]: color }));
+          }
+        });
+      }
+    });
+  }, [months]);
+
   const buildFallback = useCallback((m: typeof months[0]): StoryData => {
     const rate = m.total > 0 ? m.completedCount / m.total : 0;
     const catCount: Record<string, number> = {};
@@ -194,6 +210,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     const s = aiStories[m.key] || buildFallback(m);
     const hasAIStory = !!aiStories[m.key];
     const loading = loadingKeys.has(m.key);
+    const themeColor = monthColors[m.key];
+    const accentColor = themeColor ? hslToString(themeColor, { s: Math.min(themeColor.s + 10, 70), l: Math.max(themeColor.l - 10, 30) }) : undefined;
+    const accentColorLight = themeColor ? hslToString(themeColor, { s: Math.min(themeColor.s, 50), l: Math.min(themeColor.l + 25, 85), a: 0.15 }) : undefined;
+    const accentColorMuted = themeColor ? hslToString(themeColor, { s: Math.min(themeColor.s, 40), l: Math.min(themeColor.l + 10, 60), a: 0.6 }) : undefined;
 
     return (
       <div className={cn("h-full flex flex-col overflow-hidden", !isActive && "pointer-events-none select-none")}>
@@ -205,20 +225,25 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           <div className="px-5 pt-6 pb-4">
             <div className="flex items-start gap-4">
               <div className="flex-1 min-w-0">
-                <h1 className="text-3xl font-bold text-foreground leading-none tracking-tight" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
+                <h1
+                  className="text-3xl font-bold leading-none tracking-tight"
+                  style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive", color: accentColor || 'hsl(var(--foreground))' }}
+                >
                   {m.monthName}
                 </h1>
                 <p className="text-xs text-muted-foreground mt-1">{m.year}</p>
                 {m.key === months[0].key && (
-                  <span className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                  <span
+                    className="inline-block mt-1.5 text-[10px] px-2 py-0.5 rounded-full font-medium"
+                    style={accentColor ? { backgroundColor: accentColorLight, color: accentColor } : undefined}
+                  >
                     {t("story.current")}
                   </span>
                 )}
-                {/* Highlights moved here, below month name */}
                 <div className="mt-3 space-y-1.5">
                   {s.highlights.slice(0, 3).map((h, i) => (
                     <div key={i} className="flex items-start gap-1.5">
-                      <span className="text-primary/60 text-[10px] mt-0.5 shrink-0">✽</span>
+                      <span className="text-[10px] mt-0.5 shrink-0" style={{ color: accentColorMuted || 'hsl(var(--primary) / 0.6)' }}>✽</span>
                       <span className="text-xs text-foreground/70 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
                         {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}\u{2B50}\u{2728}\u{270A}-\u{270D}\u{2764}]/gu, "").trim()}
                       </span>
@@ -227,7 +252,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                 </div>
               </div>
               <div className="w-[130px] shrink-0">
-                <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} taskDates={m.taskDates} incompleteDates={m.incompleteDates} />
+                <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} taskDates={m.taskDates} incompleteDates={m.incompleteDates} themeColor={themeColor} />
               </div>
             </div>
           </div>

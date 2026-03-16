@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { startOfMonth, getDay, getDaysInMonth, isToday } from "date-fns";
+import { hslToString } from "@/lib/colorExtract";
 
 interface MonthCalendarGridProps {
   year: number;
@@ -8,11 +9,11 @@ interface MonthCalendarGridProps {
   completedDates: Set<string>;
   taskDates?: Set<string>;
   incompleteDates?: Set<string>;
+  themeColor?: { h: number; s: number; l: number } | null;
 }
 
 const WEEKDAY_LABELS = ["日", "一", "二", "三", "四", "五", "六"];
 
-// Predefined "wobble" variations for hand-drawn feel
 const WOBBLES = [
   "49% 51% 52% 48% / 50% 48% 52% 50%",
   "52% 48% 50% 50% / 48% 52% 50% 50%",
@@ -23,7 +24,7 @@ const WOBBLES = [
   "52% 48% 49% 51% / 50% 52% 48% 50%",
 ];
 
-const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteDates }: MonthCalendarGridProps) => {
+const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteDates, themeColor }: MonthCalendarGridProps) => {
   const grid = useMemo(() => {
     const firstDay = startOfMonth(new Date(year, month));
     const startDow = getDay(firstDay);
@@ -33,6 +34,14 @@ const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteD
     for (let d = 1; d <= daysInMonth; d++) cells.push(d);
     return cells;
   }, [year, month]);
+
+  // Derive colors from theme
+  const completedBg = themeColor
+    ? hslToString(themeColor, { s: Math.min(themeColor.s + 10, 65), l: Math.max(themeColor.l - 5, 35), a: 0.8 })
+    : "hsl(var(--primary) / 0.8)";
+  const taskBg = themeColor
+    ? hslToString(themeColor, { s: Math.min(themeColor.s, 30), l: Math.min(themeColor.l + 30, 88), a: 0.5 })
+    : "hsl(var(--foreground) / 0.15)";
 
   return (
     <div className="w-full">
@@ -63,16 +72,18 @@ const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteD
               <span
                 className={cn(
                   "w-[18px] h-[18px] flex items-center justify-center rounded-full text-[9px] leading-none",
-                  showGreenCircle && "bg-primary/80 text-primary-foreground font-semibold",
-                  showDarkCircle && "bg-foreground/15 text-foreground font-medium",
-                  !showGreenCircle && !showDarkCircle && isTodayDate && "text-primary font-bold",
+                  showGreenCircle && "text-white font-semibold",
+                  showDarkCircle && "font-medium",
+                  !showGreenCircle && !showDarkCircle && isTodayDate && "font-bold",
                   !showGreenCircle && !showDarkCircle && !isTodayDate && "text-foreground/40"
                 )}
-                style={
-                  (showGreenCircle || showDarkCircle)
-                    ? { borderRadius: wobble }
-                    : undefined
-                }
+                style={{
+                  ...(showGreenCircle ? { backgroundColor: completedBg, borderRadius: wobble, color: "white" } : {}),
+                  ...(showDarkCircle ? { backgroundColor: taskBg, borderRadius: wobble, color: "hsl(var(--foreground) / 0.7)" } : {}),
+                  ...(!showGreenCircle && !showDarkCircle && isTodayDate && themeColor
+                    ? { color: hslToString(themeColor, { s: Math.min(themeColor.s + 10, 60), l: Math.max(themeColor.l - 10, 35) }) }
+                    : {}),
+                }}
               >
                 {day}
               </span>
