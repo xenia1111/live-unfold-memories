@@ -320,26 +320,9 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           </div>
         </div>
 
-        {/* Month navigation arrows at bottom */}
-        <div className="flex items-center justify-center gap-6 mt-5">
-          <button
-            onClick={() => goTo(activeIndex - 1)}
-            disabled={activeIndex === 0}
-            className={cn("w-9 h-9 rounded-full flex items-center justify-center transition-all", activeIndex === 0 ? "text-muted-foreground/20" : "text-foreground/50 hover:bg-muted/30 active:scale-90")}
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <span className="text-xs text-muted-foreground font-medium tabular-nums">
-            {activeIndex + 1} / {months.length}
-          </span>
-          <button
-            onClick={() => goTo(activeIndex + 1)}
-            disabled={activeIndex === months.length - 1}
-            className={cn("w-9 h-9 rounded-full flex items-center justify-center transition-all", activeIndex === months.length - 1 ? "text-muted-foreground/20" : "text-foreground/50 hover:bg-muted/30 active:scale-90")}
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
+        {/* Bottom stacked card shadows need spacing */}
+        <div style={{ height: months.length > activeIndex + 1 ? "28px" : "0" }} />
+      </div>
       </div>
 
       {shareDialog && (
