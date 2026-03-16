@@ -284,8 +284,8 @@ async function generatePoster(
     curY += 115;
   }
 
-  // Highlights - left column, below year
-  const highlightMaxW = hasCal ? contentW * 0.55 : contentW;
+  // Highlights - left column, below year (constrained to not overlap calendar)
+  const highlightMaxW = hasCal ? leftMaxW : contentW;
 
   ctx.textBaseline = "alphabetic";
   if (highlights.length > 0) {
