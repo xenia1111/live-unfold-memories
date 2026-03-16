@@ -380,7 +380,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             key={month.key}
             className="absolute left-0 right-0 bottom-0 cursor-pointer"
             style={{
-              top: `${layerIndex * PEEK_HEIGHT}px`,
+              top: `${SAFE_TOP + layerIndex * PEEK_HEIGHT}px`,
               zIndex: layerIndex + 1,
               transform: `scale(${Math.max(scale, 0.86)})`,
               transformOrigin: "top center",
