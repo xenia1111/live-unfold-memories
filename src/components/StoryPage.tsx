@@ -372,7 +372,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       ref={containerRef}
       className="h-[calc(100vh-80px)] relative overflow-hidden"
       onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* Carousel track */}
