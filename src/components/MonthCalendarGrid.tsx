@@ -62,20 +62,15 @@ const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteD
             <div key={day} className="w-full aspect-square flex flex-col items-center justify-center">
               <span
                 className={cn(
-                  "w-[18px] h-[18px] flex items-center justify-center text-[9px] leading-none",
-                  showGreenCircle && "text-primary font-bold",
-                  showDarkCircle && "text-foreground font-semibold",
+                  "w-[18px] h-[18px] flex items-center justify-center rounded-full text-[9px] leading-none",
+                  showGreenCircle && "bg-primary/80 text-primary-foreground font-semibold",
+                  showDarkCircle && "bg-foreground/15 text-foreground font-medium",
                   !showGreenCircle && !showDarkCircle && isTodayDate && "text-primary font-bold",
-                  !showGreenCircle && !showDarkCircle && !isTodayDate && "text-foreground/40",
+                  !showGreenCircle && !showDarkCircle && !isTodayDate && "text-foreground/40"
                 )}
                 style={
                   (showGreenCircle || showDarkCircle)
-                    ? {
-                        borderRadius: wobble,
-                        boxShadow: showGreenCircle
-                          ? "0 0 0 1.8px hsl(var(--primary))"
-                          : "0 0 0 1.5px hsl(var(--foreground) / 0.7)",
-                      }
+                    ? { borderRadius: wobble }
                     : undefined
                 }
               >
