@@ -277,9 +277,8 @@ async function generatePoster(
     );
   }
 
-  // Highlights with ✽ markers
-  const highlights = story.highlights.slice(0, 4).map(h => stripEmoji(h));
-  const highlightMaxW = hasCal ? Math.min(contentW, POSTER_W - 420) : contentW;
+  // Highlights - left column, below year
+  const highlightMaxW = hasCal ? contentW * 0.55 : contentW;
 
   ctx.textBaseline = "alphabetic";
   if (highlights.length > 0) {
