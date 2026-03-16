@@ -130,8 +130,8 @@ function drawCalendarGrid(
   const startDow = getDay(firstDay);
   const daysInMonth = getDaysInMonth(firstDay);
 
-  const cellSize = 42;
-  const gap = 4;
+  const cellSize = 36;
+  const gap = 3;
   const gridW = 7 * (cellSize + gap) - gap;
 
   // Accent color from theme
