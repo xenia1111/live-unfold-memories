@@ -389,17 +389,12 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
 
       {activeIndex !== 0 && (
-        <div
-          className="absolute right-6 z-50"
-          style={{ top: `${activeTop + 14}px` }}
+        <button
+          onClick={() => { setActiveIndex(0); setDragOffset(0); }}
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 rounded-full border border-border/50 bg-card px-5 py-2 text-xs font-medium text-foreground shadow-md backdrop-blur-sm transition-all hover:shadow-lg active:scale-95"
         >
-          <button
-            onClick={() => { setActiveIndex(0); setDragOffset(0); }}
-            className="rounded-full border border-border/60 bg-background/90 px-3.5 py-1.5 text-[11px] font-medium text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-background"
-          >
-            {lang === "zh" ? "回到本月" : "Back to this month"}
-          </button>
-        </div>
+          {lang === "zh" ? "回到本月" : "Back to this month"}
+        </button>
       )}
 
       {shareDialog && (
