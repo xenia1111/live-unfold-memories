@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import { extractDominantColor, hslToString } from "@/lib/colorExtract";
 import { Sparkles, Share2, RefreshCw, Loader2, PenLine, Check, Layers } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SharePosterDialog from "./SharePosterDialog";
