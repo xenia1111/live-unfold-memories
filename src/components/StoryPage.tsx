@@ -364,8 +364,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           "h-full rounded-t-3xl bg-card border border-b-0 border-border/20 overflow-hidden",
           "shadow-[0_-4px_16px_-4px_hsl(var(--foreground)/0.08)]"
         )}>
-          <div ref={scrollRef} className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}
-            onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+          <div ref={scrollRef} className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
             {renderMonthCard(activeMonth, activeIndex)}
             <div className="h-20" />
           </div>
