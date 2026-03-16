@@ -220,7 +220,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     <div key={i} className="flex items-start gap-1.5">
                       <span className="text-primary/60 text-[10px] mt-0.5 shrink-0">✽</span>
                       <span className="text-xs text-foreground/70 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
-                        {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").trim()}
+                        {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}\u{2B50}\u{2728}\u{270A}-\u{270D}\u{2764}]/gu, "").trim()}
                       </span>
                     </div>
                   ))}
