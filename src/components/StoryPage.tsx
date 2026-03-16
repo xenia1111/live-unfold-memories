@@ -294,7 +294,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             </div>
           )}
 
-          <div className="px-5 py-4 border-t border-dashed border-border/30 space-y-2.5">
+          <div className="px-5 py-2 border-t border-dashed border-border/30 space-y-1.5">
             <button
               onClick={() => generateAIStory(m)}
               disabled={loading}
