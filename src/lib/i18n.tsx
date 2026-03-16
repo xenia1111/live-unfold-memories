@@ -733,7 +733,7 @@ const frDict: Dict = {
   "story.notes": "Notes", "story.done": "Terminé", "story.edit": "Modifier",
   "story.writeSomething": "Écrire...",
   "story.notePlaceholder": "Notez vos sentiments, pensées...",
-  "story.share": "Partager", "story.copied": "Copié",
+  "story.share": "Partager", "story.categoryView": "Par catégorie", "story.copied": "Copié",
   "story.generateFailed": "Échec de la génération",
   "story.fallback.waiting": "En attente", "story.fallback.highlight": "Moments forts",
   "story.fallback.steady": "Progrès régulier", "story.fallback.building": "En construction",
