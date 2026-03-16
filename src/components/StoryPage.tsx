@@ -192,7 +192,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       <div className="px-5 pt-10 pb-24 max-w-lg mx-auto animate-fade-in">
         <button onClick={() => setShowCategory(false)} className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4 hover:text-foreground transition-colors">
           <span>←</span>
-          <span>{t("story.backToMonths") || "返回月历"}</span>
+          <span>{t("story.backToMonths")}</span>
         </button>
         <CategoryStoryView tasks={tasks} />
       </div>
@@ -290,7 +290,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
           {m.photos.length === 0 && m.completedCount > 0 && (
             <div className="px-5 py-6 border-t border-dashed border-border/30 text-center">
-              <p className="text-xs text-muted-foreground">{t("story.noPhotos") || "完成任务时拍张照，记录美好瞬间"}</p>
+              <p className="text-xs text-muted-foreground">{t("story.noPhotos")}</p>
             </div>
           )}
 

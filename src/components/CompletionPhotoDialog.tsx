@@ -49,7 +49,7 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
         photoUrl = await uploadTaskPhoto(user.id, file);
       } catch (e) {
         console.error("Upload failed:", e);
-        toast.error(t("complete.uploadFailed") || "上传照片失败");
+        toast.error(t("complete.uploadFailed"));
         setUploading(false);
         return;
       }
@@ -106,7 +106,7 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
           <div className="flex gap-3 pt-1">
             <button onClick={handleSkip} disabled={uploading} className="flex-1 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-all active:scale-[0.98]">{t("complete.skip")}</button>
             <button onClick={handleConfirm} disabled={uploading} className={cn("flex-1 py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.98]", hasContent && !uploading ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground")}>
-              {uploading ? (<span className="flex items-center justify-center gap-1.5"><Loader2 size={14} className="animate-spin" />{t("complete.uploading") || "上传中..."}</span>) : hasContent ? (<span className="flex items-center justify-center gap-1.5"><Sparkles size={14} />{t("complete.record")}</span>) : t("complete.done")}
+              {uploading ? (<span className="flex items-center justify-center gap-1.5"><Loader2 size={14} className="animate-spin" />{t("complete.uploading")}</span>) : hasContent ? (<span className="flex items-center justify-center gap-1.5"><Sparkles size={14} />{t("complete.record")}</span>) : t("complete.done")}
             </button>
           </div>
         </div>
