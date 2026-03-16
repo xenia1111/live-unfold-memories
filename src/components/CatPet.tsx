@@ -97,20 +97,6 @@ import bgGarden from "@/assets/bg-garden.png";
 import bgCardboardBox from "@/assets/bg-cardboard-box.png";
 import EggHatchEffect from "@/components/EggHatchEffect";
 import { useI18n, interpolate } from "@/lib/i18n";
-import { removeWhiteBackground } from "@/lib/imageUtils";
-
-const TransparentImage = ({ src, alt, className, style }: any) => {
-  const [tSrc, setTSrc] = useState(src);
-  useEffect(() => {
-    let mounted = true;
-    setTSrc(src);
-    removeWhiteBackground(src).then(res => {
-      if (mounted) setTSrc(res);
-    });
-    return () => { mounted = false; };
-  }, [src]);
-  return <img src={tSrc} alt={alt} className={className} style={style} />;
-};
 
 const BG_IMAGES: Record<string, string> = { grassland: bgGrassland, cottage: bgCottage, garden: bgGarden, cardboard: bgCardboardBox };
 
@@ -286,12 +272,12 @@ const CatPet = ({ tasks }: CatPetProps) => {
             {stage.level < 0 ? (
               /* 蛋阶段：巢里的蛋左右晃动 */
               <button onClick={() => setShowRadar(true)} className="animate-egg-wobble active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-                <TransparentImage src={eggNest} alt="egg" className="w-24 h-24 object-contain" style={{ imageRendering: "pixelated" }} />
+                <img src={eggNest} alt="egg" className="w-24 h-24 object-contain" style={{ imageRendering: "pixelated" }} />
               </button>
             ) : (
               /* 猫阶段：走来走去 */
               <button onClick={() => setShowRadar(true)} className="absolute bottom-0 animate-cat-walk active:scale-95 transition-transform bg-transparent border-none p-0 cursor-pointer">
-                <TransparentImage src={getCatImage(stage.level, fixedCategory || "default")} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
+                <img src={getCatImage(stage.level, fixedCategory || "default")} alt="cat" className="w-16 h-16 object-contain" style={{ imageRendering: "pixelated" }} />
               </button>
             )}
           </div>
