@@ -175,14 +175,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     );
   }
 
+  // Only show up to MAX_VISIBLE_BEHIND peeking cards behind active
   const olderStack = months
-    .slice(activeIndex + 1)
+    .slice(activeIndex + 1, activeIndex + 1 + MAX_VISIBLE_BEHIND)
     .map((month, offset) => ({ month, index: activeIndex + 1 + offset }))
-    .reverse();
-
-  const newerStack = months
-    .slice(0, activeIndex)
-    .map((month, index) => ({ month, index }))
     .reverse();
 
   const activeTop = olderStack.length * PEEK_HEIGHT;
