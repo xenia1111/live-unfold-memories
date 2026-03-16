@@ -38,14 +38,25 @@ export function extractDominantColor(imageUrl: string): Promise<{ h: number; s: 
           buckets[key].count++;
         }
 
-        // Find the most frequent bucket, but skip very light/dark colors
+        // Score each bucket: prioritize vibrant, saturated colors over dull grays
         let best: { r: number; g: number; b: number; count: number } | null = null;
+        let bestScore = -1;
         for (const b of Object.values(buckets)) {
           const avgR = b.r / b.count, avgG = b.g / b.count, avgB = b.b / b.count;
           const brightness = (avgR + avgG + avgB) / 3;
-          // Skip near-white (>220) and near-black (<35) for more interesting colors
-          if (brightness > 220 || brightness < 35) continue;
-          if (!best || b.count > best.count) best = b;
+          // Skip near-white and near-black
+          if (brightness > 230 || brightness < 25) continue;
+
+          // Calculate saturation: higher spread between RGB channels = more vivid
+          const maxC = Math.max(avgR, avgG, avgB);
+          const minC = Math.min(avgR, avgG, avgB);
+          const chroma = maxC - minC; // 0-255, higher = more colorful
+
+          // Score = chroma weight (vibrance) + modest count weight
+          // Strongly favor vivid colors even if they're not the largest bucket
+          const score = (chroma * 3) + Math.sqrt(b.count);
+
+          if (score > bestScore) { bestScore = score; best = b; }
         }
 
         if (!best) {
