@@ -364,14 +364,12 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           </div>
         </div>
 
-        {/* "Back to this month" floating button */}
         {activeIndex !== 0 && (
           <button
             onClick={() => goTo(0)}
             className="absolute top-3 right-4 z-10 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-[11px] font-medium shadow-md hover:bg-primary transition-colors"
           >
-            <ChevronRight size={12} />
-            <span>{t("story.current") || "本月"}</span>
+            <span>← {months[0].monthName}</span>
           </button>
         )}
       </div>
