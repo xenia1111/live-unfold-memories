@@ -180,9 +180,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     setIsDragging(false);
   }, [activeIndex, containerHeight, isDragging, months.length]);
 
-  // Calculate translateY
-  const cardHeight = containerHeight ? containerHeight - CARD_GAP : 0;
-  const translateY = containerHeight ? -(activeIndex * (cardHeight + CARD_GAP)) + dragOffset : 0;
+  // Calculate translateY — card is shorter than container to show peek of adjacent cards
+  const cardHeight = containerHeight ? containerHeight - PEEK * 2 : 0;
+  const stride = cardHeight + CARD_GAP;
+  const translateY = containerHeight ? PEEK + -(activeIndex * stride) + dragOffset : 0;
 
   if (showCategory) {
     return (
