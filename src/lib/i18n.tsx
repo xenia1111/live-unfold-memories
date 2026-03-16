@@ -1120,7 +1120,7 @@ const jaDict: Dict = {
   "story.notes": "メモ", "story.done": "完了", "story.edit": "編集",
   "story.writeSomething": "何か書く...",
   "story.notePlaceholder": "この期間の感想や思いを記録...",
-  "story.share": "シェア", "story.copied": "コピーしました",
+  "story.share": "シェア", "story.categoryView": "カテゴリ別", "story.copied": "コピーしました",
   "story.generateFailed": "生成失敗",
   "story.fallback.waiting": "待機中", "story.fallback.highlight": "ハイライト",
   "story.fallback.steady": "着実に前進", "story.fallback.building": "準備中",
