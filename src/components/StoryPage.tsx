@@ -31,7 +31,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCategory, setShowCategory] = useState(false);
-  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
+  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[]; calendarData?: any } | null>(null);
 
   // Swipe state
   const [dragOffset, setDragOffset] = useState(0);
