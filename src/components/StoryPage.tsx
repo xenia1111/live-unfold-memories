@@ -305,6 +305,12 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           zIndex = 6;
         }
 
+        const edgeShadow = offset < 0
+          ? "shadow-[0_8px_24px_-4px_hsl(var(--foreground)/0.08)]"
+          : offset > 0
+          ? "shadow-[0_-8px_24px_-4px_hsl(var(--foreground)/0.08)]"
+          : "";
+
         return (
           <div
             key={m.key}
@@ -318,16 +324,23 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             }}
             onClick={!isActive ? () => goTo(i) : undefined}
           >
-            {/* Solid background layer to prevent text bleed-through */}
-            <div className="absolute inset-0 bg-background rounded-t-3xl" />
+            <div className={cn(
+              "absolute inset-0 bg-background border border-border/20",
+              offset <= 0 ? "rounded-b-3xl" : "rounded-t-3xl",
+              edgeShadow
+            )} />
             <div className={cn(
               "relative h-full pb-4",
               isActive ? "overflow-y-auto" : "overflow-hidden pointer-events-none"
             )} style={{ scrollbarWidth: "none" }}>
-              {/* For non-active cards, show a mini label at the visible edge */}
-              {!isActive && (
-                <div className="px-8 pt-3 pb-2">
-                  <span className="text-xs font-medium text-muted-foreground/60">{m.monthName} {m.year}</span>
+              {!isActive && offset > 0 && (
+                <div className="px-8 pt-3.5 pb-2 border-b border-border/10">
+                  <span className="text-[11px] font-medium text-muted-foreground/50 tracking-wide">{m.monthName} {m.year}</span>
+                </div>
+              )}
+              {!isActive && offset < 0 && (
+                <div className="absolute bottom-0 left-0 right-0 px-8 pb-3.5 pt-2 border-t border-border/10">
+                  <span className="text-[11px] font-medium text-muted-foreground/50 tracking-wide">{m.monthName} {m.year}</span>
                 </div>
               )}
               {isActive && renderMonthCard(m, i)}
