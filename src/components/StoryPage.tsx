@@ -398,7 +398,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       <div
         className="absolute left-0 right-0 bottom-0"
         style={{
-          top: `${activeTop}px`,
+          top: `${SAFE_TOP + activeTop}px`,
           zIndex: olderStack.length + 20,
           transform: `translateY(${isDragging ? dragOffset : 0}px)`,
           transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
