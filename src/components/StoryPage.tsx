@@ -323,7 +323,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         {/* Bottom stacked card shadows need spacing */}
         <div style={{ height: months.length > activeIndex + 1 ? "28px" : "0" }} />
       </div>
-      </div>
 
       {shareDialog && (
         <SharePosterDialog
