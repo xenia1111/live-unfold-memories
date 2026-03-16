@@ -152,46 +152,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     touchRef.current = { y: e.touches[0].clientY, time: Date.now(), scrollTop, canSwipe: false };
   }, [activeIndex]);
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    const start = touchRef.current;
-    if (!start || !containerHeight) return;
-
-    const dy = e.touches[0].clientY - start.y;
-    const scrollEl = scrollRefs.current.get(activeIndex);
-
-    // Determine if we should allow page swiping vs internal scrolling
-    if (!start.canSwipe) {
-      // Check if scroll is at boundary
-      if (scrollEl) {
-        const atTop = scrollEl.scrollTop <= 1;
-        const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
-        const swipingDown = dy > 0; // pulling content down = go to previous
-        const swipingUp = dy < 0;   // pulling content up = go to next
-
-        if ((swipingDown && atTop) || (swipingUp && atBottom)) {
-          start.canSwipe = true;
-        } else if (!atTop && !atBottom) {
-          return; // let internal scroll handle it
-        } else {
-          return;
-        }
-      } else {
-        start.canSwipe = true;
-      }
-    }
-
-    // Prevent internal scroll when we're carousel-swiping
-    if (start.canSwipe) {
-      e.preventDefault();
-      // Add resistance at boundaries
-      let offset = dy;
-      if ((activeIndex === 0 && dy > 0) || (activeIndex === months.length - 1 && dy < 0)) {
-        offset = dy * 0.3; // rubber band effect
-      }
-      setDragOffset(offset);
-      setIsDragging(true);
-    }
-  }, [activeIndex, containerHeight, months.length]);
+  // touchMove is handled via native event listener above (non-passive)
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const start = touchRef.current;
