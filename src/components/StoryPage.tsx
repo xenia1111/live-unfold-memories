@@ -204,7 +204,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
         >
           <div className="px-5 pt-6 pb-4">
             <div className="flex items-start gap-4">
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h1 className="text-3xl font-bold text-foreground leading-none tracking-tight" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
                   {m.monthName}
                 </h1>
@@ -214,40 +214,22 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
                     {t("story.current")}
                   </span>
                 )}
+                {/* Highlights moved here, below month name */}
+                <div className="mt-3 space-y-1.5">
+                  {s.highlights.slice(0, 3).map((h, i) => (
+                    <div key={i} className="flex items-start gap-1.5">
+                      <span className="text-primary/60 text-[10px] mt-0.5 shrink-0">✽</span>
+                      <span className="text-xs text-foreground/70 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
+                        {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").trim()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="w-[130px] shrink-0">
                 <MonthCalendarGrid year={m.year} month={m.month} completedDates={m.completedDates} taskDates={m.taskDates} incompleteDates={m.incompleteDates} />
               </div>
             </div>
-            <div className="flex items-center gap-3 mt-4">
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span>{m.completedCount} {t("story.completed") || "已完成"}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-border" />
-                <span>{m.total - m.completedCount} {t("story.pending") || "待完成"}</span>
-              </div>
-              {m.photos.length > 0 && (
-                <div className="text-xs text-muted-foreground ml-auto">📷 {m.photos.length}</div>
-              )}
-            </div>
-          </div>
-
-          <div className="px-5 py-4 border-t border-dashed border-border/30">
-            <div className="space-y-2">
-              {s.highlights.slice(0, 4).map((h, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <span className="text-primary/60 text-xs mt-0.5 shrink-0">✽</span>
-                  <span className="text-sm text-foreground/80 leading-relaxed" style={{ fontFamily: "'Ma Shan Zheng', cursive" }}>
-                    {h.replace(/[\u{1F300}-\u{1FAD6}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{1F900}-\u{1F9FF}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, "").trim()}
-                  </span>
-                </div>
-              ))}
-            </div>
-            {s.summary && (
-              <p className="text-xs text-muted-foreground mt-3 leading-relaxed italic">{s.summary}</p>
-            )}
           </div>
 
           {m.photos.length > 0 && (
