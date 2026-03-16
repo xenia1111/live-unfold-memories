@@ -340,7 +340,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               ) : null}
             </div>
 
-            <div className="flex gap-2 pt-1">
+            <div className="flex gap-2">
               <button
                 onClick={() => {
                   const s2 = aiStories[m.key] || buildFallback(m);
