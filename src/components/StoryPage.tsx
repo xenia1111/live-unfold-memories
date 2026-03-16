@@ -19,7 +19,7 @@ const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", 
 
 const PEEK_HEIGHT = 48; // px height of each peeking card header
 const SCALE_STEP = 0.03; // scale reduction per layer
-const MAX_VISIBLE_BEHIND = 4; // max peeking cards behind active
+const MAX_VISIBLE_BEHIND = 2; // max peeking cards behind active
 
 const StoryPage = ({ tasks }: StoryPageProps) => {
   const { t, lang } = useI18n();
