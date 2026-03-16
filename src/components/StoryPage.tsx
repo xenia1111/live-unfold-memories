@@ -259,7 +259,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           </div>
 
           {m.photos.length > 0 && (
-            <div className="px-5 py-4 border-t border-dashed border-border/30">
+            <div className="px-5 py-2 border-t border-dashed border-border/30">
               <div className="relative">
                 {/* Hero photo - large, takes most width */}
                 <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-muted/20 shadow-sm">
