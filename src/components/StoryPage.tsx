@@ -306,8 +306,6 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   return (
     <div
       className="h-[calc(100vh-80px)] relative overflow-hidden"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
     >
       {/* Stacked OLDER months above — oldest at top, newest near active */}
       {months.map((m, i) => {
