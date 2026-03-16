@@ -112,29 +112,46 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const isLoading = loadingKeys.has(activeMonth.key);
 
   return (
-    <div className="px-5 pt-8 pb-24 max-w-lg mx-auto" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div className="px-5 pt-6 pb-24 max-w-lg mx-auto" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+
+      {/* Month navigation arrows at top */}
+      <div className="flex items-center justify-between mb-5">
+        <button
+          onClick={() => goTo(activeIndex + 1)}
+          disabled={activeIndex === months.length - 1}
+          className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", activeIndex === months.length - 1 ? "text-muted-foreground/20" : "text-foreground/50 hover:bg-muted/30 active:scale-90")}
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <span className="text-sm text-foreground/70 font-medium">
+          {activeMonth.monthName} {activeMonth.year}
+        </span>
+        <button
+          onClick={() => goTo(activeIndex - 1)}
+          disabled={activeIndex === 0}
+          className={cn("w-8 h-8 rounded-full flex items-center justify-center transition-all", activeIndex === 0 ? "text-muted-foreground/20" : "text-foreground/50 hover:bg-muted/30 active:scale-90")}
+        >
+          <ChevronRight size={18} />
+        </button>
+      </div>
 
       {/* Card stack */}
-      <div className="relative" style={{ minHeight: "560px" }}>
+      <div className="relative">
 
-        {/* Stacked card tabs behind — show up to 3 behind cards */}
-        {months.slice(activeIndex + 1, activeIndex + 4).map((m, i) => (
+        {/* Stacked card tabs behind — show up to 2 behind cards */}
+        {months.slice(activeIndex + 1, activeIndex + 3).map((m, i) => (
           <button
             key={m.key}
             onClick={() => goTo(activeIndex + i + 1)}
-            className="absolute left-0 right-0 rounded-t-3xl border border-border/20 bg-card/80 backdrop-blur-sm transition-all duration-500 cursor-pointer hover:opacity-90"
+            className="absolute left-1 right-1 bottom-0 rounded-b-3xl border border-t-0 border-border/15 bg-card/60 backdrop-blur-sm transition-all duration-500 cursor-pointer"
             style={{
-              top: `${-36 + i * 12}px`,
-              height: "40px",
+              bottom: `${-(i + 1) * 10 - 4}px`,
+              height: "16px",
               zIndex: 10 - i,
-              transform: `scale(${1 - (i + 1) * 0.03})`,
-              opacity: 1 - (i + 1) * 0.2,
+              transform: `scale(${1 - (i + 1) * 0.04})`,
+              opacity: 1 - (i + 1) * 0.25,
             }}
-          >
-            <span className="text-[11px] font-semibold text-muted-foreground/70 block pt-2.5">
-              {m.monthName}
-            </span>
-          </button>
+          />
         ))}
 
         {/* Active card */}
