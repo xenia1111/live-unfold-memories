@@ -31,7 +31,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [editingNote, setEditingNote] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCategory, setShowCategory] = useState(false);
-  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
+  const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[]; calendarData?: any } | null>(null);
 
   // Swipe state
   const [dragOffset, setDragOffset] = useState(0);
@@ -343,7 +343,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               <button
                 onClick={() => {
                   const s2 = aiStories[m.key] || buildFallback(m);
-                  setShareDialog({ story: s2, periodLabel: m.label, timeRange: `${format(m.start, "M/d")} - ${format(m.end, "M/d")}`, photos: m.photos });
+                  setShareDialog({ story: s2, periodLabel: m.label, timeRange: `${format(m.start, "M/d")} - ${format(m.end, "M/d")}`, photos: m.photos, calendarData: { year: m.year, month: m.month, monthName: m.monthName, completedDates: m.completedDates, taskDates: m.taskDates, themeColor: monthColors[m.key] } });
                 }}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-2xl bg-muted/15 text-muted-foreground hover:text-primary text-[11px] font-medium transition-all"
               >
@@ -426,6 +426,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           periodLabel={shareDialog.periodLabel}
           timeRange={shareDialog.timeRange}
           photos={shareDialog.photos}
+          calendarData={shareDialog.calendarData}
         />
       )}
     </div>
