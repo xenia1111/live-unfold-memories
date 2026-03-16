@@ -357,9 +357,10 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
           "h-full rounded-t-3xl bg-card border border-b-0 border-border/20 overflow-hidden",
           "shadow-[0_-4px_16px_-4px_hsl(var(--foreground)/0.08)]"
         )}>
-          <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          <div ref={scrollRef} className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}
+            onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             {renderMonthCard(activeMonth, activeIndex)}
-            <div className="h-20" /> {/* bottom spacing for nav bar */}
+            <div className="h-20" />
           </div>
         </div>
 
