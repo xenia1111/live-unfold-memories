@@ -110,7 +110,21 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     });
   }, [tasks, lang, t]);
 
-  const buildFallback = useCallback((m: typeof months[0]): StoryData => {
+  // Extract dominant color from first photo of each month
+  const [monthColors, setMonthColors] = useState<Record<string, { h: number; s: number; l: number }>>({});
+
+  useEffect(() => {
+    months.forEach(m => {
+      if (m.photos.length > 0 && !monthColors[m.key]) {
+        extractDominantColor(m.photos[0]).then(color => {
+          if (color) {
+            setMonthColors(prev => ({ ...prev, [m.key]: color }));
+          }
+        });
+      }
+    });
+  }, [months]);
+
     const rate = m.total > 0 ? m.completedCount / m.total : 0;
     const catCount: Record<string, number> = {};
     m.completed.forEach(t => { catCount[t.category] = (catCount[t.category] || 0) + 1; });
