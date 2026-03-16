@@ -117,8 +117,18 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   useEffect(() => {
     months.forEach(m => {
       if (m.photos.length > 0 && !monthColors[m.key]) {
+        const cacheKey = `color_cache_${m.photos[0]}`;
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+          try {
+            const color = JSON.parse(cached);
+            setMonthColors(prev => ({ ...prev, [m.key]: color }));
+            return;
+          } catch {}
+        }
         extractDominantColor(m.photos[0]).then(color => {
           if (color) {
+            localStorage.setItem(cacheKey, JSON.stringify(color));
             setMonthColors(prev => ({ ...prev, [m.key]: color }));
           }
         });
