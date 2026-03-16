@@ -40,7 +40,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const scrollRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const touchRef = useRef<{ y: number; time: number; scrollTop: number; canSwipe: boolean } | null>(null);
 
-  // Container height
+  // Container height + non-passive touchmove for preventDefault
   const [containerHeight, setContainerHeight] = useState(0);
   useEffect(() => {
     const measure = () => {
@@ -49,6 +49,50 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // We need a ref-based touchmove handler to use { passive: false }
+  const touchMoveHandler = useRef<(e: TouchEvent) => void>();
+  touchMoveHandler.current = (e: TouchEvent) => {
+    const start = touchRef.current;
+    if (!start || !containerHeight) return;
+
+    const dy = e.touches[0].clientY - start.y;
+    const scrollEl = scrollRefs.current.get(activeIndex);
+
+    if (!start.canSwipe) {
+      if (scrollEl) {
+        const atTop = scrollEl.scrollTop <= 1;
+        const atBottom = scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 1;
+        const swipingDown = dy > 0;
+        const swipingUp = dy < 0;
+        if ((swipingDown && atTop) || (swipingUp && atBottom)) {
+          start.canSwipe = true;
+        } else {
+          return;
+        }
+      } else {
+        start.canSwipe = true;
+      }
+    }
+
+    if (start.canSwipe) {
+      e.preventDefault();
+      let offset = dy;
+      if ((activeIndex === 0 && dy > 0) || (activeIndex === months.length - 1 && dy < 0)) {
+        offset = dy * 0.3;
+      }
+      setDragOffset(offset);
+      setIsDragging(true);
+    }
+  };
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: TouchEvent) => touchMoveHandler.current?.(e);
+    el.addEventListener("touchmove", handler, { passive: false });
+    return () => el.removeEventListener("touchmove", handler);
   }, []);
 
   // Build 12 months of data
