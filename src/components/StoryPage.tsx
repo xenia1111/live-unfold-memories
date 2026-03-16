@@ -118,7 +118,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     const loading = loadingKeys.has(m.key);
 
     return (
-      <div className="px-5 py-5 max-w-lg mx-auto">
+      <div className="px-5 pt-8 pb-5 max-w-lg mx-auto">
         <div className="rounded-3xl border border-border/30 bg-card shadow-lg overflow-hidden">
           {/* Header: Month title + mini calendar */}
           <div className="px-6 pt-6 pb-4">
