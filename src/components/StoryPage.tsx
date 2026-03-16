@@ -262,7 +262,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
             <div className="px-5 py-4 border-t border-dashed border-border/30">
               <div className="relative">
                 {/* Hero photo - large, takes most width */}
-                <div className="rounded-2xl overflow-hidden aspect-[3/4] bg-muted/20 shadow-sm">
+                <div className="rounded-2xl overflow-hidden aspect-[4/3] bg-muted/20 shadow-sm">
                   <img src={m.photos[0]} alt="" className="w-full h-full object-cover" />
                 </div>
                 {/* Smaller photos stacked on right side, overlapping */}
