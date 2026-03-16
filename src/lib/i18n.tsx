@@ -530,7 +530,7 @@ const en: Dict = {
   "story.notes": "Notes", "story.done": "Done", "story.edit": "Edit",
   "story.writeSomething": "Write something...",
   "story.notePlaceholder": "Record your feelings, thoughts, or any moment worth keeping...",
-  "story.share": "Share this story", "story.copied": "Copied to clipboard",
+  "story.share": "Share this story", "story.categoryView": "Category Review", "story.copied": "Copied to clipboard",
   "story.generateFailed": "Story generation failed, showing basic summary",
   "story.fallback.waiting": "Awaiting", "story.fallback.highlight": "Highlights",
   "story.fallback.steady": "Steady Progress", "story.fallback.building": "Building Up",
