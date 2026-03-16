@@ -270,9 +270,18 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
     );
   };
 
-  // How many older months are stacked above the active one
-  const PEEK_HEIGHT = 36; // px each stacked card edge shows
-  const MAX_STACKED = 5; // max visible stacked edges above
+  const PEEK_HEIGHT = 34;
+  const MAX_STACKED = 6;
+
+  // Older months = higher index in months array
+  const olderCount = months.length - 1 - activeIndex;
+  const numVisibleAbove = Math.min(olderCount, MAX_STACKED);
+  // Newer months (below) = activeIndex
+  const newerCount = activeIndex;
+  const numVisibleBelow = Math.min(newerCount, MAX_STACKED);
+
+  const stackTopHeight = numVisibleAbove * PEEK_HEIGHT;
+  const stackBottomHeight = numVisibleBelow * PEEK_HEIGHT;
 
   return (
     <div
@@ -280,84 +289,104 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Stacked older months behind (above the active card) */}
+      {/* Stacked OLDER months above — oldest at top, newest near active */}
       {months.map((m, i) => {
-        if (i <= activeIndex) return null; // only older months (higher index = older)
-        const stackPos = i - activeIndex; // 1, 2, 3...
+        if (i <= activeIndex) return null;
+        const stackPos = i - activeIndex; // 1 = nearest older
         if (stackPos > MAX_STACKED) return null;
 
-        const topOffset = (stackPos - 1) * PEEK_HEIGHT;
+        // Nearest older month at bottom of stack area, oldest at top
+        const topOffset = (numVisibleAbove - stackPos) * PEEK_HEIGHT;
 
         return (
           <div
             key={m.key}
             onClick={() => goTo(i)}
-            className="absolute left-0 right-0 cursor-pointer transition-all duration-500 ease-out"
+            className="absolute left-0 right-0 cursor-pointer transition-all duration-400 ease-out"
             style={{
               top: `${topOffset}px`,
               height: `${PEEK_HEIGHT}px`,
-              zIndex: MAX_STACKED - stackPos + 1,
+              zIndex: stackPos,
             }}
           >
             <div className={cn(
-              "h-full rounded-t-2xl bg-card border border-b-0 border-border/25 px-6 flex items-center",
-              "shadow-[0_-2px_8px_-2px_hsl(var(--foreground)/0.06)]"
+              "h-full bg-card border-x border-t border-border/20 px-6 flex items-center",
+              stackPos === numVisibleAbove && "rounded-t-2xl",
+              "shadow-[0_1px_0_0_hsl(var(--border)/0.15)]"
             )}>
-              <span
-                className="text-sm font-semibold text-foreground/50 tracking-wide"
-                style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}
-              >
+              <span className="text-sm font-semibold text-foreground/45 tracking-wide" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
                 {m.monthName}
               </span>
-              <span className="text-[10px] text-muted-foreground/40 ml-2">{m.year}</span>
+              <span className="text-[10px] text-muted-foreground/35 ml-2">{m.year}</span>
             </div>
           </div>
         );
       })}
 
-      {/* Active card — positioned below the stacked edges */}
+      {/* Active card */}
       <div
         key={activeMonth.key}
-        className="absolute left-0 right-0 bottom-0 transition-all duration-500 ease-out animate-fade-in"
+        className="absolute left-0 right-0 transition-all duration-400 ease-out"
         style={{
-          top: `${Math.min(activeIndex > 0 ? 0 : 0, MAX_STACKED) * 0 + Math.min(months.length - 1 - activeIndex, MAX_STACKED) * PEEK_HEIGHT}px`,
+          top: `${stackTopHeight}px`,
+          bottom: `${stackBottomHeight}px`,
           zIndex: MAX_STACKED + 2,
         }}
       >
         <div className={cn(
-          "h-full rounded-t-3xl bg-card border border-b-0 border-border/25 overflow-hidden",
-          "shadow-[0_-4px_20px_-4px_hsl(var(--foreground)/0.1)]"
+          "h-full rounded-t-3xl bg-card border border-b-0 border-border/20 overflow-hidden",
+          "shadow-[0_-4px_16px_-4px_hsl(var(--foreground)/0.08)]"
         )}>
-          <div className="h-full overflow-y-auto pb-4" style={{ scrollbarWidth: "none" }}>
+          <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "none" }}>
             {renderMonthCard(activeMonth, activeIndex)}
+            <div className="h-20" /> {/* bottom spacing for nav bar */}
           </div>
         </div>
+
+        {/* "Back to this month" floating button */}
+        {activeIndex !== 0 && (
+          <button
+            onClick={() => goTo(0)}
+            className="absolute top-3 right-4 z-10 flex items-center gap-1 px-3 py-1.5 rounded-full bg-primary/90 text-primary-foreground text-[11px] font-medium shadow-md hover:bg-primary transition-colors"
+          >
+            <ChevronRight size={12} />
+            <span>{t("story.current") || "本月"}</span>
+          </button>
+        )}
       </div>
 
-      {/* Newer month peek at the very bottom (if we scrolled to an older month) */}
-      {activeIndex > 0 && (
-        <div
-          onClick={() => goTo(activeIndex - 1)}
-          className="absolute left-0 right-0 bottom-0 cursor-pointer transition-all duration-500 ease-out"
-          style={{
-            height: `${PEEK_HEIGHT}px`,
-            zIndex: MAX_STACKED + 3,
-          }}
-        >
-          <div className={cn(
-            "h-full rounded-b-2xl bg-card border border-t-0 border-border/25 px-6 flex items-center justify-center",
-            "shadow-[0_2px_8px_-2px_hsl(var(--foreground)/0.06)]"
-          )}>
-            <span
-              className="text-sm font-semibold text-foreground/50 tracking-wide"
-              style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}
-            >
-              {months[activeIndex - 1].monthName}
-            </span>
-            <span className="text-[10px] text-muted-foreground/40 ml-2">{months[activeIndex - 1].year}</span>
+      {/* Stacked NEWER months below — newest at bottom, oldest near active */}
+      {months.map((m, i) => {
+        if (i >= activeIndex) return null;
+        const stackPos = activeIndex - i; // 1 = nearest newer
+        if (stackPos > MAX_STACKED) return null;
+
+        const bottomOffset = (numVisibleBelow - stackPos) * PEEK_HEIGHT;
+
+        return (
+          <div
+            key={m.key}
+            onClick={() => goTo(i)}
+            className="absolute left-0 right-0 cursor-pointer transition-all duration-400 ease-out"
+            style={{
+              bottom: `${bottomOffset}px`,
+              height: `${PEEK_HEIGHT}px`,
+              zIndex: stackPos,
+            }}
+          >
+            <div className={cn(
+              "h-full bg-card border-x border-b border-border/20 px-6 flex items-center",
+              stackPos === numVisibleBelow && "rounded-b-2xl",
+              "shadow-[0_-1px_0_0_hsl(var(--border)/0.15)]"
+            )}>
+              <span className="text-sm font-semibold text-foreground/45 tracking-wide" style={{ fontFamily: "'Caveat', 'Ma Shan Zheng', cursive" }}>
+                {m.monthName}
+              </span>
+              <span className="text-[10px] text-muted-foreground/35 ml-2">{m.year}</span>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })}
 
       {shareDialog && (
         <SharePosterDialog
