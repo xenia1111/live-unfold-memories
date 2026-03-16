@@ -36,7 +36,7 @@ const MonthPicker = ({ months, onSelect, currentMonthKey }: MonthPickerProps) =>
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/80 text-sm font-medium text-foreground hover:bg-muted transition-all active:scale-95">
+        <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors active:scale-95">
           <CalendarDays size={14} className="text-primary" />{currentLabel}
         </button>
       </PopoverTrigger>
