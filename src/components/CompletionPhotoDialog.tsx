@@ -49,7 +49,7 @@ const CompletionPhotoDialog = ({ open, onOpenChange, taskTitle, onConfirm }: Com
         photoUrl = await uploadTaskPhoto(user.id, file);
       } catch (e) {
         console.error("Upload failed:", e);
-        toast.error(t("complete.uploadFailed") || "上传照片失败");
+        toast.error(t("complete.uploadFailed"));
         setUploading(false);
         return;
       }
