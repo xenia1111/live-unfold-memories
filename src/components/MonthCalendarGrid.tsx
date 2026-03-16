@@ -4,13 +4,24 @@ import { startOfMonth, getDay, getDaysInMonth, isToday } from "date-fns";
 
 interface MonthCalendarGridProps {
   year: number;
-  month: number; // 0-indexed
-  completedDates: Set<string>; // "YYYY-MM-DD"
-  taskDates?: Set<string>; // all dates with tasks
-  incompleteDates?: Set<string>; // dates with incomplete tasks
+  month: number;
+  completedDates: Set<string>;
+  taskDates?: Set<string>;
+  incompleteDates?: Set<string>;
 }
 
 const WEEKDAY_LABELS = ["日", "一", "二", "三", "四", "五", "六"];
+
+// Predefined "wobble" variations for hand-drawn feel
+const WOBBLES = [
+  "49% 51% 52% 48% / 50% 48% 52% 50%",
+  "52% 48% 50% 50% / 48% 52% 50% 50%",
+  "50% 50% 48% 52% / 52% 50% 50% 50%",
+  "48% 52% 51% 49% / 50% 50% 48% 52%",
+  "51% 49% 50% 50% / 49% 51% 52% 48%",
+  "50% 50% 52% 48% / 51% 49% 50% 50%",
+  "52% 48% 49% 51% / 50% 52% 48% 50%",
+];
 
 const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteDates }: MonthCalendarGridProps) => {
   const grid = useMemo(() => {
@@ -32,7 +43,7 @@ const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteD
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-0.5">
+      <div className="grid grid-cols-7 gap-[3px]">
         {grid.map((day, i) => {
           if (day === null) return <div key={`empty-${i}`} className="w-full aspect-square" />;
           const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -42,30 +53,36 @@ const MonthCalendarGrid = ({ year, month, completedDates, taskDates, incompleteD
           const hasIncomplete = incompleteDates?.has(dateStr) ?? false;
           const isTodayDate = isToday(dateObj);
 
-          // Green circle for completed, black circle for has-task-but-no-completion
           const showGreenCircle = hasCompleted;
           const showDarkCircle = !hasCompleted && hasTask;
-          // Red dot for incomplete tasks (only if not already showing green)
           const showRedDot = hasIncomplete && !hasCompleted;
+          const wobble = WOBBLES[day % WOBBLES.length];
 
           return (
-            <div
-              key={day}
-              className="w-full aspect-square flex flex-col items-center justify-center relative"
-            >
+            <div key={day} className="w-full aspect-square flex flex-col items-center justify-center">
               <span
                 className={cn(
-                  "w-[18px] h-[18px] flex items-center justify-center rounded-full text-[9px] leading-none",
-                  showGreenCircle && "ring-[1.5px] ring-primary text-primary font-semibold",
-                  showDarkCircle && "ring-[1.5px] ring-foreground/70 text-foreground/70 font-medium",
+                  "w-[16px] h-[16px] flex items-center justify-center text-[8px] leading-none",
+                  showGreenCircle && "text-primary font-semibold",
+                  showDarkCircle && "text-foreground/70 font-medium",
                   !showGreenCircle && !showDarkCircle && isTodayDate && "text-primary font-bold",
-                  !showGreenCircle && !showDarkCircle && !isTodayDate && "text-foreground/40"
+                  !showGreenCircle && !showDarkCircle && !isTodayDate && "text-foreground/40",
                 )}
+                style={
+                  (showGreenCircle || showDarkCircle)
+                    ? {
+                        borderRadius: wobble,
+                        boxShadow: showGreenCircle
+                          ? "0 0 0 1.2px hsl(var(--primary))"
+                          : "0 0 0 1px hsl(var(--foreground) / 0.55)",
+                      }
+                    : undefined
+                }
               >
                 {day}
               </span>
               {showRedDot && (
-                <span className="w-[3px] h-[3px] rounded-full bg-destructive/70 mt-[1px]" />
+                <span className="w-[2.5px] h-[2.5px] rounded-full bg-destructive/60 mt-[1px]" />
               )}
             </div>
           );
