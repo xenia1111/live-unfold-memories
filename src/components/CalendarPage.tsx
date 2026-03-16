@@ -36,7 +36,7 @@ const MonthPicker = ({ months, onSelect, currentMonthKey }: MonthPickerProps) =>
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/80 text-sm font-medium text-foreground hover:bg-muted transition-all active:scale-95">
+        <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors active:scale-95">
           <CalendarDays size={14} className="text-primary" />{currentLabel}
         </button>
       </PopoverTrigger>
@@ -102,17 +102,14 @@ const CalendarPage = ({ tasks = [], onUpdateTask, onDeleteTask }: CalendarPagePr
 
   return (
     <div ref={el => { if (el) scrollRef.current = el; }}>
-      <div className="fixed top-0 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="max-w-lg mx-auto px-5 py-3 flex items-center justify-between">
-          <h1 className="text-lg font-bold text-foreground font-serif">{t("cal.title")}</h1>
-          <div className="flex items-center gap-2">
+      <div className="px-5 pt-14 pb-24 max-w-lg mx-auto">
+        <div className="flex items-center justify-between pb-4">
+          <h1 className="text-xl font-medium tracking-tight text-foreground">{t("cal.title")}</h1>
+          <div className="flex items-center gap-3">
             <MonthPicker months={groupedByMonth} onSelect={scrollToMonth} currentMonthKey={currentMonthKey} />
-            <button onClick={scrollToToday} className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-all active:scale-95 shadow-sm">{t("cal.today")}</button>
+            <button onClick={scrollToToday} className="text-xs font-medium text-primary hover:text-primary/70 transition-colors active:scale-95">{t("cal.today")}</button>
           </div>
         </div>
-      </div>
-
-      <div className="px-5 pt-16 pb-24 max-w-lg mx-auto">
         <div className="animate-fade-in" style={{ animationDelay: "0.1s" }}>
           {allEvents.length === 0 ? (
             <div className="bg-card rounded-2xl p-8 card-glow border border-border/50 text-center">
