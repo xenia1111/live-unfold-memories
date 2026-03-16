@@ -27,7 +27,8 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showCategory, setShowCategory] = useState(false);
   const [shareDialog, setShareDialog] = useState<{ story: any; periodLabel: string; timeRange: string; photos: string[] } | null>(null);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const touchStartRef = useRef<{ y: number; time: number } | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Build 12 months of data
   const months = useMemo(() => {
