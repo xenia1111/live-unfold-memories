@@ -83,14 +83,14 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
 
   const goTo = (idx: number) => setActiveIndex(Math.max(0, Math.min(months.length - 1, idx)));
 
-  // Touch swipe handling
+  // Touch swipe handling (vertical)
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientY);
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStart === null) return;
     const diff = touchStart - e.changedTouches[0].clientY;
-    if (Math.abs(diff) > 60) {
-      if (diff > 0) goTo(activeIndex + 1); // swipe up → next (older)
-      else goTo(activeIndex - 1); // swipe down → prev (newer)
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(activeIndex + 1); // swipe up → older month
+      else goTo(activeIndex - 1); // swipe down → newer month
     }
     setTouchStart(null);
   };
