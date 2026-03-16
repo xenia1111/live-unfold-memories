@@ -391,9 +391,9 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       {activeIndex !== 0 && (
         <button
           onClick={() => { setActiveIndex(0); setDragOffset(0); }}
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 px-4 py-2 rounded-full bg-card/90 backdrop-blur-sm border border-border/40 text-foreground/70 text-[11px] font-medium shadow-sm hover:shadow-md hover:text-foreground transition-all"
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold shadow-lg hover:shadow-xl active:scale-95 transition-all animate-fade-in"
         >
-          <span className="text-xs">←</span>
+          <span>←</span>
           <span>{months[0].monthName}</span>
         </button>
       )}
