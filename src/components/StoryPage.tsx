@@ -299,7 +299,7 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
               onClick={() => generateAIStory(m)}
               disabled={loading}
               className={cn(
-                "w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-xs font-medium transition-all duration-300",
+                "w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-xs font-medium transition-all duration-300",
                 hasAIStory
                   ? "bg-muted/30 text-muted-foreground hover:text-foreground"
                   : "gradient-warm text-primary-foreground shadow-sm hover:shadow-md active:scale-[0.98]"
