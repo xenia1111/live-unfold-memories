@@ -93,12 +93,15 @@ const StoryPage = ({ tasks }: StoryPageProps) => {
       const end = endOfMonth(monthDate);
       const monthTasks = tasks.filter(t => t.date && isWithinInterval(t.date, { start, end }));
       const completed = monthTasks.filter(t => t.completed);
+      const incomplete = monthTasks.filter(t => !t.completed);
       const photos = completed.map(t => t.completionPhoto).filter((p): p is string => !!p);
       const completedDates = new Set(completed.map(t => t.date ? format(t.date, "yyyy-MM-dd") : "").filter(Boolean));
+      const taskDates = new Set(monthTasks.map(t => t.date ? format(t.date, "yyyy-MM-dd") : "").filter(Boolean));
+      const incompleteDates = new Set(incomplete.map(t => t.date ? format(t.date, "yyyy-MM-dd") : "").filter(Boolean));
       const key = `month-${year}-${month}`;
       const monthName = lang === "zh" ? MONTH_NAMES_ZH[month] : MONTH_NAMES_EN[month];
       const label = i === 0 ? t("story.thisMonth") : `${monthName} ${year}`;
-      return { key, year, month, label, monthName, start, end, tasks: monthTasks, completed, photos, completedDates, total: monthTasks.length, completedCount: completed.length };
+      return { key, year, month, label, monthName, start, end, tasks: monthTasks, completed, photos, completedDates, taskDates, incompleteDates, total: monthTasks.length, completedCount: completed.length };
     });
   }, [tasks, lang, t]);
 
