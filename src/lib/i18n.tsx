@@ -479,6 +479,19 @@ const zh: Dict = {
   "region.suzhou": "苏州", "region.xian": "西安", "region.changsha": "长沙",
   "region.tianjin": "天津", "region.qingdao": "青岛", "region.dalian": "大连",
   "region.xiamen": "厦门", "region.other": "其他",
+
+  // Notifications
+  "notif.title": "通知设置",
+  "notif.taskReminders": "任务提醒",
+  "notif.taskRemindersDesc": "在任务时间到达时收到提醒",
+  "notif.enabled": "已开启通知",
+  "notif.disabled": "已关闭通知",
+  "notif.browserPermission": "浏览器权限",
+  "notif.permissionGranted": "已授权",
+  "notif.permissionDenied": "已拒绝，请在浏览器设置中开启",
+  "notif.permissionDefault": "未设置",
+  "notif.notSupported": "当前浏览器不支持通知",
+  "notif.note": "通知功能需要浏览器授权。任务时间到达时，若应用在后台打开，将弹出浏览器通知提醒你。",
 };
 
 const en: Dict = {
