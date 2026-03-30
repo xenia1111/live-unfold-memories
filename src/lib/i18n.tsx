@@ -908,6 +908,13 @@ const frDict: Dict = {
   "region.suzhou": "Suzhou", "region.xian": "Xi'an", "region.changsha": "Changsha",
   "region.tianjin": "Tianjin", "region.qingdao": "Qingdao", "region.dalian": "Dalian",
   "region.xiamen": "Xiamen", "region.other": "Autre",
+  "notif.title": "Notifications", "notif.taskReminders": "Rappels de tâches",
+  "notif.taskRemindersDesc": "Recevez un rappel à l'heure de la tâche",
+  "notif.enabled": "Notifications activées", "notif.disabled": "Notifications désactivées",
+  "notif.browserPermission": "Permission du navigateur",
+  "notif.permissionGranted": "Autorisé", "notif.permissionDenied": "Refusé — activez dans les paramètres",
+  "notif.permissionDefault": "Non défini", "notif.notSupported": "Notifications non supportées",
+  "notif.note": "Les notifications nécessitent l'autorisation du navigateur. Quand l'heure d'une tâche arrive et que l'app est ouverte, vous recevrez une notification.",
 };
 
 // Spanish - copy structure from English with Spanish translations
