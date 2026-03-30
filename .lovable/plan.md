@@ -1,23 +1,56 @@
 
 
-## 移除两个不符合 iOS 规范的标题元素
+## Browser Notification Feature Plan
 
-### 要移除的内容
+### Overview
+Implement real browser notifications that fire when a task's scheduled time arrives. This uses the **Notification API** (works in all modern browsers) combined with an in-app timer system — no backend changes needed.
 
-1. **故事页顶部标题区** (`src/components/StoryPage.tsx` 第 175-181 行)
-   - 📖 图标 + "回忆是最美的礼物" 副标题
-   - "你的故事" 大标题
-   - 整个 `animate-fade-in mb-4` 的 div 块移除
+### How It Works
 
-2. **首页日期行** (`src/components/HomePage.tsx` 第 168-170 行)
-   - "3月5日 星期四" 的文字移除
+```text
+App Mount → useTaskNotifications hook starts
+  ├─ Request browser permission (if not yet granted)
+  ├─ Every 60s, scan today's tasks
+  │   └─ For tasks with time="HH:MM" or range start time:
+  │       If current time matches (±1 min) AND not yet notified → fire Notification
+  └─ Track notified task IDs in a Set to avoid duplicates
+```
 
-### 改动范围
+### Task Time Parsing
+Tasks store time as one of four formats:
+- `"不限"` / `"全天"` → no specific time, skip notification
+- `"HH:MM"` (e.g. `"09:00"`) → notify at that exact time
+- `"HH:MM-HH:MM"` (e.g. `"09:00-10:00"`) → notify at start time
 
-| 文件 | 操作 |
-|------|------|
-| `src/components/StoryPage.tsx` | 删除第 175-181 行的标题区块 |
-| `src/components/HomePage.tsx` | 删除第 168-170 行的日期段落 |
+### Implementation Steps
 
-两处都是纯删除，不影响其他功能。
+#### 1. Create `useTaskNotifications` hook
+New file: `src/hooks/useTaskNotifications.ts`
+- Accept `tasks: Task[]` as input
+- On mount, call `Notification.requestPermission()` if setting is enabled
+- Set up a `setInterval` (every 60s) that:
+  - Filters today's incomplete tasks with a specific time
+  - Compares task time to `new Date()` (hour + minute match)
+  - Fires `new Notification(title, { body, icon })` for matching tasks
+  - Tracks fired notifications in a `Set<string>` (task ID + date) to prevent repeats
+- Reads `localStorage` notification enabled flag before firing
+- Cleans up interval on unmount
+
+#### 2. Integrate hook in `Index.tsx`
+- Call `useTaskNotifications(tasks)` inside the `Index` component (after auth check)
+- No UI changes needed — the hook runs silently in the background
+
+#### 3. Update `NotificationSettingsPage.tsx`
+- When user enables notifications, immediately request browser permission via `Notification.requestPermission()`
+- Show permission status (granted/denied/default) as a subtitle
+- Connect text to i18n system (replace hardcoded Chinese/English)
+
+#### 4. Add i18n keys
+- Add notification-related translation keys: permission status text, notification body template
+
+### Files to Create/Modify
+- **New**: `src/hooks/useTaskNotifications.ts`
+- **Edit**: `src/pages/Index.tsx` — add hook call
+- **Edit**: `src/components/NotificationSettingsPage.tsx` — request permission, show status
+- **Edit**: `src/lib/i18n.tsx` — add notification translation keys
 
