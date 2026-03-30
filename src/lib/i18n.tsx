@@ -701,6 +701,13 @@ const en: Dict = {
   "region.suzhou": "Suzhou", "region.xian": "Xi'an", "region.changsha": "Changsha",
   "region.tianjin": "Tianjin", "region.qingdao": "Qingdao", "region.dalian": "Dalian",
   "region.xiamen": "Xiamen", "region.other": "Other",
+  "notif.title": "Notifications", "notif.taskReminders": "Task Reminders",
+  "notif.taskRemindersDesc": "Get reminded when task time arrives",
+  "notif.enabled": "Notifications enabled", "notif.disabled": "Notifications disabled",
+  "notif.browserPermission": "Browser Permission",
+  "notif.permissionGranted": "Granted", "notif.permissionDenied": "Denied — enable in browser settings",
+  "notif.permissionDefault": "Not set", "notif.notSupported": "Notifications not supported",
+  "notif.note": "Notifications require browser permission. When a task's time arrives and this app is open in the background, you'll receive a browser notification.",
 };
 
 const frDict: Dict = {
