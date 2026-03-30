@@ -1117,6 +1117,13 @@ const esDict: Dict = {
   "region.suzhou": "Suzhou", "region.xian": "Xi'an", "region.changsha": "Changsha",
   "region.tianjin": "Tianjin", "region.qingdao": "Qingdao", "region.dalian": "Dalian",
   "region.xiamen": "Xiamen", "region.other": "Otro",
+  "notif.title": "Notificaciones", "notif.taskReminders": "Recordatorios de tareas",
+  "notif.taskRemindersDesc": "Recibe un aviso cuando llegue la hora",
+  "notif.enabled": "Notificaciones activadas", "notif.disabled": "Notificaciones desactivadas",
+  "notif.browserPermission": "Permiso del navegador",
+  "notif.permissionGranted": "Concedido", "notif.permissionDenied": "Denegado — actívalo en ajustes",
+  "notif.permissionDefault": "No configurado", "notif.notSupported": "Notificaciones no soportadas",
+  "notif.note": "Las notificaciones requieren permiso del navegador. Cuando llegue la hora de una tarea y la app esté abierta, recibirás una notificación.",
 };
 
 // Japanese
