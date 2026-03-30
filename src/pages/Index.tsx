@@ -21,6 +21,7 @@ const Index = () => {
   const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("home");
   const { tasks, loading, addTask, completeTask, updateTask, deleteTask } = useTasks();
+  useTaskNotifications(tasks);
 
   if (authLoading) {
     return (
