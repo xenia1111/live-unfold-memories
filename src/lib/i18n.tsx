@@ -479,6 +479,19 @@ const zh: Dict = {
   "region.suzhou": "苏州", "region.xian": "西安", "region.changsha": "长沙",
   "region.tianjin": "天津", "region.qingdao": "青岛", "region.dalian": "大连",
   "region.xiamen": "厦门", "region.other": "其他",
+
+  // Notifications
+  "notif.title": "通知设置",
+  "notif.taskReminders": "任务提醒",
+  "notif.taskRemindersDesc": "在任务时间到达时收到提醒",
+  "notif.enabled": "已开启通知",
+  "notif.disabled": "已关闭通知",
+  "notif.browserPermission": "浏览器权限",
+  "notif.permissionGranted": "已授权",
+  "notif.permissionDenied": "已拒绝，请在浏览器设置中开启",
+  "notif.permissionDefault": "未设置",
+  "notif.notSupported": "当前浏览器不支持通知",
+  "notif.note": "通知功能需要浏览器授权。任务时间到达时，若应用在后台打开，将弹出浏览器通知提醒你。",
 };
 
 const en: Dict = {
@@ -688,6 +701,13 @@ const en: Dict = {
   "region.suzhou": "Suzhou", "region.xian": "Xi'an", "region.changsha": "Changsha",
   "region.tianjin": "Tianjin", "region.qingdao": "Qingdao", "region.dalian": "Dalian",
   "region.xiamen": "Xiamen", "region.other": "Other",
+  "notif.title": "Notifications", "notif.taskReminders": "Task Reminders",
+  "notif.taskRemindersDesc": "Get reminded when task time arrives",
+  "notif.enabled": "Notifications enabled", "notif.disabled": "Notifications disabled",
+  "notif.browserPermission": "Browser Permission",
+  "notif.permissionGranted": "Granted", "notif.permissionDenied": "Denied — enable in browser settings",
+  "notif.permissionDefault": "Not set", "notif.notSupported": "Notifications not supported",
+  "notif.note": "Notifications require browser permission. When a task's time arrives and this app is open in the background, you'll receive a browser notification.",
 };
 
 const frDict: Dict = {
@@ -888,6 +908,13 @@ const frDict: Dict = {
   "region.suzhou": "Suzhou", "region.xian": "Xi'an", "region.changsha": "Changsha",
   "region.tianjin": "Tianjin", "region.qingdao": "Qingdao", "region.dalian": "Dalian",
   "region.xiamen": "Xiamen", "region.other": "Autre",
+  "notif.title": "Notifications", "notif.taskReminders": "Rappels de tâches",
+  "notif.taskRemindersDesc": "Recevez un rappel à l'heure de la tâche",
+  "notif.enabled": "Notifications activées", "notif.disabled": "Notifications désactivées",
+  "notif.browserPermission": "Permission du navigateur",
+  "notif.permissionGranted": "Autorisé", "notif.permissionDenied": "Refusé — activez dans les paramètres",
+  "notif.permissionDefault": "Non défini", "notif.notSupported": "Notifications non supportées",
+  "notif.note": "Les notifications nécessitent l'autorisation du navigateur. Quand l'heure d'une tâche arrive et que l'app est ouverte, vous recevrez une notification.",
 };
 
 // Spanish - copy structure from English with Spanish translations
@@ -1090,6 +1117,13 @@ const esDict: Dict = {
   "region.suzhou": "Suzhou", "region.xian": "Xi'an", "region.changsha": "Changsha",
   "region.tianjin": "Tianjin", "region.qingdao": "Qingdao", "region.dalian": "Dalian",
   "region.xiamen": "Xiamen", "region.other": "Otro",
+  "notif.title": "Notificaciones", "notif.taskReminders": "Recordatorios de tareas",
+  "notif.taskRemindersDesc": "Recibe un aviso cuando llegue la hora",
+  "notif.enabled": "Notificaciones activadas", "notif.disabled": "Notificaciones desactivadas",
+  "notif.browserPermission": "Permiso del navegador",
+  "notif.permissionGranted": "Concedido", "notif.permissionDenied": "Denegado — actívalo en ajustes",
+  "notif.permissionDefault": "No configurado", "notif.notSupported": "Notificaciones no soportadas",
+  "notif.note": "Las notificaciones requieren permiso del navegador. Cuando llegue la hora de una tarea y la app esté abierta, recibirás una notificación.",
 };
 
 // Japanese
@@ -1292,6 +1326,13 @@ const jaDict: Dict = {
   "region.suzhou": "蘇州", "region.xian": "西安", "region.changsha": "長沙",
   "region.tianjin": "天津", "region.qingdao": "青島", "region.dalian": "大連",
   "region.xiamen": "アモイ", "region.other": "その他",
+  "notif.title": "通知設定", "notif.taskReminders": "タスクリマインダー",
+  "notif.taskRemindersDesc": "タスクの時間になったら通知",
+  "notif.enabled": "通知オン", "notif.disabled": "通知オフ",
+  "notif.browserPermission": "ブラウザ権限",
+  "notif.permissionGranted": "許可済み", "notif.permissionDenied": "拒否 — ブラウザ設定で許可してください",
+  "notif.permissionDefault": "未設定", "notif.notSupported": "通知に対応していません",
+  "notif.note": "通知にはブラウザの許可が必要です。タスクの時間になると、アプリがバックグラウンドで開いていれば通知が届きます。",
 };
 
 const dictionaries: Record<Language, Dict> = {

@@ -5,6 +5,7 @@ import AddTaskDialog from "@/components/AddTaskDialog";
 import AuthPage from "@/components/AuthPage";
 import { useTasks } from "@/hooks/useTasks";
 import { useAuth } from "@/hooks/useAuth";
+import { useTaskNotifications } from "@/hooks/useTaskNotifications";
 
 const CalendarPage = lazy(() => import("@/components/CalendarPage"));
 const StoryPage = lazy(() => import("@/components/StoryPage"));
@@ -20,6 +21,7 @@ const Index = () => {
   const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState("home");
   const { tasks, loading, addTask, completeTask, updateTask, deleteTask } = useTasks();
+  useTaskNotifications(tasks);
 
   if (authLoading) {
     return (
