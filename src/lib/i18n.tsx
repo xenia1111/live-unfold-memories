@@ -1326,6 +1326,13 @@ const jaDict: Dict = {
   "region.suzhou": "蘇州", "region.xian": "西安", "region.changsha": "長沙",
   "region.tianjin": "天津", "region.qingdao": "青島", "region.dalian": "大連",
   "region.xiamen": "アモイ", "region.other": "その他",
+  "notif.title": "通知設定", "notif.taskReminders": "タスクリマインダー",
+  "notif.taskRemindersDesc": "タスクの時間になったら通知",
+  "notif.enabled": "通知オン", "notif.disabled": "通知オフ",
+  "notif.browserPermission": "ブラウザ権限",
+  "notif.permissionGranted": "許可済み", "notif.permissionDenied": "拒否 — ブラウザ設定で許可してください",
+  "notif.permissionDefault": "未設定", "notif.notSupported": "通知に対応していません",
+  "notif.note": "通知にはブラウザの許可が必要です。タスクの時間になると、アプリがバックグラウンドで開いていれば通知が届きます。",
 };
 
 const dictionaries: Record<Language, Dict> = {
